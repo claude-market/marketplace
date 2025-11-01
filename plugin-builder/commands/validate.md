@@ -61,14 +61,15 @@ Read and validate `.claude-plugin/plugin.json`:
 
 4. **Component path fields (optional):**
 
-   **IMPORTANT:** Default directories load automatically. Only specify these if using custom paths.
+   List the components your plugin provides:
 
-   - `commands` (string or array): Additional command paths beyond default `commands/` directory
-   - `agents` (string or array): Additional agent paths beyond default `agents/` directory
-   - `hooks` (string or object): Hook configuration path or inline config
-   - `mcpServers` (string or object): MCP server path or inline config
+   - `commands` (string or array): Command markdown file paths (e.g., `["./commands/init.md"]`)
+   - `agents` (string or array): Agent markdown file paths (e.g., `["./agents/helper.md"]`)
+   - `skills` (string or array): Skill markdown file paths (e.g., `["./skills/expert.md"]`)
+   - `hooks` (string or object): Hook configuration file path or inline config
+   - `mcpServers` (string or object): MCP server configuration file path or inline config
 
-   All custom paths must:
+   All paths must:
    - Be relative to plugin root
    - Begin with `./`
 
@@ -78,49 +79,50 @@ Read and validate `.claude-plugin/plugin.json`:
 
 ### Component File Validation
 
-**IMPORTANT:** Components in default directories are automatically loaded. Check all component files in:
+Check that all components listed in plugin.json exist and are valid:
 
-1. **Commands** (check `commands/` directory):
+1. **Commands** (check files listed in `commands` array):
 
-   - All `.md` files in `commands/` directory are loaded automatically
+   - Each listed file path exists
    - Each file should contain frontmatter with description
    - Has meaningful content (not empty)
    - Uses proper markdown formatting
    - File names should be in kebab-case
 
-2. **Agents** (check `agents/` directory):
+2. **Agents** (check files listed in `agents` array):
 
-   - All `.md` files in `agents/` directory are loaded automatically
+   - Each listed file path exists
    - Contains clear instructions
    - Defines specialized purpose
    - Has meaningful content
    - File names should be in kebab-case
 
-3. **Hooks** (check `hooks/` directory):
+3. **Hooks** (check path in `hooks` field):
 
-   - All `.json` files in `hooks/` directory are loaded automatically
+   - File path exists if specified
    - Valid JSON format
    - Contains required hook configuration
    - Hook type is valid
-   - File names should be in kebab-case
+   - File name should be in kebab-case
 
-4. **Skills** (check `skills/` directory):
+4. **Skills** (check files listed in `skills` array):
 
-   - All `.md` files in `skills/` directory are loaded automatically
+   - Each listed file path exists
    - Defines domain expertise
    - Contains clear usage instructions
    - Has meaningful content
    - File names should be in kebab-case
 
-5. **MCP Servers** (check `mcp-servers/` directory):
-   - All `.json` files in `mcp-servers/` directory are loaded automatically
+5. **MCP Servers** (check path in `mcpServers` field):
+   - File path exists if specified
    - Valid JSON format
    - Contains connection configuration
-   - File names should be in kebab-case
+   - File name should be in kebab-case
 
-**If custom paths are specified in plugin.json:**
-- Verify those paths exist and contain valid component files
-- Check that custom paths are relative and begin with `./`
+**Additional checks:**
+- Verify all component file paths are relative and begin with `./`
+- Check that listed components actually exist at their specified paths
+- Warn about component files that exist but aren't listed in plugin.json
 
 ### Content Quality Checks
 

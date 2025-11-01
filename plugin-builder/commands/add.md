@@ -77,35 +77,32 @@ Create `skills/{skill-name}.md` with skill definition (create `skills/` director
 
 Create `mcp-servers/{server-name}.json` with MCP config (create `mcp-servers/` directory if it doesn't exist).
 
-## Step 5: Update Plugin Manifest (If Needed)
+## Step 5: Update Plugin Manifest
 
-**IMPORTANT:** Component directories load automatically by default:
-- `commands/` directory → all commands load automatically
-- `agents/` directory → all agents load automatically
-- `skills/` directory → all skills load automatically
-- `hooks/` directory → all hooks load automatically
-- `mcp-servers/` directory → all MCP servers load automatically
+**IMPORTANT:** You must update plugin.json to include the new component.
 
-**You do NOT need to list components in plugin.json unless you are using custom paths.**
+Add the new component file path to the appropriate array in plugin.json:
 
-Only update plugin.json if:
-1. Using custom paths (not the default directories)
-2. Need to specify additional component locations
+- **commands**: Add to the `commands` array (e.g., `"./commands/my-command.md"`)
+- **agents**: Add to the `agents` array (e.g., `"./agents/my-agent.md"`)
+- **hooks**: Add path or inline config to `hooks` field
+- **mcpServers**: Add path or inline config to `mcpServers` field
+- **skills**: Add to the `skills` array (e.g., `"./skills/my-skill.md"`)
 
-If you do need to specify custom paths:
-- **commands** (string or array): Additional command markdown files or directories
-- **agents** (string or array): Additional subagent markdown files
-- **hooks** (string or object): Hook configuration path or inline JSON config
-- **mcpServers** (string or object): MCP server definitions path or inline config
+All paths must be relative to plugin root and begin with `./`
 
-All custom paths must be relative to plugin root and begin with `./`
-
-**Example with custom paths:**
+**Example:**
 ```json
 {
   "name": "my-plugin",
-  "commands": "./custom-commands",
-  "agents": ["./agents", "./extra-agents/specialized.md"]
+  "commands": [
+    "./commands/existing-command.md",
+    "./commands/new-command.md"
+  ],
+  "agents": [
+    "./agents/existing-agent.md",
+    "./agents/new-agent.md"
+  ]
 }
 ```
 

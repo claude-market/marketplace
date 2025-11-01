@@ -172,14 +172,15 @@ Create `./{plugin-name}/.claude-plugin/plugin.json` following the complete schem
 
 ### Component Path Fields (Optional)
 
-**IMPORTANT:** Custom paths supplement—rather than replace—default directories. The `commands/`, `agents/`, and `skills/` directories load automatically if they exist.
+List the components you want to include in your plugin:
 
-- **commands** (string or array): Additional command markdown files or directories
-- **agents** (string or array): Subagent markdown files
-- **hooks** (string or object): Hook configuration path or inline JSON config
-- **mcpServers** (string or object): MCP server definitions path or inline config
+- **commands** (string or array): Command markdown files (e.g., `["./commands/init.md", "./commands/add.md"]`)
+- **agents** (string or array): Agent markdown files (e.g., `["./agents/optimizer.md"]`)
+- **hooks** (string or object): Hook configuration file path or inline JSON config
+- **mcpServers** (string or object): MCP server configuration file path or inline config
+- **skills** (string or array): Skill markdown files (e.g., `["./skills/react.md"]`)
 
-All custom paths must be relative to plugin root and begin with `./`
+All paths must be relative to plugin root and begin with `./`
 
 ### Example Plugin Manifest
 
@@ -196,14 +197,20 @@ All custom paths must be relative to plugin root and begin with `./`
   "homepage": "https://github.com/johndoe/my-plugin",
   "repository": "https://github.com/johndoe/my-plugin",
   "license": "MIT",
-  "keywords": ["helper", "productivity", "automation"]
+  "keywords": ["helper", "productivity", "automation"],
+  "commands": [
+    "./commands/helper.md"
+  ],
+  "agents": [
+    "./agents/assistant.md"
+  ]
 }
 ```
 
 **Schema Notes:**
 - Only `name` is required; all other fields are optional
 - `author` must be an object (not a string) if provided
-- Component directories (`commands/`, `agents/`, `skills/`, `hooks/`, `mcp-servers/`) load automatically - no need to specify them in plugin.json unless using custom paths
+- Components must be explicitly listed in their respective arrays (e.g., commands, agents, skills)
 - Include only fields that have values; omit empty/null fields
 
 ## Step 7: Create CODEOWNERS

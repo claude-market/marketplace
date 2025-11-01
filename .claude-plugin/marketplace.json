@@ -26,7 +26,11 @@
         "scaffolding",
         "example"
       ],
-      "commands": ["init", "add", "validate"]
+      "commands": [
+        "./commands/init.md",
+        "./commands/add.md",
+        "./commands/validate.md"
+      ]
     }
   ]
 }
