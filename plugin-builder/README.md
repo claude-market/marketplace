@@ -73,6 +73,39 @@ Add a new component to an existing plugin.
 /plugin-builder:add
 ```
 
+### `/plugin-builder:edit`
+
+Use natural language to make edits to your existing plugin components.
+
+**Use this when:**
+
+- You want to modify an existing command, agent, hook, skill, or MCP server
+- You need to update functionality, fix issues, or refactor a component
+- You want to make changes using conversational descriptions instead of manual file editing
+
+**Workflow:**
+
+1. Select which plugin to edit
+2. Choose which component to modify
+3. Describe your desired changes in natural language
+4. Claude interprets your intent and applies the edits
+5. Review the changes and confirm
+6. Optionally update README and version number
+
+**Example natural language edits:**
+
+- "Add validation for email addresses"
+- "Make it ask for confirmation before deleting"
+- "Change the default model from haiku to sonnet"
+- "Add better error handling"
+- "Include usage examples in the documentation"
+
+**Example usage:**
+
+```
+/plugin-builder:edit
+```
+
 ### `/plugin-builder:validate`
 
 Validate plugin structure and configuration.
@@ -134,6 +167,7 @@ plugin-builder/
 ├── commands/
 │   ├── init.md               # Init command
 │   ├── add.md                # Add command
+│   ├── edit.md               # Edit command
 │   └── validate.md           # Validate command
 ├── LICENSE                   # MIT License
 └── README.md                 # This file

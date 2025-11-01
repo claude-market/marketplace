@@ -1,6 +1,6 @@
 {
   "name": "claude-market",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Hand-curated open source repository for Claude Code tools, agents and skills",
   "owner": {
     "name": "Claude Market",
@@ -11,7 +11,7 @@
     {
       "name": "plugin-builder",
       "source": "./plugin-builder",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "description": "Interactive plugin builder for Claude Code - serves as both an example plugin and a tool to create new plugins through guided prompts",
       "author": {
         "name": "Daniel Kovacs",
@@ -29,6 +29,7 @@
       "commands": [
         "./commands/init.md",
         "./commands/add.md",
+        "./commands/edit.md",
         "./commands/validate.md"
       ]
     }
