@@ -1,3 +1,5 @@
+![Stylistic logo of a market stall with Claude Code logo on top as a banner or flag](./claude-market-logo.png)
+
 # Claude Market
 
 Hand-curated open source repository for Claude Code plugins - tools, agents, skills, and MCP servers that extend Claude Code's capabilities.
