@@ -77,9 +77,37 @@ Create `skills/{skill-name}.md` with skill definition (create `skills/` director
 
 Create `mcp-servers/{server-name}.json` with MCP config (create `mcp-servers/` directory if it doesn't exist).
 
-## Step 5: Update Plugin Manifest
+## Step 5: Update Plugin Manifest (If Needed)
 
-Update the plugin.json to add the new component to the appropriate array (commands, agents, hooks, skills, or mcpServers) with name and description.
+**IMPORTANT:** Component directories load automatically by default:
+- `commands/` directory → all commands load automatically
+- `agents/` directory → all agents load automatically
+- `skills/` directory → all skills load automatically
+- `hooks/` directory → all hooks load automatically
+- `mcp-servers/` directory → all MCP servers load automatically
+
+**You do NOT need to list components in plugin.json unless you are using custom paths.**
+
+Only update plugin.json if:
+1. Using custom paths (not the default directories)
+2. Need to specify additional component locations
+
+If you do need to specify custom paths:
+- **commands** (string or array): Additional command markdown files or directories
+- **agents** (string or array): Additional subagent markdown files
+- **hooks** (string or object): Hook configuration path or inline JSON config
+- **mcpServers** (string or object): MCP server definitions path or inline config
+
+All custom paths must be relative to plugin root and begin with `./`
+
+**Example with custom paths:**
+```json
+{
+  "name": "my-plugin",
+  "commands": "./custom-commands",
+  "agents": ["./agents", "./extra-agents/specialized.md"]
+}
+```
 
 ## Step 6: Update README
 

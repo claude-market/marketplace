@@ -4,17 +4,30 @@ description: Initialize a new plugin with guided prompts
 
 You are helping a user create a new Claude Code plugin. Follow this workflow step by step:
 
-## Step 1: Get GitHub Username and Author Name
+## Step 1: Get GitHub Username and Fetch Profile
 
 Use the AskUserQuestion tool to ask for:
-- **GitHub username** - Will be used in CODEOWNERS for review assignments
-- **Author name** - Will be used in plugin.json and CODEOWNERS
+- **GitHub username** - Will be used in CODEOWNERS and to fetch author information
+
+Once you have the GitHub username, use WebFetch to fetch their profile:
+- URL: `https://api.github.com/users/{username}`
+- Extract the `name` field from the response
+- If `name` is present and not null, use it as the author name
+- If `name` is null or missing, use the GitHub username as the author name
+
+## Step 2: Collect Plugin Metadata
 
 Ask the user for:
 
-- **Plugin name** (kebab-case identifier)
+- **Plugin name** (kebab-case identifier, unique)
 - **Description** (what does this plugin do?)
-- **License** (suggest MIT if unsure)
+- **Version** (default: "1.0.0" if not specified)
+- **License** (default: "MIT" if unsure)
+- **Homepage** (optional - documentation URL)
+- **Repository** (optional - source code URL, can default to GitHub repo if they want)
+- **Keywords** (optional - array of tags for discoverability)
+- **Author email** (optional - contact email)
+- **Author URL** (optional - personal website/profile)
 
 ## Step 3: Create Plugin Directory
 
@@ -138,16 +151,60 @@ Then create:
 
 ## Step 6: Create Plugin Manifest
 
-Create `./{plugin-name}/.claude-plugin/plugin.json` with:
+Create `./{plugin-name}/.claude-plugin/plugin.json` following the complete schema:
 
-- name, version (start at 1.0.0), description, author, license
-- Arrays listing the created components:
-  - `commands`: array of {name, description} for each command
-  - `agents`: array of {name, description} for each agent
-  - `hooks`: array of {name, description} for each hook
-  - `skills`: array of {name, description} for each skill
-  - `mcpServers`: array of {name, description} for each MCP server
-- keywords (generate relevant ones based on what was created)
+### Required Fields
+
+- **name** (string): Plugin identifier in kebab-case, unique across all plugins
+
+### Metadata Fields (All Optional)
+
+- **version** (string): Semantic versioning (e.g., "1.0.0", "2.1.0")
+- **description** (string): Brief explanation of plugin purpose
+- **author** (object): Author information with these properties:
+  - `name` (string): Author or organization name (from GitHub profile or username)
+  - `email` (string, optional): Contact email address
+  - `url` (string, optional): Author's website or profile URL
+- **homepage** (string): Documentation URL link
+- **repository** (string): Source code repository URL
+- **license** (string): License identifier (MIT, Apache-2.0, etc.)
+- **keywords** (array of strings): Discovery and categorization tags
+
+### Component Path Fields (Optional)
+
+**IMPORTANT:** Custom paths supplement—rather than replace—default directories. The `commands/`, `agents/`, and `skills/` directories load automatically if they exist.
+
+- **commands** (string or array): Additional command markdown files or directories
+- **agents** (string or array): Subagent markdown files
+- **hooks** (string or object): Hook configuration path or inline JSON config
+- **mcpServers** (string or object): MCP server definitions path or inline config
+
+All custom paths must be relative to plugin root and begin with `./`
+
+### Example Plugin Manifest
+
+```json
+{
+  "name": "my-plugin",
+  "version": "1.0.0",
+  "description": "A helpful plugin for productivity",
+  "author": {
+    "name": "John Doe",
+    "email": "john@example.com",
+    "url": "https://github.com/johndoe"
+  },
+  "homepage": "https://github.com/johndoe/my-plugin",
+  "repository": "https://github.com/johndoe/my-plugin",
+  "license": "MIT",
+  "keywords": ["helper", "productivity", "automation"]
+}
+```
+
+**Schema Notes:**
+- Only `name` is required; all other fields are optional
+- `author` must be an object (not a string) if provided
+- Component directories (`commands/`, `agents/`, `skills/`, `hooks/`, `mcp-servers/`) load automatically - no need to specify them in plugin.json unless using custom paths
+- Include only fields that have values; omit empty/null fields
 
 ## Step 7: Create CODEOWNERS
 
@@ -155,17 +212,15 @@ Create `./{plugin-name}/CODEOWNERS` file with the following format:
 
 ```
 # Plugin maintainers and reviewers
-* @claude-market @{github-username} {author-name}
+* @claude-market @{github-username}
 ```
 
 Replace:
 - `{github-username}` with the GitHub username from Step 1
-- `{author-name}` with the author name from Step 1 (without @ symbol)
 
 This ensures that:
 - The Claude Market organization is always notified
 - The plugin creator's GitHub account is tagged for review
-- The author name is listed for visibility
 
 ## Step 8: Create README
 
@@ -200,19 +255,20 @@ Provide the user with:
 
 ## Example Interaction Flow:
 
-1. Ask for GitHub username → "awesome-dev" and author name → "Awesome Developer"
-2. Ask for plugin metadata → name: "react-helpers", description: "Helpers for React development"
-3. Create `./react-helpers/` directory
-4. Ask what to create → [Slash Command, Agent]
-5. For command → name: "add-component", description: "Add a new React component with tests"
-6. Collect detailed requirements for the command
-7. Generate well-structured command file
-8. For agent → name: "react-optimizer", description: "Optimize React components for performance"
-9. Collect agent requirements
-10. Generate agent file
-11. Create plugin.json with metadata
-12. Create CODEOWNERS with @claude-market @awesome-dev Awesome Developer
-13. Create README.md
-14. Show summary and next steps
+1. Ask for GitHub username → "awesome-dev"
+2. Fetch GitHub profile → Extract name "Awesome Developer" (or use "awesome-dev" if no name)
+3. Ask for plugin metadata → name: "react-helpers", description: "Helpers for React development", email (optional), etc.
+4. Create `./react-helpers/` directory
+5. Ask what to create → [Slash Command, Agent]
+6. For command → name: "add-component", description: "Add a new React component with tests"
+7. Collect detailed requirements for the command
+8. Generate well-structured command file
+9. For agent → name: "react-optimizer", description: "Optimize React components for performance"
+10. Collect agent requirements
+11. Generate agent file
+12. Create plugin.json with complete metadata (name from GitHub, optional email/url if provided)
+13. Create CODEOWNERS with @claude-market @awesome-dev
+14. Create README.md
+15. Show summary and next steps
 
-Begin by asking for the GitHub username and author name!
+Begin by asking for the GitHub username!

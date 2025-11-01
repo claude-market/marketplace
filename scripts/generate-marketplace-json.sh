@@ -59,7 +59,7 @@ while IFS= read -r plugin_file; do
     NAME=$(echo "$PLUGIN_DATA" | jq -r '.name // empty')
     VERSION=$(echo "$PLUGIN_DATA" | jq -r '.version // empty')
     DESCRIPTION=$(echo "$PLUGIN_DATA" | jq -r '.description // empty')
-    AUTHOR=$(echo "$PLUGIN_DATA" | jq -r '.author // empty')
+    AUTHOR=$(echo "$PLUGIN_DATA" | jq -c '.author // null')
     LICENSE=$(echo "$PLUGIN_DATA" | jq -r '.license // empty')
     HOMEPAGE=$(echo "$PLUGIN_DATA" | jq -r '.homepage // empty')
     REPOSITORY=$(echo "$PLUGIN_DATA" | jq -r '.repository // empty')
@@ -81,7 +81,7 @@ while IFS= read -r plugin_file; do
         --arg source "$SOURCE_PATH" \
         --arg version "$VERSION" \
         --arg description "$DESCRIPTION" \
-        --arg author "$AUTHOR" \
+        --argjson author "$AUTHOR" \
         --arg license "$LICENSE" \
         --arg homepage "$HOMEPAGE" \
         --arg repository "$REPOSITORY" \
@@ -97,7 +97,7 @@ while IFS= read -r plugin_file; do
         } +
         (if $version != "" then {version: $version} else {} end) +
         (if $description != "" then {description: $description} else {} end) +
-        (if $author != "" then {author: $author} else {} end) +
+        (if $author != null then {author: $author} else {} end) +
         (if $license != "" then {license: $license} else {} end) +
         (if $homepage != "" then {homepage: $homepage} else {} end) +
         (if $repository != "" then {repository: $repository} else {} end) +
