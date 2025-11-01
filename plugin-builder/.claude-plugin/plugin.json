@@ -1,6 +1,6 @@
 {
   "name": "plugin-builder",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Interactive plugin builder for Claude Code - serves as both an example plugin and a tool to create new plugins through guided prompts",
   "author": {
     "name": "Daniel Kovacs",
@@ -14,5 +14,8 @@
     "./commands/add.md",
     "./commands/edit.md",
     "./commands/validate.md"
+  ],
+  "skills": [
+    "./skills/cc-skill-builder.md"
   ]
 }

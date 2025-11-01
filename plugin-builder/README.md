@@ -134,6 +134,55 @@ Validate plugin structure and configuration.
 /plugin-builder:validate
 ```
 
+## Skills
+
+### `cc-skill-builder`
+
+Claude Code Skill Builder - Makes Claude an expert at creating highly effective Claude Code skills.
+
+**When invoked:**
+
+This skill activates automatically when users ask to create a new Claude Code skill. It provides comprehensive guidance on:
+
+- Skill structure (YAML frontmatter + markdown content)
+- Effective prompt engineering techniques
+- Tool permission optimization
+- Progressive disclosure patterns
+- Resource organization (scripts, references, assets)
+- Common skill patterns and workflows
+- Best practices and pitfalls to avoid
+
+**Based on industry best practices from:**
+- [Claude Skills Deep Dive](https://leehanchung.github.io/blogs/2025/10/26/claude-skills-deep-dive/)
+
+**What it helps you create:**
+
+- Skills with clear, action-oriented descriptions for proper invocation
+- Optimized prompts under 5,000 words using imperative voice
+- Minimal tool permissions for security
+- Supporting resources (Python/Bash scripts, reference docs, templates)
+- Skills following one of five proven patterns:
+  - Script Automation
+  - Read-Process-Write
+  - Search-Analyze-Report
+  - Command Chain Execution
+  - Wizard-Style Workflows
+
+**Example usage:**
+
+Simply ask Claude to create a skill, and this skill will automatically activate:
+
+```
+Can you help me create a skill for analyzing Python code performance?
+```
+
+Claude will guide you through:
+1. Gathering requirements
+2. Designing effective frontmatter
+3. Structuring comprehensive instructions
+4. Optimizing for context efficiency
+5. Creating supporting resources if needed
+
 ## Component Types
 
 ### Slash Commands
@@ -169,6 +218,8 @@ plugin-builder/
 │   ├── add.md                # Add command
 │   ├── edit.md               # Edit command
 │   └── validate.md           # Validate command
+├── skills/
+│   └── cc-skill-builder.md   # Skill builder skill
 ├── LICENSE                   # MIT License
 └── README.md                 # This file
 ```
