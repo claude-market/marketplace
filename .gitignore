@@ -1,0 +1,33 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Environment files (may contain secrets)
+.env
+.env.local
+.env.*.local
+
+# Node modules (if any plugins use npm)
+node_modules/
+
+# Build outputs (if any plugins generate builds)
+dist/
+build/
+*.min.js
+*.min.css

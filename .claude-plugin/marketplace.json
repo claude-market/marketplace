@@ -1,0 +1,41 @@
+{
+  "name": "claude-market",
+  "version": "1.0.0",
+  "description": "Hand-curated open source repository for Claude Code tools, agents and skills",
+  "owner": {
+    "name": "Claude Market",
+    "url": "https://github.com/claude-market/marketplace"
+  },
+  "pluginRoot": "./",
+  "plugins": [
+    {
+      "name": "plugin-builder",
+      "source": "./plugin-builder",
+      "version": "1.0.0",
+      "description": "Interactive plugin builder for Claude Code - serves as both an example plugin and a tool to create new plugins through guided prompts",
+      "author": "danielkov",
+      "license": "MIT",
+      "keywords": [
+        "plugin",
+        "builder",
+        "development",
+        "scaffolding",
+        "example"
+      ],
+      "commands": [
+        {
+          "name": "init",
+          "description": "Initialize a new plugin with guided prompts"
+        },
+        {
+          "name": "add",
+          "description": "Add a new component to an existing plugin"
+        },
+        {
+          "name": "validate",
+          "description": "Validate plugin structure and configuration"
+        }
+      ]
+    }
+  ]
+}
