@@ -102,26 +102,15 @@ The easiest way to create a plugin for this marketplace:
    └── LICENSE
    ```
 
-3. **Add your plugin to marketplace.json**:
+3. **Generate marketplace.json entry**:
 
-   Edit `.claude-plugin/marketplace.json` and add your plugin entry:
+   Run the following command to automatically generate your plugin's entry in `.claude-plugin/marketplace.json`:
 
-   ```json
-   {
-     "name": "your-plugin-name",
-     "source": "./your-plugin",
-     "version": "1.0.0",
-     "description": "Clear description of what your plugin does",
-     "author": "Your Name",
-     "license": "MIT",
-     "keywords": ["relevant", "keywords"],
-     "commands": [...],
-     "agents": [...],
-     "hooks": [...],
-     "skills": [...],
-     "mcpServers": [...]
-   }
+   ```bash
+   make generate-marketplace-json
    ```
+
+   This will scan your plugin directory and add the appropriate entry to the marketplace manifest.
 
 4. **Create a pull request** with:
 
