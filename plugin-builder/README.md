@@ -8,9 +8,11 @@ The Plugin Builder helps you create high-quality Claude Code plugins through an 
 
 ## Features
 
+- **Modular builder architecture** - Specialized builder skills for each component type (commands, agents, hooks, skills, MCP servers)
 - **Guided plugin creation** - Interactive prompts walk you through creating any type of component
 - **Multi-component support** - Create commands, agents, hooks, skills, and MCP servers in one session
-- **Best practices built-in** - Generates well-structured, comprehensive prompts automatically
+- **Best practices built-in** - Each builder skill follows industry best practices and context engineering principles
+- **Natural language editing** - Edit existing components by describing changes in plain English
 - **Example reference** - The plugin itself demonstrates proper plugin structure
 - **Validation tools** - Check your plugins for common issues before publishing
 
@@ -52,7 +54,7 @@ Initialize a new plugin with guided prompts.
 
 ### `/plugin-builder:add`
 
-Add a new component to an existing plugin.
+Add a new component to an existing plugin using specialized builder skills.
 
 **Use this when:**
 
@@ -62,10 +64,16 @@ Add a new component to an existing plugin.
 **Workflow:**
 
 1. Select which plugin to add to
-2. Choose component type to add
-3. Answer questions about the new component
-4. Generates the component file
-5. Updates plugin.json and README
+2. Choose component type to add (Command, Agent, Hook, Skill, or MCP Server)
+3. Provide basic information (name and brief description)
+4. Appropriate builder skill is invoked to guide you through detailed creation:
+   - **Commands**: `cc-command-builder` handles slash command creation
+   - **Agents**: `cc-agent-builder` handles subagent creation
+   - **Hooks**: `cc-hook-builder` handles hook configuration
+   - **Skills**: `cc-skill-builder` handles skill creation
+   - **MCP Servers**: `cc-mcp-builder` handles MCP server configuration
+5. Builder skill generates the component following best practices
+6. Updates plugin.json and README automatically
 
 **Example usage:**
 
@@ -75,7 +83,7 @@ Add a new component to an existing plugin.
 
 ### `/plugin-builder:edit`
 
-Use natural language to make edits to your existing plugin components.
+Use natural language to make edits to your existing plugin components with specialized builder skill assistance.
 
 **Use this when:**
 
@@ -88,9 +96,15 @@ Use natural language to make edits to your existing plugin components.
 1. Select which plugin to edit
 2. Choose which component to modify
 3. Describe your desired changes in natural language
-4. Claude interprets your intent and applies the edits
-5. Review the changes and confirm
-6. Optionally update README and version number
+4. Appropriate builder skill is invoked with context about the existing component:
+   - **Commands**: `cc-command-builder` helps apply changes
+   - **Agents**: `cc-agent-builder` helps apply changes
+   - **Hooks**: `cc-hook-builder` helps apply changes
+   - **Skills**: `cc-skill-builder` helps apply changes
+   - **MCP Servers**: `cc-mcp-builder` helps apply changes
+5. Builder skill interprets your intent and applies edits following best practices
+6. Review the changes and confirm
+7. Optionally update README and version number
 
 **Example natural language edits:**
 
@@ -99,6 +113,7 @@ Use natural language to make edits to your existing plugin components.
 - "Change the default model from haiku to sonnet"
 - "Add better error handling"
 - "Include usage examples in the documentation"
+- "Make it work with TypeScript files too"
 
 **Example usage:**
 
@@ -134,15 +149,15 @@ Validate plugin structure and configuration.
 /plugin-builder:validate
 ```
 
-## Skills
+## Builder Skills
+
+The plugin-builder includes specialized builder skills for each Claude Code component type. These skills are invoked automatically by the `/add` and `/edit` commands to provide expert guidance following industry best practices.
 
 ### `cc-skill-builder`
 
-Claude Code Skill Builder - Makes Claude an expert at creating highly effective Claude Code skills.
+Claude Code Skill Builder - Expert guidance for creating highly effective Claude Code skills.
 
-**When invoked:**
-
-This skill activates automatically when users ask to create a new Claude Code skill. It provides comprehensive guidance on:
+**Provides:**
 
 - Skill structure (YAML frontmatter + markdown content)
 - Effective prompt engineering techniques
@@ -150,38 +165,76 @@ This skill activates automatically when users ask to create a new Claude Code sk
 - Progressive disclosure patterns
 - Resource organization (scripts, references, assets)
 - Common skill patterns and workflows
-- Best practices and pitfalls to avoid
 
-**Based on industry best practices from:**
-- [Claude Skills Deep Dive](https://leehanchung.github.io/blogs/2025/10/26/claude-skills-deep-dive/)
+**Based on:** [Claude Skills Deep Dive](https://leehanchung.github.io/blogs/2025/10/26/claude-skills-deep-dive/)
 
-**What it helps you create:**
+### `cc-command-builder`
 
-- Skills with clear, action-oriented descriptions for proper invocation
-- Optimized prompts under 5,000 words using imperative voice
-- Minimal tool permissions for security
-- Supporting resources (Python/Bash scripts, reference docs, templates)
-- Skills following one of five proven patterns:
-  - Script Automation
-  - Read-Process-Write
-  - Search-Analyze-Report
-  - Command Chain Execution
-  - Wizard-Style Workflows
+Slash Command Builder - Expert guidance for creating slash commands.
 
-**Example usage:**
+**Provides:**
 
-Simply ask Claude to create a skill, and this skill will automatically activate:
+- Markdown structure with optional YAML frontmatter
+- Argument handling ($ARGUMENTS vs positional parameters)
+- Tool permissions and security
+- Bash execution and file references
+- Prompt engineering for commands
 
-```
-Can you help me create a skill for analyzing Python code performance?
-```
+**Based on:** [Claude Code Slash Commands Docs](https://docs.claude.com/en/docs/claude-code/slash-commands)
 
-Claude will guide you through:
-1. Gathering requirements
-2. Designing effective frontmatter
-3. Structuring comprehensive instructions
-4. Optimizing for context efficiency
-5. Creating supporting resources if needed
+### `cc-agent-builder`
+
+Subagent Builder - Expert guidance for creating specialized subagents.
+
+**Provides:**
+
+- System prompt design
+- Context isolation strategies
+- Tool permissions (inherit vs explicit)
+- Model selection guidance
+- Workflow and success criteria definition
+
+**Based on:** [Claude Code Subagents Docs](https://docs.claude.com/en/docs/claude-code/sub-agents)
+
+### `cc-hook-builder`
+
+Hook Builder - Expert guidance for creating workflow automation hooks.
+
+**Provides:**
+
+- Hook event selection (PreToolUse, PostToolUse, etc.)
+- Matcher configuration for targeting tools
+- Shell script creation with jq parsing
+- Blocking vs non-blocking operations
+- Security best practices
+
+**Based on:** [Claude Code Hooks Guide](https://docs.claude.com/en/docs/claude-code/hooks-guide)
+
+### `cc-mcp-builder`
+
+MCP Server Configuration Builder - Expert guidance for configuring MCP servers.
+
+**Provides:**
+
+- Transport type selection (HTTP, stdio, SSE)
+- Environment variable handling
+- Authentication configuration
+- Scope selection (project vs user)
+- Platform-specific considerations
+
+**Based on:** [Claude Code MCP Docs](https://docs.claude.com/en/docs/claude-code/mcp)
+
+### How Builder Skills Work
+
+Builder skills follow the [Anthropic Context Engineering Guide](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) principles:
+
+1. **Progressive Disclosure** - Information revealed incrementally as needed
+2. **Minimal Context** - Only essential details in frontmatter, detailed guidance on invocation
+3. **Tool Efficiency** - Curated minimal tool sets for each builder
+4. **Structured Guidance** - Clear step-by-step workflows
+5. **Best Practices** - Industry-standard patterns and anti-patterns
+
+When you use `/plugin-builder:add` or `/plugin-builder:edit`, the appropriate builder skill is automatically invoked to guide you through creation or modification with expert knowledge specific to that component type.
 
 ## Component Types
 
@@ -212,16 +265,21 @@ This plugin itself demonstrates proper structure:
 ```
 plugin-builder/
 ├── .claude-plugin/
-│   └── plugin.json           # Plugin manifest
+│   └── plugin.json              # Plugin manifest
 ├── commands/
-│   ├── init.md               # Init command
-│   ├── add.md                # Add command
-│   ├── edit.md               # Edit command
-│   └── validate.md           # Validate command
+│   ├── init.md                  # Init command
+│   ├── add.md                   # Add command (routes to builder skills)
+│   ├── edit.md                  # Edit command (routes to builder skills)
+│   └── validate.md              # Validate command
 ├── skills/
-│   └── cc-skill-builder.md   # Skill builder skill
-├── LICENSE                   # MIT License
-└── README.md                 # This file
+│   ├── cc-skill-builder.md      # Skill builder
+│   ├── cc-command-builder.md    # Slash command builder
+│   ├── cc-agent-builder.md      # Subagent builder
+│   ├── cc-hook-builder.md       # Hook builder
+│   └── cc-mcp-builder.md        # MCP server builder
+├── CODEOWNERS                   # Maintainers
+├── LICENSE                      # MIT License
+└── README.md                    # This file
 ```
 
 ## Best Practices

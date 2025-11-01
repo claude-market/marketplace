@@ -1,5 +1,5 @@
 ---
-description: Use natural language to make edits to your existing tools
+description: Edit an existing component in your plugin
 ---
 
 You are helping a user edit an existing component in a Claude Code plugin using natural language descriptions.
@@ -29,6 +29,7 @@ Use AskUserQuestion to ask which component they want to edit. Present options ba
 Read the full content of the selected component file to understand its current implementation.
 
 Display a summary of the component to the user:
+
 - Component name and type
 - Current description
 - Key functionality (summarized)
@@ -36,90 +37,128 @@ Display a summary of the component to the user:
 
 ## Step 5: Understand the Desired Edit
 
-Use AskUserQuestion to ask what type of edit they want to make:
+Ask the user to describe what changes they want to make in natural language.
 
-- **Modify behavior**: Change what the component does or how it works
-- **Update description**: Change the component's description or documentation
-- **Add functionality**: Extend the component with new capabilities
-- **Refactor structure**: Reorganize the component's structure or workflow
-- **Fix issues**: Correct bugs or problems in the component
-- **Other**: Custom edit (user will describe)
-
-## Step 6: Collect Edit Details
-
-Ask the user to describe their desired changes in natural language:
-
-**Prompt**: "Please describe the changes you want to make to this component. Be as specific or general as you like - I'll interpret your intent and apply the appropriate edits."
+**Prompt**: "Please describe the changes you want to make to this component. Be as specific or general as you like."
 
 The user might say things like:
+
 - "Add validation for email addresses"
 - "Make it ask for confirmation before deleting"
 - "Change the default model from haiku to sonnet"
 - "Add better error handling"
 - "Include examples in the documentation"
 - "Make it work with TypeScript files too"
+- "Update the description to be clearer"
+- "Add support for multiple arguments"
 
-## Step 7: Apply the Edits
+## Step 6: Route to Appropriate Builder Skill
 
-Based on the user's natural language description:
+Based on the component type, route the editing task to the corresponding builder skill with context about the existing component and desired changes:
 
-1. **Analyze the current component** to understand its structure
-2. **Interpret the user's intent** from their description
-3. **Plan the changes** needed (you can think through this step)
-4. **Apply the edits** using the Edit tool to modify the component file
+### For Slash Command:
 
-For different component types:
+Invoke the `cc-command-builder` skill:
 
-### Editing Commands (.md files):
-- Modify the frontmatter `description` if the purpose changed
-- Update step-by-step instructions
-- Add/remove/modify tool usage guidance
-- Include or update examples
-- Adjust workflow steps
-- Add edge case handling
+```
+Edit an existing Claude Code slash command with the following details:
 
-### Editing Agents (.md files):
-- Update agent role definition
-- Modify available tools list
-- Change default model recommendation
-- Adjust workflow steps
-- Update success criteria
-- Add or remove capabilities
+**Existing Component:**
+- Plugin: [plugin-name]
+- Command name: [name]
+- File path: [path]
+- Current content:
+[paste current content]
 
-### Editing Hooks (.json files):
-- Modify hook type or trigger conditions
-- Update the command to execute
-- Change blocking behavior
-- Adjust environment variables
-- Update hook description
+**Requested Changes:**
+[user's description of what they want to change]
 
-### Editing Skills (.md files):
-- Update domain expertise description
-- Add or remove capabilities
-- Modify usage patterns
-- Update best practices
-- Change tool requirements
+Please help apply these changes following best practices for slash commands.
+```
 
-### Editing MCP Servers (.json files):
-- Update connection details
-- Modify environment variables
-- Change server configuration
-- Update tool/resource definitions
+### For Agent (Subagent):
 
-## Step 8: Verify Changes
+Invoke the `cc-agent-builder` skill:
 
-After applying edits:
+```
+Edit an existing Claude Code subagent with the following details:
 
-1. **Read the updated component** to show the user what changed
-2. **Validate the changes**:
-   - Ensure the file structure is still correct
-   - Check that required fields are present
-   - Verify syntax (especially for JSON files)
-3. **Ask for confirmation**: Show a summary of changes and ask if they look correct
+**Existing Component:**
+- Plugin: [plugin-name]
+- Agent name: [name]
+- File path: [path]
+- Current content:
+[paste current content]
 
-## Step 9: Update Plugin Metadata (If Needed)
+**Requested Changes:**
+[user's description of what they want to change]
 
-Determine if the edit requires updating other files:
+Please help apply these changes following best practices for subagents.
+```
+
+### For Hook:
+
+Invoke the `cc-hook-builder` skill:
+
+```
+Edit an existing Claude Code hook with the following details:
+
+**Existing Component:**
+- Plugin: [plugin-name]
+- Hook name: [name]
+- File path: [path]
+- Current configuration:
+[paste current JSON]
+
+**Requested Changes:**
+[user's description of what they want to change]
+
+Please help apply these changes following best practices for hooks.
+```
+
+### For Skill:
+
+Invoke the `cc-skill-builder` skill:
+
+```
+Edit an existing Claude Code skill with the following details:
+
+**Existing Component:**
+- Plugin: [plugin-name]
+- Skill name: [name]
+- File path: [path]
+- Current content:
+[paste current content]
+
+**Requested Changes:**
+[user's description of what they want to change]
+
+Please help apply these changes following best practices for skills.
+```
+
+### For MCP Server:
+
+Invoke the `cc-mcp-builder` skill:
+
+```
+Edit an existing MCP server configuration with the following details:
+
+**Existing Component:**
+- Plugin: [plugin-name]
+- Server name: [name]
+- File path: [path]
+- Current configuration:
+[paste current JSON]
+
+**Requested Changes:**
+[user's description of what they want to change]
+
+Please help apply these changes following best practices for MCP servers.
+```
+
+## Step 7: Update Plugin Metadata (If Needed)
+
+After the builder skill completes the edits, determine if other files need updating:
 
 - **If component description changed significantly**: Offer to update the README.md
 - **If functionality changed**: Offer to update the plugin.json description or keywords
@@ -127,21 +166,23 @@ Determine if the edit requires updating other files:
 
 Use AskUserQuestion to ask if they want to update these related files.
 
-## Step 10: Apply Additional Updates
+## Step 8: Apply Additional Updates
 
 If the user agreed to update related files:
 
 ### Update README:
+
 - Find the section documenting this component
 - Update the usage examples or description
 - Ensure it reflects the new behavior
 
 ### Update Plugin.json:
+
 - Increment version (e.g., 1.0.0 → 1.0.1 for patch changes)
 - Update keywords if new functionality was added
 - Update description if plugin's overall purpose expanded
 
-## Step 11: Summary
+## Step 9: Summary
 
 Provide the user with a clear summary:
 
@@ -149,56 +190,66 @@ Provide the user with a clear summary:
 - **Changes made**: Concise summary of what was modified
 - **Files updated**: List all files that were changed (component + README/manifest if applicable)
 - **New version**: If version was bumped
-- **Testing recommendation**: Suggest how to test the changes (e.g., `/plugin-builder:edit` to test the edit command)
+- **Testing recommendation**: Suggest how to test the changes
 
 ## Important Guidelines:
 
+### Modular Approach:
+
+- Each component type has its own specialized builder skill
+- Route editing tasks to the appropriate skill based on component type
+- Builder skills understand best practices for their component type
+- This ensures consistent, high-quality edits
+
 ### Interpreting Natural Language:
-- **Be intelligent about intent**: If user says "make it faster", interpret this based on context (use haiku model, optimize steps, etc.)
+
+- **Be intelligent about intent**: If user says "make it faster", interpret based on context (use haiku model, optimize steps, etc.)
 - **Ask for clarification** if the request is genuinely ambiguous
 - **Make reasonable assumptions** for small details, but confirm major changes
 - **Preserve existing functionality** unless explicitly asked to remove it
 
 ### Edit Best Practices:
+
 - **Make surgical changes**: Only modify what's necessary
 - **Preserve formatting**: Maintain the existing markdown/JSON style
 - **Keep consistency**: Match the style of the original component
-- **Test mentally**: Think through whether your edits will work as intended
+- **Test mentally**: Think through whether edits will work as intended
 - **Respect the component's purpose**: Don't change what the component fundamentally does unless explicitly asked
 
 ### Validation:
+
 - **For .md files**: Ensure frontmatter is valid, markdown is well-formed
 - **For .json files**: Validate JSON syntax, ensure required fields are present
 - **For paths**: Ensure any file paths referenced still exist and are correct
 - **For tool usage**: Ensure tools referenced in prompts actually exist
 
 ### Communication:
-- **Show before/after** for significant changes
-- **Explain your interpretation** of their natural language request
-- **Highlight any assumptions** you made
+
+- **Show before/after** for significant changes (builder skill handles this)
+- **Explain interpretation** of their natural language request
+- **Highlight assumptions** made during editing
 - **Offer to refine** if the edit wasn't quite what they wanted
 
 ## Example Interaction Flow:
 
 1. Find plugins → user selects "plugin-builder"
-2. Read plugin.json → show components: init, add, validate commands
+2. Read plugin.json → show components: init, add, validate, edit commands
 3. User selects → "add command"
 4. Read component → display current add.md implementation summary
-5. Ask edit type → user selects "Add functionality"
-6. User describes → "Make it support creating multiple components at once"
-7. Apply edits → Modify the workflow to handle multiple component creation
-8. Show changes → Display updated sections of add.md
-9. Ask about updates → Offer to update README with new capability
-10. Update README → Add example of creating multiple components
-11. Version bump → Increment to 1.0.1
-12. Summary → List all changes and how to test
+5. User describes → "Make it use the new modular builder skill approach"
+6. Route to `cc-command-builder` skill with context
+7. Builder skill helps apply changes following best practices
+8. Offer to update README with new capability
+9. Update README if accepted
+10. Version bump → Increment to next version
+11. Summary → List all changes and testing instructions
 
 ## Edge Cases to Handle:
 
 - **Component doesn't exist**: Guide user back to component selection
-- **Invalid edit request**: Ask for clarification if request doesn't make sense
+- **Invalid edit request**: Ask for clarification if request doesn't make sense for this component type
 - **Conflicting changes**: Warn if edit might break existing functionality
-- **Syntax errors**: Fix any syntax issues introduced during editing
-- **Multiple files**: If component spans multiple files, edit all relevant ones
+- **Syntax errors**: Builder skill should catch and fix syntax issues
+- **Multiple files**: If component spans multiple files (like hooks with shell scripts), edit all relevant ones
 
 Begin by finding available plugins and asking which one to edit!

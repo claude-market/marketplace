@@ -16,112 +16,171 @@ Read the plugin.json to understand what components already exist.
 
 Use AskUserQuestion to ask what type of component they want to add:
 
-- Slash Command
-- Agent (Subagent)
-- Hook
-- Skill
-- MCP Server
+- **Slash Command** - Reusable prompt template for frequent operations
+- **Agent (Subagent)** - Specialized AI assistant for specific tasks
+- **Hook** - Automated workflow trigger at lifecycle events
+- **Skill** - Domain-specific expertise invoked when needed
+- **MCP Server** - External tool/data source via Model Context Protocol
 
-## Step 4: Collect Component Details
+Present these as clear options explaining what each type does.
 
-Follow the same detailed question flow as in the init command for the selected component type:
+## Step 4: Collect Basic Information
+
+Based on the selected component type, collect the essential information:
 
 ### For Slash Command:
 
-1. Command name (kebab-case, must not conflict with existing commands)
-2. Command description
-3. What should this command do? (detailed explanation)
-4. What files/resources will it need?
-5. What tools should it use?
+Use AskUserQuestion to collect:
 
-Create `commands/{command-name}.md` with comprehensive prompt (create `commands/` directory if it doesn't exist).
+1. **Command name** (kebab-case, must not conflict with existing commands)
+2. **Brief description** (what does this command do?)
 
-### For Agent:
+### For Agent (Subagent):
 
-1. Agent name (kebab-case)
-2. Agent description
-3. What problem does it solve?
-4. What tools should it have access to?
-5. Default model (haiku/sonnet/opus)
-6. Specific workflow steps?
+Use AskUserQuestion to collect:
 
-Create `agents/{agent-name}.md` with detailed agent prompt (create `agents/` directory if it doesn't exist).
+1. **Agent name** (kebab-case, must not conflict with existing agents)
+2. **Brief description** (when should this agent be invoked?)
 
 ### For Hook:
 
-1. Hook type (user-prompt-submit, tool-call, agent-start, agent-end)
-2. Hook name
-3. What behavior to add/modify?
-4. Should it block actions?
-5. Command to run?
+Use AskUserQuestion to collect:
 
-Create `hooks/{hook-name}.json` with hook configuration (create `hooks/` directory if it doesn't exist).
+1. **Hook name** (kebab-case identifier)
+2. **Brief description** (what workflow does this automate?)
 
 ### For Skill:
 
-1. Skill name (kebab-case)
-2. Domain/technology coverage
-3. Specialized knowledge to provide
-4. Tools needed
-5. Specific tasks to handle
+Use AskUserQuestion to collect:
 
-Create `skills/{skill-name}.md` with skill definition (create `skills/` directory if it doesn't exist).
+1. **Skill name** (kebab-case, must not conflict with existing skills)
+2. **Brief description** (what domain expertise does this provide?)
 
 ### For MCP Server:
 
-1. Server name (kebab-case)
-2. Tools/resources provided
-3. Connection details (stdio/SSE)
-4. Environment variables
-5. Features enabled
+Use AskUserQuestion to collect:
 
-Create `mcp-servers/{server-name}.json` with MCP config (create `mcp-servers/` directory if it doesn't exist).
+1. **Server name** (kebab-case identifier)
+2. **Brief description** (what tools/data does this provide?)
 
-## Step 5: Update Plugin Manifest
+## Step 5: Invoke Appropriate Builder Skill
 
-**IMPORTANT:** You must update plugin.json to include the new component.
+Based on the component type selected, invoke the corresponding builder skill to handle the detailed generation:
+
+### For Slash Command:
+
+Invoke the `cc-command-builder` skill:
+
+```
+Create a new Claude Code slash command with the following details:
+- Plugin: [plugin-name]
+- Command name: [name]
+- Description: [description]
+- File path: [plugin-path]/commands/[command-name].md
+
+Please guide the user through creating this command following best practices.
+```
+
+### For Agent (Subagent):
+
+Invoke the `cc-agent-builder` skill:
+
+```
+Create a new Claude Code subagent with the following details:
+- Plugin: [plugin-name]
+- Agent name: [name]
+- Description: [description]
+- File path: [plugin-path]/agents/[agent-name].md
+
+Please guide the user through creating this subagent following best practices.
+```
+
+### For Hook:
+
+Invoke the `cc-hook-builder` skill:
+
+```
+Create a new Claude Code hook with the following details:
+- Plugin: [plugin-name]
+- Hook name: [name]
+- Description: [description]
+- File path: [plugin-path]/hooks/[hook-name].json
+
+Please guide the user through creating this hook following best practices.
+```
+
+### For Skill:
+
+Invoke the `cc-skill-builder` skill:
+
+```
+Create a new Claude Code skill with the following details:
+- Plugin: [plugin-name]
+- Skill name: [name]
+- Description: [description]
+- File path: [plugin-path]/skills/[skill-name].md
+
+Please guide the user through creating this skill following best practices.
+```
+
+### For MCP Server:
+
+Invoke the `cc-mcp-builder` skill:
+
+```
+Configure a new MCP server with the following details:
+- Plugin: [plugin-name]
+- Server name: [name]
+- Description: [description]
+- File path: [plugin-path]/mcp-servers/[server-name].json
+
+Please guide the user through configuring this MCP server following best practices.
+```
+
+## Step 6: Update Plugin Manifest (Post-Generation)
+
+**IMPORTANT:** After the builder skill completes and creates the component file, you must update plugin.json to include the new component.
 
 Add the new component file path to the appropriate array in plugin.json:
 
 - **commands**: Add to the `commands` array (e.g., `"./commands/my-command.md"`)
 - **agents**: Add to the `agents` array (e.g., `"./agents/my-agent.md"`)
 - **hooks**: Add path or inline config to `hooks` field
-- **mcpServers**: Add path or inline config to `mcpServers` field
 - **skills**: Add to the `skills` array (e.g., `"./skills/my-skill.md"`)
+- **mcpServers**: Add path or inline config to `mcpServers` field
 
 All paths must be relative to plugin root and begin with `./`
 
 **Example:**
+
 ```json
 {
   "name": "my-plugin",
-  "commands": [
-    "./commands/existing-command.md",
-    "./commands/new-command.md"
-  ],
-  "agents": [
-    "./agents/existing-agent.md",
-    "./agents/new-agent.md"
-  ]
+  "commands": ["./commands/existing-command.md", "./commands/new-command.md"],
+  "agents": ["./agents/existing-agent.md"],
+  "skills": ["./skills/new-skill.md"]
 }
 ```
 
-## Step 6: Update README
+## Step 7: Update README (Post-Generation)
 
 Update the plugin's README.md to document the new component with usage examples.
 
-## Step 7: Summary
+## Step 8: Summary
 
 Show the user:
 
-- What was added
+- What was added (component type and name)
 - File path of the new component
-- Updated plugin.json
+- Updated plugin.json showing the new component
 - How to use the new component
+- How to test it
 
-## Important:
+## Important Notes:
 
-- Ensure component names don't conflict with existing ones
-- Maintain consistent style with existing components
-- Update version number in plugin.json (increment patch version)
-- Write high-quality, detailed prompts that follow best practices
+- **Modular approach**: Each component type has its own specialized builder skill that handles the detailed generation
+- **Ensure no conflicts**: Check that component names don't conflict with existing ones before invoking builder skills
+- **Create directories**: Create component directories (commands/, agents/, hooks/, skills/, mcp-servers/) if they don't exist
+- **Update manifest**: Always update plugin.json after component creation
+- **Maintain consistency**: Ensure new components follow the style of existing ones
+- **Version bump**: Increment patch version in plugin.json (e.g., 1.0.0 → 1.0.1)

@@ -1,7 +1,7 @@
 {
   "name": "plugin-builder",
-  "version": "1.2.0",
-  "description": "Interactive plugin builder for Claude Code - serves as both an example plugin and a tool to create new plugins through guided prompts",
+  "version": "1.3.0",
+  "description": "Interactive plugin builder for Claude Code - serves as both an example plugin and a tool to create new plugins through guided prompts with specialized builder skills for each component type",
   "author": {
     "name": "Daniel Kovacs",
     "email": "kovacsemod@gmail.com",
@@ -16,6 +16,10 @@
     "./commands/validate.md"
   ],
   "skills": [
-    "./skills/cc-skill-builder.md"
+    "./skills/cc-skill-builder.md",
+    "./skills/cc-command-builder.md",
+    "./skills/cc-agent-builder.md",
+    "./skills/cc-hook-builder.md",
+    "./skills/cc-mcp-builder.md"
   ]
 }

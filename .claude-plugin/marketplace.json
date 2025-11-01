@@ -1,6 +1,6 @@
 {
   "name": "claude-market",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Hand-curated open source repository for Claude Code tools, agents and skills",
   "owner": {
     "name": "Claude Market",
@@ -11,8 +11,8 @@
     {
       "name": "plugin-builder",
       "source": "./plugin-builder",
-      "version": "1.1.0",
-      "description": "Interactive plugin builder for Claude Code - serves as both an example plugin and a tool to create new plugins through guided prompts",
+      "version": "1.3.0",
+      "description": "Interactive plugin builder for Claude Code - serves as both an example plugin and a tool to create new plugins through guided prompts with specialized builder skills for each component type",
       "author": {
         "name": "Daniel Kovacs",
         "email": "kovacsemod@gmail.com",
@@ -31,6 +31,13 @@
         "./commands/add.md",
         "./commands/edit.md",
         "./commands/validate.md"
+      ],
+      "skills": [
+        "./skills/cc-skill-builder.md",
+        "./skills/cc-command-builder.md",
+        "./skills/cc-agent-builder.md",
+        "./skills/cc-hook-builder.md",
+        "./skills/cc-mcp-builder.md"
       ]
     }
   ]

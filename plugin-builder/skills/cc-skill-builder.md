@@ -279,6 +279,7 @@ If tool permissions seem excessive:
 
 - Claude Code Skills Guide: https://leehanchung.github.io/blogs/2025/10/26/claude-skills-deep-dive/
 - Claude Code Skills Docs: https://www.anthropic.com/news/skills
+- Claude Code Working with Skills: https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills
 
 ## Examples
 
