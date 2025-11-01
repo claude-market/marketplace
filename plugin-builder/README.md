@@ -149,6 +149,50 @@ Validate plugin structure and configuration.
 /plugin-builder:validate
 ```
 
+### `/plugin-builder:publish`
+
+Publish your plugin changes to the Claude Market marketplace with automated validation, manifest generation, and pull request creation.
+
+**Use this when:**
+
+- You've made changes to a plugin and want to submit them to the marketplace
+- You want to add a new plugin to the Claude Market
+- You need an automated workflow from validation to PR creation
+
+**Workflow:**
+
+1. **Detect changes**: Runs `git diff main` to identify which plugins have been modified
+2. **Validate in parallel**: Runs `/plugin-builder:validate` for each changed plugin simultaneously
+3. **Generate manifest**: Runs `make generate-marketplace-json` to update `.claude-plugin/marketplace.json`
+4. **Create semantic commit**: Generates a commit message following conventional commits format
+5. **Branch management**: Creates a new branch (if on main) in format `{user}/{plugin}/{description}`
+6. **Create PR**: Uses GitHub CLI to create a pull request with pre-filled template
+
+**Requirements:**
+
+- Changes must be committed to a git branch
+- All changed plugins must pass validation
+- `make` must be available (for marketplace.json generation)
+- `gh` CLI is recommended but optional (for automated PR creation)
+
+**Example usage:**
+
+```
+/plugin-builder:publish
+```
+
+**What it does:**
+
+- Validates all changed plugins in parallel
+- Stops if any validation fails
+- Generates semantic commit message like `feat(plugin-name): added new command`
+- Creates branch like `danielkov/plugin-name/add-new-command`
+- Opens PR with filled-in template including plugin metadata, components, and testing checklist
+
+**Without GitHub CLI:**
+
+If `gh` CLI is not installed, the command will provide a manual PR link and suggest installing GitHub CLI for future use.
+
 ## Builder Skills
 
 The plugin-builder includes specialized builder skills for each Claude Code component type. These skills are invoked automatically by the `/add` and `/edit` commands to provide expert guidance following industry best practices.
@@ -270,7 +314,8 @@ plugin-builder/
 │   ├── init.md                  # Init command
 │   ├── add.md                   # Add command (routes to builder skills)
 │   ├── edit.md                  # Edit command (routes to builder skills)
-│   └── validate.md              # Validate command
+│   ├── validate.md              # Validate command
+│   └── publish.md               # Publish command
 ├── skills/
 │   ├── cc-skill-builder.md      # Skill builder
 │   ├── cc-command-builder.md    # Slash command builder
