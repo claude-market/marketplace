@@ -1,0 +1,40 @@
+{
+  "name": "specforge",
+  "version": "0.1.2",
+  "description": "Schema-first development ecosystem with dual-spec workflows (OpenAPI + DB schema) for building production-ready applications through deterministic code generation and intelligent orchestration",
+  "author": {
+    "name": "Daniel Emod Kovacs",
+    "url": "https://github.com/danielkov"
+  },
+  "repository": "https://github.com/claude-market/marketplace/tree/main/specforge",
+  "license": "MIT",
+  "keywords": [
+    "specforge",
+    "openapi",
+    "schema-first",
+    "code-generation",
+    "orchestration",
+    "api-development",
+    "database-schema",
+    "type-safety"
+  ],
+  "commands": [
+    "./commands/init.md",
+    "./commands/plan.md",
+    "./commands/build.md",
+    "./commands/validate.md",
+    "./commands/test.md",
+    "./commands/ship.md",
+    "./commands/sync.md"
+  ],
+  "agents": [
+    "./agents/captain-orchestrator.md",
+    "./agents/planning-agent.md",
+    "./agents/validation-agent.md"
+  ],
+  "skills": [
+    "./skills/openapi-expert.md",
+    "./skills/stack-advisor.md",
+    "./skills/integration-expert.md"
+  ]
+}

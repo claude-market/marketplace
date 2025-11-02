@@ -1,6 +1,6 @@
 {
   "name": "claude-market",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Hand-curated open source repository for Claude Code tools, agents and skills",
   "owner": {
     "name": "Claude Market",
@@ -39,6 +39,47 @@
         "./skills/cc-agent-builder.md",
         "./skills/cc-hook-builder.md",
         "./skills/cc-mcp-builder.md"
+      ]
+    },
+    {
+      "name": "specforge",
+      "source": "./specforge",
+      "version": "0.1.2",
+      "description": "Schema-first development ecosystem with dual-spec workflows (OpenAPI + DB schema) for building production-ready applications through deterministic code generation and intelligent orchestration",
+      "author": {
+        "name": "Daniel Emod Kovacs",
+        "url": "https://github.com/danielkov"
+      },
+      "license": "MIT",
+      "repository": "https://github.com/claude-market/marketplace/tree/main/specforge",
+      "keywords": [
+        "specforge",
+        "openapi",
+        "schema-first",
+        "code-generation",
+        "orchestration",
+        "api-development",
+        "database-schema",
+        "type-safety"
+      ],
+      "commands": [
+        "./commands/init.md",
+        "./commands/plan.md",
+        "./commands/build.md",
+        "./commands/validate.md",
+        "./commands/test.md",
+        "./commands/ship.md",
+        "./commands/sync.md"
+      ],
+      "agents": [
+        "./agents/captain-orchestrator.md",
+        "./agents/planning-agent.md",
+        "./agents/validation-agent.md"
+      ],
+      "skills": [
+        "./skills/openapi-expert.md",
+        "./skills/stack-advisor.md",
+        "./skills/integration-expert.md"
       ]
     }
   ]
