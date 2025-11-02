@@ -21,6 +21,7 @@ Perform these validation checks:
    - At least one component directory should have content
 
 2. **Directory structure:**
+
    - `commands/` for commands (optional - only if commands exist)
    - `agents/` for agents (optional - only if agents exist)
    - `hooks/` for hooks (optional - only if hooks exist)
@@ -31,7 +32,7 @@ Perform these validation checks:
    - File exists at plugin root
    - Contains @claude-market
    - Contains at least one GitHub username
-   - Format is valid (pattern: * @org @user name)
+   - Format is valid (pattern: \* @org @user name)
 
 ### Plugin Manifest Validation
 
@@ -70,6 +71,7 @@ Read and validate `.claude-plugin/plugin.json`:
    - `mcpServers` (string or object): MCP server configuration file path or inline config
 
    All paths must:
+
    - Be relative to plugin root
    - Begin with `./`
 
@@ -120,6 +122,7 @@ Check that all components listed in plugin.json exist and are valid:
    - File name should be in kebab-case
 
 **Additional checks:**
+
 - Verify all component file paths are relative and begin with `./`
 - Check that listed components actually exist at their specified paths
 - Warn about component files that exist but aren't listed in plugin.json
@@ -207,3 +210,22 @@ Recommendations:
 ```
 
 Be thorough but constructive in validation feedback.
+
+## Example Output (with `--minimal` flag)
+
+If `--minimal` flag is present in input, the following output structure MUST BE FOLLOWED:
+
+### On Success
+
+```
+0
+```
+
+### On Failure
+
+```
+1
+✗ Failed Checks:
+  - File commands/broken-cmd.md found but contains no content
+    Fix: Add meaningful content to the command file or remove it
+```

@@ -16,21 +16,36 @@ If no plugin changes are detected, inform the user and exit.
 
 ## Step 2: Validate Changed Plugins in Parallel
 
-For each changed plugin identified in Step 1, run `/plugin-builder:validate {plugin-name}` commands **in parallel**.
+For each changed plugin identified in Step 1, spawn a sub-agent using the Task tool to validate the plugin.
 
-Use a single message with multiple SlashCommand tool calls to validate all plugins simultaneously.
+Use a single message with multiple Task tool calls to validate all plugins simultaneously:
 
-Wait for all validation results to complete.
+```
+For each plugin, spawn an agent with:
+- subagent_type: "general-purpose"
+- model: "haiku" (for speed)
+- description: "Validate {plugin-name}"
+- prompt: "Run the command `/plugin-builder:validate {plugin-name} --minimal` and return ONLY the exit code and output. The output should start with either '0' (success) or '1' (failure) followed by any error details."
+```
+
+Wait for all validation agents to complete and collect their outputs.
 
 ## Step 3: Check Validation Results
 
-If **all** plugins pass validation:
+Parse each agent's output:
+
+- If output starts with `0`: Plugin passed validation
+- If output starts with `1`: Plugin failed validation
+
+If **all** plugins pass validation (all outputs start with `0`):
 
 - Proceed to Step 4
 
-If **any** plugin fails validation:
+If **any** plugin fails validation (any output starts with `1`):
 
-- Display the validation issues for each failed plugin clearly
+- For each failed plugin, display:
+  - Plugin name
+  - The full validation output (excluding the leading `1`)
 - Exit the command with an error message
 - Do not proceed further
 
