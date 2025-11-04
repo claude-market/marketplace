@@ -8,13 +8,42 @@ This command validates changed plugins, generates the marketplace manifest, crea
 
 ## Step 1: Identify Changed Plugins
 
-Run `git diff main --name-only` to find all changed files. Parse the output to identify which plugins have been modified by looking for paths matching `{plugin-name}/.claude-plugin/plugin.json` or `{plugin-name}/*`.
+Check the current branch with `git branch --show-current`.
+
+If on `main` branch:
+- Run `git status --porcelain` to find uncommitted/staged changes
+- Parse the output to identify which plugins have been modified
+
+If on a different branch:
+- Run `git diff main --name-only` to find all changed files compared to main
+- Parse the output to identify which plugins have been modified
+
+Look for paths matching `{plugin-name}/.claude-plugin/plugin.json` or `{plugin-name}/*`.
 
 Extract the unique plugin names from the changed paths.
 
 If no plugin changes are detected, inform the user and exit.
 
-## Step 2: Validate Changed Plugins in Parallel
+## Step 2: Branch Management
+
+Check the current branch (already checked in Step 1).
+
+If on `main` branch:
+
+- Attempt to get GitHub username with `git config user.github || git config user.name`
+- Create branch name in format: `{github-user}/{plugin-affected}/{very-short-description}`
+  - Use kebab-case for all parts
+  - Keep description to 3-4 words max
+  - Example: `danielkov/browser-tools/add-chromium-mcp`
+- Run `git checkout -b {branch-name}` to create and switch to new branch
+- **Note**: Do not stage or commit yet - changes will be committed after validation passes
+
+If on a different branch (not main):
+
+- Continue with the existing branch
+- **Note**: Do not stage or commit yet - changes will be committed after validation passes
+
+## Step 3: Validate Changed Plugins in Parallel
 
 For each changed plugin identified in Step 1, spawn a sub-agent using the Task tool to validate the plugin.
 
@@ -30,7 +59,7 @@ For each plugin, spawn an agent with:
 
 Wait for all validation agents to complete and collect their outputs.
 
-## Step 3: Check Validation Results
+## Step 4: Check Validation Results
 
 Parse each agent's output:
 
@@ -39,7 +68,7 @@ Parse each agent's output:
 
 If **all** plugins pass validation (all outputs start with `0`):
 
-- Proceed to Step 4
+- Proceed to Step 5
 
 If **any** plugin fails validation (any output starts with `1`):
 
@@ -49,13 +78,13 @@ If **any** plugin fails validation (any output starts with `1`):
 - Exit the command with an error message
 - Do not proceed further
 
-## Step 4: Generate Marketplace Manifest
+## Step 5: Generate Marketplace Manifest
 
 Run `make generate-marketplace-json` in the project root directory to update `.claude-plugin/marketplace.json`.
 
 This script automatically reads all plugin manifests and generates the marketplace listing.
 
-## Step 5: Create Semantic Commit Message
+## Step 6: Create Semantic Commit Message
 
 Analyze the changes using `git diff` to understand what was modified in each plugin.
 
@@ -76,29 +105,17 @@ Examples:
 
 The description should be lowercase, concise, and explain **what** changed, not **how** it changed.
 
-## Step 6: Branch Management
+## Step 7: Commit and Push Changes
 
-Check the current branch with `git branch --show-current`.
+Stage all changes: `git add .`
 
-If on `main` branch:
+Commit with semantic message: `git commit -m "{semantic-commit-message}"`
 
-- Attempt to get GitHub username with `git config user.github || git config user.name`
-- Create branch name in format: `{github-user}/{plugin-affected}/{very-short-description}`
-  - Use kebab-case for all parts
-  - Keep description to 3-4 words max
-  - Example: `danielkov/browser-tools/add-chromium-mcp`
-- Run `git checkout -b {branch-name}` to create and switch to new branch
-- Stage all changes: `git add .`
-- Commit with semantic message: `git commit -m "{semantic-commit-message}"`
-- Push branch: `git push -u origin {branch-name}`
+Push the branch:
+- If on a newly created branch (from Step 2): `git push -u origin {branch-name}`
+- If on an existing branch: `git push`
 
-If on a different branch (not main):
-
-- Stage all changes: `git add .`
-- Commit with semantic message: `git commit -m "{semantic-commit-message}"`
-- Push branch: `git push`
-
-## Step 7: Create Pull Request
+## Step 8: Create Pull Request
 
 Check if `gh` CLI is available by running `gh --version`.
 
