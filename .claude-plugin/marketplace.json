@@ -1,6 +1,6 @@
 {
   "name": "claude-market",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Hand-curated open source repository for Claude Code tools, agents and skills",
   "owner": {
     "name": "Claude Market",
@@ -80,6 +80,45 @@
         "./skills/openapi-expert.md",
         "./skills/stack-advisor.md",
         "./skills/integration-expert.md"
+      ]
+    },
+    {
+      "name": "specforge-backend-rust-axum",
+      "source": "./specforge-backend-rust-axum",
+      "version": "1.0.0",
+      "description": "Rust + Axum backend framework expertise - implements handlers using OpenAPI and DB-generated types",
+      "author": {
+        "name": "Daniel Emod Kovacs"
+      },
+      "license": "MIT",
+      "keywords": [
+        "specforge",
+        "backend",
+        "rust",
+        "axum",
+        "openapi",
+        "framework",
+        "distributed-systems"
+      ],
+      "agents": [
+        "./agents/handler-implementer.md",
+        "./agents/test-generator.md",
+        "./agents/router-builder.md"
+      ],
+      "skills": [
+        "./skills/axum-patterns.md",
+        "./skills/axum-handler-implementation.md",
+        "./skills/axum-error-mapping.md",
+        "./skills/rust-testing.md",
+        "./skills/axum-middleware.md",
+        "./skills/rust-openapi-integration.md",
+        "./skills/rust-dev-setup.md",
+        "./skills/axum-idempotency.md",
+        "./skills/axum-resilience.md",
+        "./skills/axum-tracing.md",
+        "./skills/axum-timeouts.md",
+        "./skills/axum-health-shutdown.md",
+        "./skills/axum-rate-limiting.md"
       ]
     }
   ]
