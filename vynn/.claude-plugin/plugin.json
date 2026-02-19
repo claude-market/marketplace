@@ -1,0 +1,24 @@
+{
+  "name": "vynn",
+  "version": "0.1.1",
+  "description": "Self-improving AI workflows with backtesting, prompt optimization, and scheduling. 21 MCP tools for building, running, and optimizing AI workflows — plus quantitative backtesting with natural language strategies.",
+  "author": "Vynn",
+  "homepage": "https://the-vynn.com",
+  "repository": "https://github.com/beee003/vynn-mcp",
+  "license": "MIT",
+  "keywords": [
+    "workflows",
+    "backtesting",
+    "ai",
+    "self-improving",
+    "prompt-optimization",
+    "scheduling",
+    "trading",
+    "quantitative",
+    "portfolio-optimization",
+    "mcp"
+  ],
+  "components": {
+    "mcp-servers": ["vynn"]
+  }
+}

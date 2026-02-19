@@ -1,0 +1,15 @@
+{
+  "name": "vynn",
+  "description": "Self-improving AI workflows with backtesting, prompt optimization, and scheduling",
+  "command": "vynn-mcp",
+  "args": [],
+  "env": {
+    "VYNN_API_KEY": {
+      "description": "Your Vynn API key. Get one free at https://the-vynn.com or via: curl -X POST https://the-vynn.com/v1/signup -H 'Content-Type: application/json' -d '{\"email\": \"you@example.com\"}'",
+      "required": true
+    }
+  },
+  "install": {
+    "pip": "vynn-mcp"
+  }
+}
