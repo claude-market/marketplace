@@ -120,6 +120,34 @@
         "./skills/axum-health-shutdown.md",
         "./skills/axum-rate-limiting.md"
       ]
+    },
+    {
+      "name": "preflight",
+      "source": {
+        "source": "github",
+        "repo": "Nancy-Chauhan/preflight"
+      },
+      "version": "1.0.0",
+      "description": "Know exactly where your system breaks before you ship. Scans your codebase, traces every service call, and simulates what happens at scale -- finding bottlenecks, cost cliffs, rate limits, and breaking points.",
+      "author": {
+        "name": "Nancy Chauhan",
+        "url": "https://github.com/Nancy-Chauhan"
+      },
+      "license": "MIT",
+      "homepage": "https://github.com/Nancy-Chauhan/preflight",
+      "repository": "https://github.com/Nancy-Chauhan/preflight",
+      "keywords": [
+        "preflight",
+        "cost",
+        "infrastructure",
+        "scaling",
+        "bottleneck",
+        "deployment",
+        "rate-limits",
+        "devops"
+      ],
+      "category": "devops",
+      "tags": ["infrastructure", "cost-analysis", "deployment", "scaling"]
     }
   ]
 }
