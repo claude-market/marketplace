@@ -1,0 +1,7 @@
+{
+  "name": "session-end-hint",
+  "type": "session-end",
+  "description": "Writes a hint file so Claude is reminded to update MEMORY.md at the start of the next session",
+  "command": "~/.claude/hooks/session-end-hint.sh",
+  "blockOnFailure": false
+}

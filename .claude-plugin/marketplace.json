@@ -120,6 +120,30 @@
         "./skills/axum-health-shutdown.md",
         "./skills/axum-rate-limiting.md"
       ]
+    },
+    {
+      "name": "claude-hooks",
+      "source": "./claude-hooks",
+      "version": "1.0.0",
+      "description": "Lightweight hook system that injects workflow rules, restores session context, and auto-loads recent docs on every prompt \u2014 hands-free.",
+      "author": {
+        "name": "jaytoone",
+        "url": "https://github.com/jaytoone"
+      },
+      "license": "MIT",
+      "keywords": [
+        "hooks",
+        "session-memory",
+        "workflow",
+        "context",
+        "git-smart",
+        "productivity"
+      ],
+      "homepage": "https://github.com/jaytoone/claude-hooks",
+      "hooks": [
+        "./hooks/inject-system-prompt.json",
+        "./hooks/session-end-hint.json"
+      ]
     }
   ]
 }

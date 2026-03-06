@@ -1,0 +1,22 @@
+{
+  "name": "claude-hooks",
+  "version": "1.0.0",
+  "description": "Lightweight hook system that injects workflow rules, restores session context, and auto-loads recent docs — every prompt, hands-free.",
+  "author": "jaytoone",
+  "license": "MIT",
+  "keywords": ["hooks", "session-memory", "workflow", "context", "git-smart"],
+  "homepage": "https://github.com/jaytoone/claude-hooks",
+  "repository": "https://github.com/jaytoone/claude-hooks",
+  "hooks": [
+    {
+      "name": "inject-system-prompt",
+      "type": "user-prompt-submit",
+      "description": "Injects workflow rules, restores session context, and loads recent docs on every prompt"
+    },
+    {
+      "name": "session-end-hint",
+      "type": "session-end",
+      "description": "Writes a reminder hint for Claude to update MEMORY.md at the next session start"
+    }
+  ]
+}

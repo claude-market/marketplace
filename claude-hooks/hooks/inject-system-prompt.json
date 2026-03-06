@@ -1,0 +1,7 @@
+{
+  "name": "inject-system-prompt",
+  "type": "user-prompt-submit",
+  "description": "Core hook: injects agent_nodes_template.md rules, restores work-progress context, and loads recently changed docs via Git-Smart on every user prompt",
+  "command": "~/.claude/hooks/inject-system-prompt.sh",
+  "blockOnFailure": false
+}
