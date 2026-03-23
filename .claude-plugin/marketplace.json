@@ -1,6 +1,6 @@
 {
   "name": "claude-market",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Hand-curated open source repository for Claude Code tools, agents and skills",
   "owner": {
     "name": "Claude Market",
@@ -132,7 +132,7 @@
       },
       "license": "MIT",
       "homepage": "https://xvary.com",
-      "repository": "https://github.com/xvary-research/stock-research",
+      "repository": "https://github.com/xvary-research/claude-code-stock-analysis-skill",
       "keywords": [
         "xvary",
         "stocks",

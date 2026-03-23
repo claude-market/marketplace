@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Standalone SEC EDGAR fetcher for stock-research.
+"""Standalone SEC EDGAR fetcher for claude-code-stock-analysis-skill.
 
 Public functions:
 - get_cik(ticker)
@@ -34,7 +34,7 @@ _ACCEPTED_FORMS = {"10-K", "10-Q", "20-F", "6-K"}
 _ANNUAL_FORMS = {"10-K", "20-F"}
 _QUARTERLY_FORMS = {"10-Q", "6-K"}
 _HEADERS = {
-    "User-Agent": "stock-research/1.0 (research@xvary.com)",
+    "User-Agent": "claude-code-stock-analysis-skill/1.0 (research@xvary.com)",
     "Accept": "application/json",
     "Accept-Encoding": "gzip, deflate",
 }

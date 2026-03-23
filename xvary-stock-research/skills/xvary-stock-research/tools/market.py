@@ -29,7 +29,7 @@ _MAX_RETRIES = 3
 _INITIAL_BACKOFF_SECONDS = 1.0
 _RETRYABLE_STATUS_CODES = {429, 500, 502, 503, 504}
 _HEADERS = {
-    "User-Agent": "stock-research/1.0 (research@xvary.com)",
+    "User-Agent": "claude-code-stock-analysis-skill/1.0 (research@xvary.com)",
     "Accept": "application/json,text/html;q=0.9,*/*;q=0.8",
 }
 _SUFFIX_MULTIPLIERS = {

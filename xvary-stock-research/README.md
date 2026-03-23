@@ -11,7 +11,7 @@ Claude Code skill for **institutional-style equity snapshots** from public data:
 
 This directory is vendored into Claude Market for discovery. The **canonical public repo** (issue tracker, full history) is:
 
-**https://github.com/xvary-research/stock-research**
+**https://github.com/xvary-research/claude-code-stock-analysis-skill**
 
 Please open issues and PRs against that repository unless the change is specific to this marketplace listing.
 
@@ -26,7 +26,8 @@ After adding the Claude Market marketplace:
 Or install directly from GitHub:
 
 ```text
-/plugin install xvary-research/stock-research
+/plugin marketplace add xvary-research/claude-code-stock-analysis-skill
+/plugin install xvary-stock-research
 ```
 
 (Uses the plugin layout under `plugins/xvary-stock-research` in that repo.)
