@@ -1,6 +1,6 @@
 {
   "name": "claude-market",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Hand-curated open source repository for Claude Code tools, agents and skills",
   "owner": {
     "name": "Claude Market",
@@ -119,6 +119,32 @@
         "./skills/axum-timeouts.md",
         "./skills/axum-health-shutdown.md",
         "./skills/axum-rate-limiting.md"
+      ]
+    },
+    {
+      "name": "xvary-stock-research",
+      "source": "./xvary-stock-research",
+      "version": "1.0.0",
+      "description": "Thesis-driven equity snapshots in Claude Code: /analyze, /score, /compare using public SEC EDGAR + market data (local Python tools, no API keys required).",
+      "author": {
+        "name": "XVARY Research",
+        "url": "https://github.com/xvary-research"
+      },
+      "license": "MIT",
+      "homepage": "https://xvary.com",
+      "repository": "https://github.com/xvary-research/stock-research",
+      "keywords": [
+        "xvary",
+        "stocks",
+        "edgar",
+        "sec",
+        "finance",
+        "research",
+        "claude-code",
+        "equity"
+      ],
+      "skills": [
+        "./skills/xvary-stock-research/SKILL.md"
       ]
     }
   ]
