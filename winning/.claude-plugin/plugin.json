@@ -1,0 +1,10 @@
+{
+  "name": "winning",
+  "description": "Evolutionary parallel strategy orchestrator. Deploys 3 agents per round on different strategies, compares results against verification tests, records learnings, and redeploys until the goal is achieved. No cycle limits. No round limits.",
+  "version": "0.8.0",
+  "author": {
+    "name": "misha"
+  },
+  "repository": "https://github.com/mishafyi/claudus-maximus",
+  "keywords": ["orchestrator", "parallel", "evolutionary", "strategies", "verification", "research"]
+}

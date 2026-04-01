@@ -1,0 +1,15 @@
+{
+  "description": "Winning orchestrator stop hook — keeps session alive for evolutionary loop until goal is verified",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/stop-hook.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
