@@ -1,0 +1,17 @@
+{
+  "name": "diagram",
+  "version": "1.1.0",
+  "description": "Generate architecture diagrams, flowcharts, sequence diagrams, and system maps from codebase analysis using Mermaid syntax. Analyzes real code paths first, then produces accurate .mmd files.",
+  "author": {
+    "name": "misha"
+  },
+  "repository": "https://github.com/mishafyi/claudus-maximus",
+  "keywords": [
+    "diagram",
+    "mermaid",
+    "architecture",
+    "flowchart",
+    "sequence",
+    "visualization"
+  ]
+}

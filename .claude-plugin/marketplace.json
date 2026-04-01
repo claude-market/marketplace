@@ -120,6 +120,67 @@
         "./skills/axum-health-shutdown.md",
         "./skills/axum-rate-limiting.md"
       ]
+    },
+    {
+      "name": "diagram",
+      "source": "./diagram",
+      "version": "1.1.0",
+      "description": "Generate architecture diagrams, flowcharts, sequence diagrams, and system maps from actual codebase analysis using Mermaid syntax",
+      "author": {
+        "name": "misha",
+        "url": "https://github.com/mishafyi"
+      },
+      "license": "MIT",
+      "repository": "https://github.com/mishafyi/claudus-maximus",
+      "keywords": [
+        "diagram",
+        "mermaid",
+        "architecture",
+        "flowchart",
+        "sequence",
+        "visualization"
+      ]
+    },
+    {
+      "name": "winning",
+      "source": "./winning",
+      "version": "0.8.0",
+      "description": "Evolutionary parallel strategy orchestrator — deploys competing approaches, monitors progress, eliminates underperformers, consolidates the winner",
+      "author": {
+        "name": "misha",
+        "url": "https://github.com/mishafyi"
+      },
+      "license": "MIT",
+      "repository": "https://github.com/mishafyi/claudus-maximus",
+      "keywords": [
+        "orchestrator",
+        "parallel",
+        "evolutionary",
+        "strategies",
+        "optimization"
+      ]
+    },
+    {
+      "name": "career-companion",
+      "source": "./career-companion",
+      "version": "1.0.0",
+      "description": "Career companion for frontier tech — search live job openings, tailor resumes, and practice interviews across space, AI, robotics, and defense industries",
+      "author": {
+        "name": "misha",
+        "url": "https://github.com/mishafyi"
+      },
+      "license": "MIT",
+      "repository": "https://github.com/mishafyi/claudus-maximus",
+      "keywords": [
+        "jobs",
+        "career",
+        "resume",
+        "interview",
+        "space",
+        "ai",
+        "robotics",
+        "defense"
+      ]
     }
   ]
 }

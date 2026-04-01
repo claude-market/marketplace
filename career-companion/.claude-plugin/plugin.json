@@ -1,0 +1,19 @@
+{
+  "name": "career-companion",
+  "version": "1.0.0",
+  "description": "Career companion for frontier tech — search live job openings, tailor resumes, and practice interviews across space, AI, robotics, and defense industries",
+  "author": {
+    "name": "misha"
+  },
+  "repository": "https://github.com/mishafyi/claudus-maximus",
+  "keywords": [
+    "jobs",
+    "career",
+    "resume",
+    "interview",
+    "space",
+    "ai",
+    "robotics",
+    "defense"
+  ]
+}
