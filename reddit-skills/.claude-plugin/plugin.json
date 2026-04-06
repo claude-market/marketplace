@@ -1,0 +1,32 @@
+{
+  "name": "reddit-skills",
+  "version": "1.0.0",
+  "description": "Reddit automation skills for AI agents — browse, search, comment, vote, and publish using your real browser via a Chrome extension bridge.",
+  "author": "Qingyuan Yang",
+  "license": "MIT",
+  "keywords": ["reddit", "automation", "social-media", "browser-automation", "ai-agent"],
+  "homepage": "https://github.com/1146345502/reddit-skills",
+  "repository": "https://github.com/1146345502/reddit-skills",
+  "skills": [
+    {
+      "name": "reddit-auth",
+      "description": "Check Reddit login status and get current username"
+    },
+    {
+      "name": "reddit-explore",
+      "description": "Browse feeds, search posts, view post details, and explore user profiles"
+    },
+    {
+      "name": "reddit-interact",
+      "description": "Comment, reply, upvote, downvote, and save Reddit posts"
+    },
+    {
+      "name": "reddit-publish",
+      "description": "Submit text, link, and image posts to any subreddit"
+    },
+    {
+      "name": "reddit-compound",
+      "description": "Compound operations combining explore + interact + publish"
+    }
+  ]
+}
