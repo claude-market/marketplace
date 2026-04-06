@@ -120,6 +120,32 @@
         "./skills/axum-health-shutdown.md",
         "./skills/axum-rate-limiting.md"
       ]
+    },
+    {
+      "name": "reddit-skills",
+      "source": "./reddit-skills",
+      "version": "1.0.0",
+      "description": "Reddit automation skills for AI agents — browse, search, comment, vote, and publish using your real browser via a Chrome extension bridge",
+      "author": {
+        "name": "Qingyuan Yang",
+        "url": "https://github.com/1146345502"
+      },
+      "license": "MIT",
+      "repository": "https://github.com/1146345502/reddit-skills",
+      "keywords": [
+        "reddit",
+        "automation",
+        "social-media",
+        "browser-automation",
+        "ai-agent"
+      ],
+      "skills": [
+        "./skills/reddit-auth.md",
+        "./skills/reddit-explore.md",
+        "./skills/reddit-interact.md",
+        "./skills/reddit-publish.md",
+        "./skills/reddit-content-ops.md"
+      ]
     }
   ]
 }
