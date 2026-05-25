@@ -44,6 +44,33 @@ Interactive tool for creating new Claude Code plugins through guided prompts.
 
 **Learn more:** [plugin-builder/README.md](./plugin-builder/README.md)
 
+### Longbridge Securities Skills
+
+125+ agent skills for financial market analysis — real-time quotes, charts, fundamentals, portfolio analysis, valuation, options, and more.
+
+**Features:**
+
+- 125+ skills covering HK, US, A-share, and Singapore markets
+- Real-time quotes, candlestick charts, fundamentals, portfolio analytics, valuation models, options strategies, and news
+- Trilingual support: Simplified Chinese, Traditional Chinese, and English
+- Compatible with Claude Code, Cursor, Gemini CLI, and all agents that support the Agent Skills standard
+
+**Install:**
+
+```bash
+/plugin marketplace add longbridge/skills
+```
+
+Or with npx:
+
+```bash
+npx skills add https://github.com/longbridge/skills
+```
+
+**Learn more:** [github.com/longbridge/skills](https://github.com/longbridge/skills)
+
+---
+
 ## Contributing a Plugin
 
 We welcome high-quality plugin contributions! Here's how to submit yours:
