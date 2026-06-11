@@ -1,0 +1,30 @@
+{
+  "name": "engenharia-de-requisitos",
+  "version": "1.13.0",
+  "description": "Loads canonical knowledge of Requirements Engineering, Business Analysis, and Professional Ethics into any Claude session — built from the IFPB ERS course (Prof. Dr. Juliana Dantas Ribeiro Viana de Medeiros) plus the canonical bibliography (Sommerville, Pressman, Wiegers, Cohn, Robertson, Hull, Falbo, BABOK v3, SBC 002/2024). Bilingual (en-CA default + full pt-BR). For the stage BEFORE code (discover what to build) and AFTER (validate it was built right): elicitation, user stories, acceptance criteria, BDD, EARS, Planning Poker, dependability/security NFRs, traceability, and an on-disk docs/ spine.",
+  "author": {
+    "name": "Gabriel Marques",
+    "url": "https://github.com/GabeMarques-Intetsu"
+  },
+  "repository": "https://github.com/claude-market/marketplace/tree/main/engenharia-de-requisitos",
+  "license": "CC-BY-SA-4.0",
+  "keywords": [
+    "requirements-engineering",
+    "engenharia-de-requisitos",
+    "business-analysis",
+    "bdd",
+    "ears",
+    "agile",
+    "scrum",
+    "acceptance-criteria",
+    "user-stories",
+    "planning-poker",
+    "traceability",
+    "babok",
+    "sommerville",
+    "ifpb"
+  ],
+  "skills": [
+    "./skills/engenharia-de-requisitos"
+  ]
+}
