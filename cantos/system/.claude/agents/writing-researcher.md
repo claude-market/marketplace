@@ -1,0 +1,1 @@
+../../.assistants/folio/sub-agents/writing-researcher.md

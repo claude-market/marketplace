@@ -1,0 +1,13 @@
+{
+  "name": "cantos",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cantos — a self-installing personal-assistant operating system for Claude Code.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "playwright": "^1.49.0"
+  }
+}
