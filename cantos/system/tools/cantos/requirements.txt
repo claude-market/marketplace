@@ -1,0 +1,4 @@
+# Dependencies for tools/cantos/flux.py (Flux image generation via NVIDIA NIM API).
+# Install only if you use that tool:  pip install -r tools/cantos/requirements.txt
+requests
+python-dotenv

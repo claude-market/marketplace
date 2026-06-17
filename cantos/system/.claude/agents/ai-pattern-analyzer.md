@@ -1,0 +1,1 @@
+../../.assistants/folio/sub-agents/ai-pattern-analyzer.md

@@ -1,0 +1,39 @@
+# Local and secret files — never commit these
+.env
+.env.*
+*.key
+*.pem
+credentials*
+secrets*
+
+# Node / npm — pylon's tools and the browser skills install deps here
+node_modules/
+package-lock.json
+
+# Python — bytecode cruft from running the tools
+__pycache__/
+*.pyc
+
+# Claude Code local state
+.claude/settings.local.json
+.claude/worktrees/
+.tmp/
+tmp/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Personal writing — never commit or push these.
+# samples/ holds your raw writing; analysis/ holds the derived per-dimension
+# findings. Both are personal. The folder structure still ships via .gitkeep:
+# we re-include each directory and its .gitkeep so the empty scaffold tracks.
+references/writing-voice/samples/**
+references/writing-voice/analysis/**
+!references/writing-voice/samples/
+!references/writing-voice/samples/*/
+!references/writing-voice/analysis/
+!**/.gitkeep

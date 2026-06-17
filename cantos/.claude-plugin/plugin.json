@@ -1,0 +1,12 @@
+{
+  "name": "cantos",
+  "description": "The full Cantos system as a one-command install: a self-improving, multi-agent assistant orchestrator for Claude Code. /cantos:init scaffolds the whole writable system into a project; /cantos:start runs it for one session. Bundles the orchestrator, specialist assistants, sub-agents, workflows, references, and a library of design, engineering, research, and writing skills.",
+  "version": "1.0.0",
+  "author": { "name": "Brian Chen", "url": "https://github.com/ne11nn" },
+  "homepage": "https://github.com/ne11nn/cantos-plugin",
+  "repository": "https://github.com/ne11nn/cantos-plugin",
+  "license": "MIT",
+  "keywords": ["orchestrator","multi-agent","assistant","self-improving","skills","design","engineering","research","writing","claude-code"],
+  "commands": ["./commands/init.md", "./commands/start.md"],
+  "agents": ["./agents/browser-agent.md"]
+}

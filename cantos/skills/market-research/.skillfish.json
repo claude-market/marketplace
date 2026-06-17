@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "name": "market-research",
+  "owner": "majesticlabs-dev",
+  "repo": "majestic-marketplace",
+  "path": "plugins/majestic-marketing/skills/market-research",
+  "branch": "master",
+  "sha": "04d762680aa75b7281a229d6e664d732e2a8e6bc",
+  "source": "manual"
+}

@@ -120,6 +120,26 @@
         "./skills/axum-health-shutdown.md",
         "./skills/axum-rate-limiting.md"
       ]
+    },
+    {
+      "name": "cantos",
+      "source": "./cantos",
+      "description": "A self-improving, multi-agent assistant orchestrator for Claude Code. Scaffold the full writable system with /cantos:init, or run it for one session with /cantos:start.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Brian Chen",
+        "url": "https://github.com/ne11nn"
+      },
+      "homepage": "https://github.com/ne11nn/cantos-plugin",
+      "license": "MIT",
+      "category": "productivity",
+      "keywords": [
+        "orchestrator",
+        "multi-agent",
+        "assistant",
+        "self-improving",
+        "claude-code"
+      ]
     }
   ]
 }

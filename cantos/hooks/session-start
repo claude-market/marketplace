@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# SessionStart hook for the cantos plugin.
+# Injects a lightweight notice that the Cantos system is installed and how to use
+# it (/cantos:init to scaffold the writable system, /cantos:start to morph for one
+# session). Stays SILENT when the current project is already a scaffolded Cantos
+# checkout, so the project's own CLAUDE.md governs without a conflicting notice.
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PLUGIN_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+# Suppress the notice if this project already has Cantos scaffolded into it.
+# A scaffolded checkout's CLAUDE.md first line is the heading "# Cantos — Orchestrator".
+# Match that heading specifically (require both "Cantos" and "Orchestrator", which is also
+# robust to the em-dash) so an unrelated project whose first line merely mentions "cantos"
+# (e.g. "# Cantos tooling") still gets the usage notice.
+project_dir="${CLAUDE_PROJECT_DIR:-$PWD}"
+claude_md="${project_dir}/CLAUDE.md"
+if [ -f "$claude_md" ] && head -n 1 "$claude_md" | grep -qiE '^#.*cantos.*orchestrator'; then
+    exit 0
+fi
+
+# Build the injected context: read the bootstrap notice and resolve the plugin path.
+bootstrap_content=$(cat "${SCRIPT_DIR}/bootstrap.md" 2>&1 || echo "The Cantos plugin is installed. Use /cantos:init or /cantos:start.")
+bootstrap_content="${bootstrap_content//__PLUGIN_ROOT__/$PLUGIN_ROOT}"
+
+# Escape a string for embedding in a JSON string value.
+escape_for_json() {
+    local s="$1"
+    s="${s//\\/\\\\}"
+    s="${s//\"/\\\"}"
+    s="${s//$'\n'/\\n}"
+    s="${s//$'\r'/\\r}"
+    s="${s//$'\t'/\\t}"
+    printf '%s' "$s"
+}
+
+session_context=$(escape_for_json "$bootstrap_content")
+
+# Emit context injection as JSON, matching the consuming platform's expected field.
+# Claude Code reads hookSpecificOutput.additionalContext (nested).
+# Cursor reads additional_context (top-level snake_case).
+# Copilot CLI / others read additionalContext (top-level, SDK standard).
+# printf (not heredoc) avoids a bash 5.3+ heredoc hang.
+if [ -n "${CURSOR_PLUGIN_ROOT:-}" ]; then
+  printf '{\n  "additional_context": "%s"\n}\n' "$session_context"
+elif [ -n "${CLAUDE_PLUGIN_ROOT:-}" ] && [ -z "${COPILOT_CLI:-}" ]; then
+  printf '{\n  "hookSpecificOutput": {\n    "hookEventName": "SessionStart",\n    "additionalContext": "%s"\n  }\n}\n' "$session_context"
+else
+  printf '{\n  "additionalContext": "%s"\n}\n' "$session_context"
+fi
+
+exit 0
