@@ -1,6 +1,6 @@
 {
   "name": "claude-market",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Hand-curated open source repository for Claude Code tools, agents and skills",
   "owner": {
     "name": "Claude Market",
@@ -39,6 +39,29 @@
         "./skills/cc-agent-builder.md",
         "./skills/cc-hook-builder.md",
         "./skills/cc-mcp-builder.md"
+      ]
+    },
+    {
+      "name": "socratic-comprehension",
+      "source": "./socratic-comprehension",
+      "version": "0.1.0",
+      "description": "A Socratic sparring partner for true understanding. Helps you grok difficult texts, papers, and concepts by making you reconstruct the logic in your own words — never summarizing or ghost-writing for you.",
+      "author": {
+        "name": "kpab"
+      },
+      "license": "MIT",
+      "homepage": "https://github.com/kpab/socratic-comprehension",
+      "repository": "https://github.com/kpab/socratic-comprehension",
+      "keywords": [
+        "agent-skills",
+        "claude-code",
+        "socratic",
+        "comprehension",
+        "learning",
+        "understanding"
+      ],
+      "skills": [
+        "./skills/socratic-comprehension/SKILL.md"
       ]
     },
     {

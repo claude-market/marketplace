@@ -1,0 +1,13 @@
+{
+  "name": "socratic-comprehension",
+  "version": "0.1.0",
+  "description": "A Socratic sparring partner for true understanding. Helps you grok difficult texts, papers, and concepts by making you reconstruct the logic in your own words — never summarizing or ghost-writing for you.",
+  "author": {
+    "name": "kpab"
+  },
+  "homepage": "https://github.com/kpab/socratic-comprehension",
+  "repository": "https://github.com/kpab/socratic-comprehension",
+  "license": "MIT",
+  "keywords": ["agent-skills", "claude-code", "socratic", "comprehension", "learning", "understanding"],
+  "skills": ["./skills/socratic-comprehension/SKILL.md"]
+}
