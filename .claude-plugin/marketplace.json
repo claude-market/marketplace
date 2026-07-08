@@ -1,6 +1,6 @@
 {
   "name": "claude-market",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Hand-curated open source repository for Claude Code tools, agents and skills",
   "owner": {
     "name": "Claude Market",
@@ -39,6 +39,29 @@
         "./skills/cc-agent-builder.md",
         "./skills/cc-hook-builder.md",
         "./skills/cc-mcp-builder.md"
+      ]
+    },
+    {
+      "name": "routerbase-model-gateway",
+      "source": "./routerbase-model-gateway",
+      "version": "1.0.0",
+      "description": "RouterBase OpenAI-compatible model gateway workflows for SDK migration, model routing, fallback planning, and safe credential handling",
+      "author": {
+        "name": "zenlee123",
+        "url": "https://github.com/zenlee123"
+      },
+      "license": "MIT",
+      "homepage": "https://routerbase.com/",
+      "repository": "https://github.com/zenlee123/routerbase-agent-skills",
+      "keywords": [
+        "routerbase",
+        "llm",
+        "openai-compatible",
+        "model-routing",
+        "api-gateway"
+      ],
+      "skills": [
+        "./skills/routerbase-model-gateway.md"
       ]
     },
     {
