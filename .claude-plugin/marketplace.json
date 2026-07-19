@@ -1,6 +1,6 @@
 {
   "name": "claude-market",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Hand-curated open source repository for Claude Code tools, agents and skills",
   "owner": {
     "name": "Claude Market",
@@ -119,6 +119,30 @@
         "./skills/axum-timeouts.md",
         "./skills/axum-health-shutdown.md",
         "./skills/axum-rate-limiting.md"
+      ]
+    },
+    {
+      "name": "xquik",
+      "source": "./xquik",
+      "version": "1.0.0",
+      "description": "Plan X data workflows with Xquik REST, remote MCP, SDK, webhook, and export guidance",
+      "author": {
+        "name": "Xquik"
+      },
+      "license": "MIT",
+      "homepage": "https://docs.xquik.com",
+      "repository": "https://github.com/Xquik-dev/x-twitter-scraper",
+      "keywords": [
+        "xquik",
+        "twitter",
+        "x",
+        "social-data",
+        "mcp",
+        "webhooks",
+        "api"
+      ],
+      "skills": [
+        "./skills/x-twitter-scraper.md"
       ]
     }
   ]

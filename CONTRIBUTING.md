@@ -116,19 +116,19 @@ Every plugin must include a CODEOWNERS file at its root. This file defines who s
 **Format:**
 ```
 # Plugin maintainers and reviewers
-* @claude-market @your-github-username Your Name
+* @claude-market @your-github-username
 ```
 
 **Example:**
 ```
 # Plugin maintainers and reviewers
-* @claude-market @danielkov danielkov
+* @claude-market @danielkov
 ```
 
 This ensures:
 - The Claude Market organization (@claude-market) is notified of all changes
 - Your GitHub account (@your-username) is tagged as a reviewer
-- Your name is listed for visibility
+- Every listed owner uses a GitHub username or team slug
 
 ### README Requirements
 
