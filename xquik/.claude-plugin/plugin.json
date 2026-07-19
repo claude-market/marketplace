@@ -1,0 +1,23 @@
+{
+  "name": "xquik",
+  "version": "1.0.0",
+  "description": "Plan X data workflows with Xquik REST, remote MCP, SDK, webhook, and export guidance",
+  "author": {
+    "name": "Xquik"
+  },
+  "homepage": "https://docs.xquik.com",
+  "repository": "https://github.com/Xquik-dev/x-twitter-scraper",
+  "license": "MIT",
+  "keywords": [
+    "xquik",
+    "twitter",
+    "x",
+    "social-data",
+    "mcp",
+    "webhooks",
+    "api"
+  ],
+  "skills": [
+    "./skills/x-twitter-scraper.md"
+  ]
+}
