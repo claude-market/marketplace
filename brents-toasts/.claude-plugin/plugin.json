@@ -1,0 +1,17 @@
+{
+  "name": "brents-toasts",
+  "version": "2.4.10",
+  "description": "Claude Skill for writing correct code against brents-toasts, a zero-dependency toast/snackbar UI library for JavaScript/TypeScript.",
+  "author": {
+    "name": "Brentspine",
+    "email": "me@brentspine.de",
+    "url": "https://brentspine.de"
+  },
+  "homepage": "https://brentspine.github.io/brents-toasts/",
+  "repository": "https://github.com/brentspine/brents-toasts",
+  "license": "Apache-2.0",
+  "keywords": ["toast", "snackbar", "notification", "ui"],
+  "skills": [
+    "./skills/brents-toasts.md"
+  ]
+}
