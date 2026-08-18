@@ -1,0 +1,23 @@
+{
+  "name": "t2a-review",
+  "version": "1.0.0",
+  "description": "AI code reviewer that thinks like your team — built from your team's actual PR comment history.",
+  "author": {
+    "name": "Yaniv Aharon",
+    "url": "https://github.com/ayaniv"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/ayaniv/t2a-review-template",
+  "repository": "https://github.com/ayaniv/t2a-review-template",
+  "keywords": [
+    "code-review",
+    "pr-review",
+    "pre-pr",
+    "team-conventions",
+    "multi-agent"
+  ],
+  "commands": [
+    "./commands/review.md",
+    "./commands/add-team-member.md"
+  ]
+}
