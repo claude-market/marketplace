@@ -45,10 +45,12 @@ Claude Code is a first-class HOL Guard target. Prefer the canonical `claude-code
 
 ```bash
 hol-guard approvals
-hol-guard approvals open
+hol-guard approvals open <request-id>
 hol-guard receipts
 hol-guard diff claude-code
 ```
+
+Pass the pending approval request ID to `hol-guard approvals open` so the CLI opens the specific queued request.
 
 For terminal-only resolution:
 
