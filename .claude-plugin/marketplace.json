@@ -120,6 +120,20 @@
         "./skills/axum-health-shutdown.md",
         "./skills/axum-rate-limiting.md"
       ]
+    },
+    {
+      "name": "stayux-ste",
+      "source": "./stayux-ste",
+      "version": "0.1.0",
+      "description": "Simplified Technical English (ASD-STE100) for Claude Code: dialogue mode plus ste-check, ste-rewrite, ste-init, and ste-mode. Zero-dependency Python linter and curated dictionary. Unofficial.",
+      "author": "Stayu Kasabov",
+      "license": "MIT",
+      "keywords": [
+        "ste",
+        "asd-ste100",
+        "technical-writing"
+      ],
+      "category": "productivity"
     }
   ]
 }

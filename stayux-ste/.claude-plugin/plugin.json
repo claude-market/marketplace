@@ -1,0 +1,11 @@
+{
+  "name": "stayux-ste",
+  "displayName": "Stayux STE",
+  "version": "0.1.0",
+  "description": "Simplified Technical English (ASD-STE100) for Claude Code: dialogue mode plus file check, rewrite, and repo init, backed by a zero-dependency Python linter and a curated dictionary. Unofficial.",
+  "author": { "name": "STAYUX - STAYU KASABOV" },
+  "homepage": "https://github.com/stayukasabov/Stayux-STE-linter",
+  "repository": "https://github.com/stayukasabov/Stayux-STE-linter",
+  "license": "MIT",
+  "keywords": ["ste", "asd-ste100", "simplified-technical-english", "technical-writing", "linter"]
+}
