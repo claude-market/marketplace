@@ -18,7 +18,8 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from ste_dictionary import (  # noqa: E402
-    WORD_SUBSTITUTIONS, PHRASE_SUBSTITUTIONS, REMOVED_TERMS, CONTRACTIONS,
+    WORD_SUBSTITUTIONS, PHRASE_SUBSTITUTIONS, WORDINESS_PHRASES, REMOVED_TERMS,
+    CONTRACTIONS,
 )
 
 # Optional local cache built from the user's own official copy (never shipped).
@@ -264,6 +265,11 @@ def _check_sentence(sentence, cfg, violations, line,
             violations.append(_make(
                 "unapproved-word", "warning",
                 f"use '{sub}' instead of '{phrase}'", sentence[:60], line))
+    for phrase, sub in WORDINESS_PHRASES.items():
+        if re.search(r"\b" + re.escape(phrase) + r"\b", low):
+            advice = (f"remove '{phrase}'; it adds no meaning" if not sub
+                      else f"'{phrase}' is wordy: use '{sub}'")
+            violations.append(_make("wordiness", "warning", advice, sentence[:60], line))
     for term in REMOVED_TERMS:
         if re.search(r"\b" + re.escape(term) + r"\b", low):
             violations.append(_make(

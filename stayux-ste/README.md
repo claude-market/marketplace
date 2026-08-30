@@ -1,11 +1,14 @@
 # Stayux-STE-linter
 
-A Claude Code plugin, and a Claude Desktop skill, that makes Claude write in
-**Simplified Technical English (STE)**, the terse, unambiguous controlled-English
-style based on the ASD-STE100 standard. On Claude Code it is a bundle of `ste-*`
-commands plus an auto-loading skill; on Desktop it is a single uploaded skill. A
-fast, deterministic, zero-dependency Python linter sits at its core as the
-pass/fail gate.
+A **plain-English and technical-clarity linter** for Claude, **compatible with
+Simplified Technical English (ASD-STE100)**. It makes Claude write short, active,
+unambiguous sentences, both in the dialogue and on your documents. The shipped
+rules and word list are original, aligned with the Google (CC BY 4.0) and
+Microsoft style guides; **bring your own** official ASD-STE100 copy for full
+conformance. On Claude Code it is a bundle of `ste-*` commands plus an
+auto-loading skill; on Desktop it is a single uploaded skill. A fast,
+deterministic, zero-dependency Python linter sits at its core as the pass/fail
+gate.
 
 ## Two ways to use it
 
@@ -93,6 +96,8 @@ Advisory (warnings that never fail the gate):
 - Passive voice, phrasal verbs
 - Joined imperatives (one instruction per sentence: no `and`/`then`)
 - Unapproved words, with a suggested plain-English swap (curated seed map)
+- Wordiness and filler phrases (for example "it is important to note that"),
+  seeded from the FOSS prose linters write-good and proselint
 - Words removed from the ASD-STE100 word list (Issue 9)
 
 ## Install
@@ -184,9 +189,11 @@ python3 -m unittest discover -s tests
 
 The linter bundles a small, hand-authored **substitution map**
 (`scripts/ste_dictionary.py`). It maps common non-STE words and phrases to plain
-replacements, and lists terms removed from the standard. Entries marked
-"Issue 9" were checked against the ASD-STE100 Issue 9 dictionary; the rest are
-uncontroversial plain-English swaps.
+replacements, and lists terms removed from the standard. Every entry is tagged by
+provenance so the seed is auditable: **[Issue 9]** verified against a local
+ASD-STE100 copy, **[Google style]** from the Google Developer Documentation Style
+Guide word list (CC BY 4.0, used with attribution), and **[plain-English]**
+general style advice. The wordiness phrases come from write-good and proselint.
 
 It is **not** the official ~900-word list, which is copyrighted. Extend it three
 ways:

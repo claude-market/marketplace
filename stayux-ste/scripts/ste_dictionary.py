@@ -8,21 +8,48 @@ paste the official approved words / substitutions into these maps.
 
 Keys are lowercase. WORD_SUBSTITUTIONS are matched per token; PHRASE_
 SUBSTITUTIONS and REMOVED_TERMS are matched as whole-word phrases inside a
-sentence. Entries marked "Issue 9" were checked against the ASD-STE100 Issue 9
-dictionary; all others are common, uncontroversial plain-English swaps.
+sentence.
+
+Provenance tags mark where each swap comes from, so the seed is auditable and
+legally defensible:
+- [Issue 9]       Verified against the ASD-STE100 Issue 9 dictionary using your
+                  own bring-your-own copy. The standard's actual replacement.
+- [Google style]  From the Google Developer Documentation Style Guide word list
+                  (https://developers.google.com/style/word-list), CC BY 4.0.
+                  Reusable with attribution.
+- [plain-English] Uncontroversial formal/wordy -> plain swaps. Not from any
+                  copyrighted source; general style advice.
+All swaps are advisory warnings only; they never fail the gate.
 """
 
 WORD_SUBSTITUTIONS = {
-    # --- Original seed set ---
-    "commence": "start",
-    "initiate": "start",
+    # --- [Issue 9] verified against your BYO official copy ---
+    "require": "necessary",      # require (v) -> NECESSARY (adj)
+    "substance": "material",     # substance (n) -> MATERIAL (n)
+    "acceptable": "permitted",   # acceptable (adj) -> PERMITTED (adj)
+    "alternate": "alternative",  # alternate (adj) -> ALTERNATIVE (adj)
+    "avoid": "prevent",          # avoid (v) -> PREVENT (v)
+    "ensure": "make sure",       # ensure (v) -> MAKE SURE (v)
+    "main": "primary",           # main (adj) -> PRIMARY (adj)
+    "complete": "completed",     # complete (adj) -> COMPLETED (adj) [verb COMPLETE is approved]
+    "activity": "task",          # activity (n) -> TASK (n) / PROCEDURE (n)
+    "action": "task",            # action (n) -> STEP (n) / TASK (n)
+    "abandon": "go",             # abandon (v) -> GO (v) / STOP (v)
+    "assistance": "help",        # assistance (n) -> AID (n) / HELP (v)
+    "blank": "seal",             # blank (v) -> SEAL (v)
+    # NOTE: "subsequently" is an APPROVED word in Issue 9. Do not add it here.
+
+    # --- [Google style] Google Developer Documentation Style Guide (CC BY 4.0) ---
     "utilize": "use",
     "utilise": "use",
+
+    # --- [plain-English] uncontroversial formal/wordy -> plain swaps ---
+    "commence": "start",
+    "initiate": "start",
     "terminate": "stop",
     "assist": "help",
     "attempt": "try",
     "obtain": "get",
-    "require": "necessary",      # require (v) -> NECESSARY (adj) [Issue 9]
     "additional": "more",
     "indicate": "show",
     "demonstrate": "show",
@@ -38,25 +65,6 @@ WORD_SUBSTITUTIONS = {
     "ascertain": "check",
     "commencement": "start",
     "consequently": "so",
-
-    # --- Verified against ASD-STE100 Issue 9 ---
-    "substance": "material",     # substance (n) -> MATERIAL (n)
-    "acceptable": "permitted",   # acceptable (adj) -> PERMITTED (adj)
-    "alternate": "alternative",  # alternate (adj) -> ALTERNATIVE (adj)
-    "avoid": "prevent",          # avoid (v) -> PREVENT (v)
-    "ensure": "make sure",       # ensure (v) -> MAKE SURE (v)
-    "main": "primary",           # main (adj) -> PRIMARY (adj)
-    "complete": "completed",     # complete (adj) -> COMPLETED (adj) [verb COMPLETE is approved]
-    "activity": "task",          # activity (n) -> TASK (n) / PROCEDURE (n)
-    "action": "task",            # action (n) -> STEP (n) / TASK (n)
-    "abandon": "go",             # abandon (v) -> GO (v) / STOP (v)
-    "assistance": "help",        # assistance (n) -> AID (n) / HELP (v)
-    "blank": "seal",             # blank (v) -> SEAL (v)
-    # NOTE: "subsequently" is an APPROVED word in Issue 9. Do not add it here.
-
-    # --- Common plain-English swaps (not from the copyrighted list) ---
-    # Well-established formal/wordy -> plain substitutions. Advisory warnings
-    # only. NOT claimed as Issue 9-verified; add here, not to the block above.
     "accordingly": "so",
     "aforementioned": "this",
     "apparent": "clear",
@@ -89,6 +97,9 @@ WORD_SUBSTITUTIONS = {
     # And do NOT suggest these banned words as replacements: need, expect, ask, now.
 }
 
+# Wordy multiword phrases -> a shorter form. [plain-English], except a few
+# ("in order to", "prior to") that also appear in the Google Developer
+# Documentation Style Guide word list (CC BY 4.0).
 PHRASE_SUBSTITUTIONS = {
     "in order to": "to",
     "due to the fact that": "because",
@@ -108,6 +119,30 @@ PHRASE_SUBSTITUTIONS = {
     "in spite of the fact that": "although",
     "on a regular basis": "regularly",
     "the majority of": "most",
+}
+
+# Wordiness / "zombie" filler: phrases that add no meaning and should be cut,
+# not swapped for a shorter word (that is what PHRASE_SUBSTITUTIONS does). The
+# value is the advice: an empty string means "delete it", a non-empty string is
+# the shorter form to keep. Seeded from the FOSS prose linters write-good and
+# proselint (both openly licensed); this is original curation, not ASD data.
+# Advisory warnings only; they never fail the gate.
+WORDINESS_PHRASES = {
+    "it is important to note that": "",
+    "it is worth noting that": "",
+    "it should be noted that": "",
+    "it is interesting to note that": "",
+    "needless to say": "",
+    "for all intents and purposes": "",
+    "for what it is worth": "",
+    "at the end of the day": "",
+    "when all is said and done": "",
+    "in a very real sense": "",
+    "as a matter of fact": "",
+    "in the final analysis": "",
+    "the fact that": "that",
+    "in my opinion": "",
+    "please note that": "",
 }
 
 # Terms removed from the ASD-STE100 word list in Issue 9. No approved

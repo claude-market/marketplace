@@ -1,0 +1,33 @@
+Stayux-STE-linter: Trademark and Copyright Notice
+=================================================
+
+This project is UNOFFICIAL. It is not affiliated with, endorsed by, or
+sponsored by ASD (the AeroSpace and Defence Industries Association of Europe)
+or the ASD Simplified Technical English Maintenance Group (STEMG).
+
+"Simplified Technical English" and "ASD-STE100" are trademarks of ASD,
+Brussels, Belgium (European Union Trade Mark No. 017966390). The ASD-STE100
+specification and its dictionary are Copyright ASD. All rights reserved.
+
+This tool does NOT include, redistribute, download, or embed the official
+ASD-STE100 dictionary or specification. The substitution list bundled here
+(scripts/ste_dictionary.py) is a small, original, hand-authored set of common
+plain-English word swaps. It is not the official approved-word list. Each entry
+is tagged by provenance: [plain-English] general style advice, [Google style]
+from the Google Developer Documentation Style Guide word list (licensed CC BY
+4.0, used with attribution), and [Issue 9] entries the maintainer verified
+against their own local ASD-STE100 copy. The wordiness/filler phrases are seeded
+from the FOSS prose linters write-good and proselint.
+
+This project is a plain-English and technical-clarity linter that is COMPATIBLE
+with ASD-STE100, not a conformance tool. For a check against the official
+approved-word list, obtain your own free copy directly from ASD
+(https://www.asd-ste100.org/) and supply that copy locally. The tool parses your
+local file into a local cache. That cache is never committed to this repository.
+See .gitignore.
+
+References to "ASD-STE100" in this project are nominative only, to state
+compatibility. No claim of ownership over the marks is made.
+
+Copyright (c) 2026 Stayux (Stayu Kasabov). The original code and substitution
+list in this project are licensed under the MIT License. See LICENSE.
