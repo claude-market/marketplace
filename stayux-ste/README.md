@@ -113,7 +113,7 @@ skill.
 The repo doubles as a plugin marketplace:
 
 ```
-/plugin marketplace add stayukasabov/Stayux-STE-linter
+/plugin marketplace add stayukasabov/Stayux-Clear-Answer
 /plugin install stayux-ste@stayux
 ```
 
@@ -141,7 +141,7 @@ English, or STE. See the skill at
 No build needed. You download the ready skill and upload it once:
 
 1. Download `stayux-ste.zip` from the
-   [latest release](https://github.com/stayukasabov/Stayux-STE-linter/releases/latest).
+   [latest release](https://github.com/stayukasabov/Stayux-Clear-Answer/releases/latest).
 2. In Claude Desktop or claude.ai, open **Settings > Capabilities > Skills** and
    upload the zip, then enable it.
 3. Ask Claude for a clear answer, for example "reply in plain English" or
@@ -246,7 +246,7 @@ ways:
 - **Claude Desktop guide**: [`desktop/README.md`](desktop/README.md)
 - **STE rule reference**: [`references/writing-rules.md`](references/writing-rules.md)
 - **The skill**: [`skills/ste-write/SKILL.md`](skills/ste-write/SKILL.md)
-- **Downloads**: [latest release](https://github.com/stayukasabov/Stayux-STE-linter/releases/latest)
+- **Downloads**: [latest release](https://github.com/stayukasabov/Stayux-Clear-Answer/releases/latest)
 - **Legal**: [LICENSE](LICENSE), [NOTICE](NOTICE)
 
 ## Roadmap
