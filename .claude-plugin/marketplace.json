@@ -125,10 +125,12 @@
       "name": "stayux-ste",
       "source": "./stayux-ste",
       "version": "0.1.0",
-      "description": "Simplified Technical English (ASD-STE100) for Claude Code: dialogue mode plus ste-check, ste-rewrite, ste-init, and ste-mode. Zero-dependency Python linter and curated dictionary. Unofficial.",
+      "description": "Stayux Clear Answer: make Claude reply in short, plain English. Dialogue mode plus clear-check, clear-rewrite, clear-init, and clear-mode (with /ste-* aliases). Zero-dependency Python linter. Compatible with Simplified Technical English (ASD-STE100). Unofficial.",
       "author": "Stayux (Stayu Kasabov)",
       "license": "MIT",
       "keywords": [
+        "clear-answer",
+        "plain-english",
         "ste",
         "asd-ste100",
         "technical-writing"

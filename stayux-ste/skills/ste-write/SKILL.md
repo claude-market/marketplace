@@ -1,11 +1,12 @@
 ---
 name: ste-write
 description: >
-  Write, rewrite, and check text in Simplified Technical English (ASD-STE100):
-  short, exact, unambiguous controlled English. Load this when the user asks to
-  write in STE, rewrite in STE, check STE compliance, apply ASD-STE100, or
-  simplify technical documentation. Commands: /ste-on, /ste-off, /ste-mode,
-  /ste-check, /ste-rewrite, /ste-init.
+  Clear Answer: write, rewrite, and check text in short, plain English
+  (Simplified Technical English, ASD-STE100). Load this when the user asks for a
+  clear answer, plain English, short replies, to write or rewrite in STE, to
+  check STE compliance, apply ASD-STE100, or simplify technical documentation.
+  Commands: /clear-on, /clear-off, /clear-mode, /clear-check, /clear-rewrite,
+  /clear-init (each has a /ste-* alias).
 ---
 
 # Simplified Technical English (STE)
@@ -20,12 +21,17 @@ cost no model-context tokens.
 
 ## Commands
 
-- `/ste-on`, `/ste-off`: turn STE dialogue mode on or off. While on, every reply
-  is written in STE and gated by the linter.
-- `/ste-mode off|prose|strict`: set the mode and strictness.
-- `/ste-check`: check a file or text and report the violations.
-- `/ste-rewrite`: rewrite text into STE with a before and after.
-- `/ste-init`: add STE rules to the project's CLAUDE.md.
+Each command has two names: the Clear Answer name and a legacy `/ste-*` alias.
+Both do the same thing.
+
+- `/clear-on`, `/clear-off` (aliases `/ste-on`, `/ste-off`): turn Clear Answer
+  dialogue mode on or off. While on, every reply is written in short, plain
+  English and gated by the linter.
+- `/clear-mode off|prose|strict` (alias `/ste-mode`): set the mode and strictness.
+- `/clear-check` (alias `/ste-check`): check a file or text and report the
+  violations.
+- `/clear-rewrite` (alias `/ste-rewrite`): rewrite text with a before and after.
+- `/clear-init` (alias `/ste-init`): add the rules to the project's CLAUDE.md.
 
 ## When the user asks for STE without a command
 

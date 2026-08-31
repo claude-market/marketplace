@@ -1,25 +1,28 @@
-# Stayux-STE-linter
+# Stayux Clear Answer
 
-A **plain-English and technical-clarity linter** for Claude, **compatible with
-Simplified Technical English (ASD-STE100)**. It makes Claude write short, active,
-unambiguous sentences, both in the dialogue and on your documents. The shipped
-rules and word list are original, aligned with the Google (CC BY 4.0) and
-Microsoft style guides; **bring your own** official ASD-STE100 copy for full
-conformance. On Claude Code it is a bundle of `ste-*` commands plus an
+**Clear Answer** makes Claude reply in short, plain English, both in the dialogue
+and on your documents. It is a **plain-English and technical-clarity linter**,
+**compatible with Simplified Technical English (ASD-STE100)**. The shipped rules
+and word list are original, aligned with the Google (CC BY 4.0) and Microsoft
+style guides; **bring your own** official ASD-STE100 copy for full conformance. On
+Claude Code it is a bundle of `clear-*` commands (with `ste-*` aliases) plus an
 auto-loading skill; on Desktop it is a single uploaded skill. A fast,
 deterministic, zero-dependency Python linter sits at its core as the pass/fail
 gate.
+
+> The repo and plugin id stay `stayux-ste` for install stability. The product
+> name is Stayux Clear Answer.
 
 ## Two ways to use it
 
 **1. Optimize the model's output, in the dialogue.**
 For product managers, designers, and anyone who wants less verbose answers. Turn
-STE mode on and Claude writes its replies in short, clear, controlled English.
-One install, then `/ste-on`.
+Clear Answer mode on and Claude writes its replies in short, clear, controlled
+English. One install, then `/clear-on`.
 
 **2. Produce clearer documentation, on your own content.**
 For developers and technical writers. Check, rewrite, and standardize technical
-docs with `/ste-check`, `/ste-rewrite`, and `/ste-init`. A Desktop and API build
+docs with `/clear-check`, `/clear-rewrite`, and `/clear-init`. A Desktop and API build
 brings the same to non-developers.
 
 Both share one core: a **Claude Code plugin** (the `ste-*` commands) and a
@@ -78,7 +81,7 @@ LLM-only skill would load and reason over the equivalent every turn.
 Claude Code reports its own projection. Run `claude plugin details stayux-ste`: it
 shows about 429 tokens always-on for the whole plugin (every command and skill
 description, so Claude knows when to use each), plus an on-invoke cost each time a
-command fires (for example `/ste-on` about 400, `/ste-check` about 320). Those are
+command fires (for example `/clear-on` about 400, `/clear-check` about 320). Those are
 estimates too. They measure a different thing from the table above: the always-on
 figure is all seven descriptions loaded up front, while the table is one flow, a
 skill body plus its lint round-trips.
@@ -116,18 +119,21 @@ The repo doubles as a plugin marketplace:
 
 Update later with `/plugin update stayux-ste`, then restart Claude Code to apply.
 
-Commands:
+Commands. Each has a Clear Answer name and a legacy `/ste-*` alias; both do the
+same thing.
 
-- `/ste-on`, `/ste-off`: turn STE dialogue mode on or off. While on, the
-  assistant drafts each reply, gates it through the linter, and rewrites until it
-  passes.
-- `/ste-mode off|prose|strict`: set strictness (prose uses the chat profile,
-  strict uses the full profile).
-- `/ste-check`: check a file or text and report the violations.
-- `/ste-rewrite`: rewrite text into STE with a before and after.
-- `/ste-init`: add STE rules to the project's CLAUDE.md.
+- `/clear-on`, `/clear-off` (aliases `/ste-on`, `/ste-off`): turn Clear Answer
+  dialogue mode on or off. While on, the assistant drafts each reply, gates it
+  through the linter, and rewrites until it passes.
+- `/clear-mode off|prose|strict` (alias `/ste-mode`): set strictness (prose uses
+  the chat profile, strict uses the full profile).
+- `/clear-check` (alias `/ste-check`): check a file or text and report the
+  violations.
+- `/clear-rewrite` (alias `/ste-rewrite`): rewrite text with a before and after.
+- `/clear-init` (alias `/ste-init`): add the rules to the project's CLAUDE.md.
 
-The plugin also loads automatically when you mention STE. See the skill at
+The plugin also loads automatically when you ask for a clear answer, plain
+English, or STE. See the skill at
 [`skills/ste-write/SKILL.md`](skills/ste-write/SKILL.md).
 
 ### Claude Desktop (download the skill)
@@ -138,7 +144,8 @@ No build needed. You download the ready skill and upload it once:
    [latest release](https://github.com/stayukasabov/Stayux-STE-linter/releases/latest).
 2. In Claude Desktop or claude.ai, open **Settings > Capabilities > Skills** and
    upload the zip, then enable it.
-3. Ask Claude to reply in STE, for example "reply in STE".
+3. Ask Claude for a clear answer, for example "reply in plain English" or
+   "reply in plain English".
 
 Custom skills need code execution, on the Pro, Max, Team, or Enterprise plans.
 Full notes are in [`desktop/README.md`](desktop/README.md).
@@ -149,7 +156,7 @@ The same question, answered with the skill off (Claude's normal prose) and on.
 
 **You:** The API returns 502 sometimes right after a deploy. What should I check?
 
-**STE off (default):**
+**Clear Answer off (default):**
 
 > Intermittent 502s just after a deploy usually mean traffic reaches new
 > instances before they are ready to serve it, so the first thing I would look
@@ -160,14 +167,14 @@ The same question, answered with the skill off (Claude's normal prose) and on.
 > after each deploy, since that window is where this kind of race condition
 > tends to show up.
 
-**STE on:**
+**Clear Answer on:**
 
 > Check three things.
 > 1. Readiness probes. Confirm they pass only when the app can serve requests.
 > 2. Connection draining. Make sure the load balancer removes old pods before it stops them.
 > 3. Deploy timing. Look at the logs from the first 30 seconds after each rollout.
 
-Same information. The STE reply is shorter, scannable, and faster to act on.
+Same information. The Clear Answer reply is shorter, scannable, and faster to act on.
 
 ## The linter directly
 
@@ -229,7 +236,7 @@ ways:
 - **Tutorials** ([`docs/tutorials/`](docs/tutorials/README.md)), with worked,
   run-verified examples:
   1. [Install the plugin](docs/tutorials/01-install.md)
-  2. [Write in STE in the dialogue](docs/tutorials/02-dialogue-mode.md)
+  2. [Get clear answers in the dialogue](docs/tutorials/02-dialogue-mode.md)
   3. [Check a document](docs/tutorials/03-check-a-document.md)
   4. [Rewrite a document](docs/tutorials/04-rewrite-a-document.md)
   5. [Repo and Desktop setup](docs/tutorials/05-init-and-desktop.md)

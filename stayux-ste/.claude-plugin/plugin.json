@@ -1,11 +1,11 @@
 {
   "name": "stayux-ste",
-  "displayName": "Stayux STE",
+  "displayName": "Stayux Clear Answer",
   "version": "0.1.0",
-  "description": "Simplified Technical English (ASD-STE100) for Claude Code: dialogue mode plus file check, rewrite, and repo init, backed by a zero-dependency Python linter and a curated dictionary. Unofficial.",
+  "description": "Clear Answer: make Claude reply in short, plain English. Dialogue mode plus file check, rewrite, and repo init, backed by a zero-dependency Python linter. Commands are /clear-* (and /ste-* aliases). Compatible with Simplified Technical English (ASD-STE100). Unofficial.",
   "author": { "name": "Stayux (Stayu Kasabov)", "email": "stayu.kasabov@gmail.com", "url": "https://github.com/stayukasabov" },
   "homepage": "https://github.com/stayukasabov/Stayux-STE-linter",
   "repository": "https://github.com/stayukasabov/Stayux-STE-linter",
   "license": "MIT",
-  "keywords": ["ste", "asd-ste100", "simplified-technical-english", "technical-writing", "linter"]
+  "keywords": ["clear-answer", "plain-english", "ste", "asd-ste100", "simplified-technical-english", "technical-writing", "linter"]
 }
