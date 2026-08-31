@@ -145,7 +145,9 @@ No build needed. You download the ready skill and upload it once:
 2. In Claude Desktop or claude.ai, open **Settings > Capabilities > Skills** and
    upload the zip, then enable it.
 3. Ask Claude for a clear answer, for example "reply in plain English" or
-   "reply in plain English".
+   "reply in STE".
+4. Turn it off with words when you are done: "clear answer off" or "reply in
+   normal prose". Desktop has no slash commands, so on and off are both spoken.
 
 Custom skills need code execution, on the Pro, Max, Team, or Enterprise plans.
 Full notes are in [`desktop/README.md`](desktop/README.md).
