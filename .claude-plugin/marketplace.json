@@ -1,6 +1,6 @@
 {
   "name": "claude-market",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Hand-curated open source repository for Claude Code tools, agents and skills",
   "owner": {
     "name": "Claude Market",
@@ -39,6 +39,32 @@
         "./skills/cc-agent-builder.md",
         "./skills/cc-hook-builder.md",
         "./skills/cc-mcp-builder.md"
+      ]
+    },
+    {
+      "name": "seoagent",
+      "source": "./seoagent",
+      "version": "1.0.0",
+      "description": "The SEO engine for coding agents. Free Skill audits the site and builds or improves SEO pages in the repo; optional Autopilot uses GSC and keyword research and queues updates you approve.",
+      "author": {
+        "name": "Baxter Inc",
+        "email": "support@seoagent.com",
+        "url": "https://seoagent.com"
+      },
+      "license": "MIT",
+      "homepage": "https://seoagent.com",
+      "repository": "https://github.com/Baxter-Inc/seoagent-npm",
+      "keywords": [
+        "seo",
+        "ai-seo",
+        "aeo",
+        "geo",
+        "content-strategy",
+        "technical-seo",
+        "keyword-research"
+      ],
+      "skills": [
+        "./skills/seoagent-cli-setup/SKILL.md"
       ]
     },
     {

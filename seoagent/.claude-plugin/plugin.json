@@ -1,0 +1,16 @@
+{
+  "name": "seoagent",
+  "displayName": "SEOAgent",
+  "description": "The SEO engine for coding agents. Free Skill audits the site and builds or improves SEO pages in the repo; optional Autopilot uses GSC and keyword research and queues updates you approve.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Baxter Inc",
+    "email": "support@seoagent.com",
+    "url": "https://seoagent.com"
+  },
+  "homepage": "https://seoagent.com",
+  "repository": "https://github.com/Baxter-Inc/seoagent-npm",
+  "license": "MIT",
+  "keywords": ["seo", "ai-seo", "aeo", "geo", "content-strategy", "technical-seo", "keyword-research"],
+  "skills": ["./skills/seoagent-cli-setup/SKILL.md"]
+}
