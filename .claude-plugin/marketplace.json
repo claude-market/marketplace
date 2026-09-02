@@ -120,6 +120,35 @@
         "./skills/axum-health-shutdown.md",
         "./skills/axum-rate-limiting.md"
       ]
+    },
+    {
+      "name": "adlicio",
+      "source": "./adlicio",
+      "version": "1.1.0",
+      "description": "Customer-voice research for marketers: scrape comments and reviews from Reddit, YouTube, Amazon, TikTok, Instagram, Trustpilot, app stores and 20 more sources, search Reddit, YouTube and Blind, pull short-form video hooks, find creators, find Meta Ad Library competitor ads, and build brand and voice-of-customer reports",
+      "author": {
+        "name": "Daniel Derzic",
+        "email": "daniel@tryadlicio.com",
+        "url": "https://tryadlicio.com"
+      },
+      "homepage": "https://tryadlicio.com/mcp",
+      "repository": "https://github.com/claude-market/marketplace/tree/main/adlicio",
+      "license": "MIT",
+      "keywords": [
+        "research",
+        "marketing",
+        "reddit",
+        "reviews",
+        "scraping",
+        "voice-of-customer",
+        "competitor-ads",
+        "mcp"
+      ],
+      "skills": [
+        "./skills/adlicio-mcp",
+        "./skills/commentscraper"
+      ],
+      "mcpServers": "./.mcp.json"
     }
   ]
 }

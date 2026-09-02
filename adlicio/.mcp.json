@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "adlicio": {
+      "type": "http",
+      "url": "https://mcp.tryadlicio.com/mcp"
+    }
+  }
+}
