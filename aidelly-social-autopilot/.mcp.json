@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "aidelly": {
+      "url": "https://app.aidelly.ai/api/mcp/public-api",
+      "transportType": "http",
+      "description": "Aidelly MCP server for social content automation"
+    }
+  }
+}

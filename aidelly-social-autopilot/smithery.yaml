@@ -1,0 +1,7 @@
+# Smithery listing for the Aidelly remote MCP server.
+# Docs: https://smithery.ai/docs
+startCommand:
+  type: http
+  url: https://app.aidelly.ai/api/mcp/public-api
+  # Auth is OAuth 2.1 (PKCE + dynamic client registration) — discovered
+  # automatically from the server's .well-known metadata. No config required.

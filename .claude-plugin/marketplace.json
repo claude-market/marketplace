@@ -120,6 +120,27 @@
         "./skills/axum-health-shutdown.md",
         "./skills/axum-rate-limiting.md"
       ]
+    },
+    {
+      "name": "aidelly",
+      "source": "./aidelly-social-autopilot",
+      "version": "0.1.0",
+      "description": "Aidelly social content automation for Claude Code — create posts, schedule content, check approvals, and pull analytics.",
+      "author": {
+        "name": "Aidelly",
+        "url": "https://aidelly.ai"
+      },
+      "license": "MIT",
+      "homepage": "https://aidelly.ai",
+      "repository": "https://github.com/Aidelly/claude-plugin",
+      "keywords": [
+        "social-media",
+        "marketing",
+        "content",
+        "scheduling",
+        "analytics",
+        "mcp"
+      ]
     }
   ]
 }
