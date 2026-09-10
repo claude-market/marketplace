@@ -1,0 +1,29 @@
+{
+  "name": "aidelly",
+  "version": "1.0.1",
+  "description": "Create, schedule, approve, and analyze social media content across connected platforms.",
+  "settings": [
+    {
+      "name": "Aidelly API key",
+      "description": "API key used to authenticate with the Aidelly MCP server.",
+      "envVar": "AIDELLY_API_KEY",
+      "sensitive": true
+    },
+    {
+      "name": "Aidelly workspace ID",
+      "description": "Optional workspace ID for multi-workspace accounts.",
+      "envVar": "AIDELLY_WORKSPACE_ID",
+      "sensitive": false
+    }
+  ],
+  "mcpServers": {
+    "aidelly": {
+      "httpUrl": "https://app.aidelly.ai/api/mcp/public-api",
+      "headers": {
+        "Authorization": "Bearer ${AIDELLY_API_KEY}",
+        "x-aidelly-workspace-id": "${AIDELLY_WORKSPACE_ID}"
+      },
+      "timeout": 30000
+    }
+  }
+}
