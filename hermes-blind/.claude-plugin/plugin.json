@@ -1,0 +1,24 @@
+{
+  "name": "hermes-blind",
+  "version": "0.2.0",
+  "description": "Local recovery anchors for Claude Code and Codex sessions, plus evidence-gated evaluation prompts",
+  "author": {
+    "name": "Hermes Labs",
+    "email": "roli@hermes-labs.ai",
+    "url": "https://github.com/hermes-labs-ai"
+  },
+  "homepage": "https://hermes-labs.ai/open-source",
+  "repository": "https://github.com/hermes-labs-ai/hermes-blind",
+  "license": "MIT",
+  "keywords": [
+    "session",
+    "recovery",
+    "context",
+    "claude-code",
+    "codex",
+    "deterministic"
+  ],
+  "skills": [
+    "./skills/hermes-blind"
+  ]
+}

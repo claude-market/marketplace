@@ -1,6 +1,6 @@
 {
   "name": "claude-market",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Hand-curated open source repository for Claude Code tools, agents and skills",
   "owner": {
     "name": "Claude Market",
@@ -8,6 +8,31 @@
   },
   "pluginRoot": "./",
   "plugins": [
+    {
+      "name": "hermes-blind",
+      "source": "./hermes-blind",
+      "version": "0.2.0",
+      "description": "Local recovery anchors for Claude Code and Codex sessions, plus evidence-gated evaluation prompts",
+      "author": {
+        "name": "Hermes Labs",
+        "email": "roli@hermes-labs.ai",
+        "url": "https://github.com/hermes-labs-ai"
+      },
+      "license": "MIT",
+      "homepage": "https://hermes-labs.ai/open-source",
+      "repository": "https://github.com/hermes-labs-ai/hermes-blind",
+      "keywords": [
+        "session",
+        "recovery",
+        "context",
+        "claude-code",
+        "codex",
+        "deterministic"
+      ],
+      "skills": [
+        "./skills/hermes-blind"
+      ]
+    },
     {
       "name": "plugin-builder",
       "source": "./plugin-builder",
