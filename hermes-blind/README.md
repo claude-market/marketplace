@@ -12,26 +12,28 @@ requests.
 ## Installation
 
 ```bash
-/plugin install hermes-blind
+/plugin marketplace add claude-market/marketplace
+/plugin install hermes-blind@claude-market
 ```
 
 ## Requirements
 
 The skill drives the `hermes-blind` command-line tool, which is a separate
 Python package (Python 3.10+). The skill picks a runner at use time and prefers
-a zero-install one:
+an existing command on PATH, then a zero-install runner:
 
 ```bash
 # zero-install, no PATH changes (preferred by the skill)
-uvx hermes-blind==0.2.0 --help
+uvx hermes-blind==0.3.2 --help
 
 # or install it persistently
-pipx install hermes-blind
+pipx install hermes-blind==0.3.2
 ```
 
-The skill pins an exact version on `uvx`/`pipx` so it never fetches an
-unreviewed newer release. No API key, environment variable, or network access is
-required by the tool itself.
+The skill pins version 0.3.2 on `uvx`/`pipx`. First use may download the
+package; recovery itself needs no API key or network access. An existing
+`hermes-blind` on PATH takes precedence, with the explicit-session fallback
+available for older installations.
 
 ## Components
 

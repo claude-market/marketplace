@@ -11,7 +11,7 @@
     {
       "name": "hermes-blind",
       "source": "./hermes-blind",
-      "version": "0.2.0",
+      "version": "0.3.2",
       "description": "Local recovery anchors for Claude Code and Codex sessions, plus evidence-gated evaluation prompts",
       "author": {
         "name": "Hermes Labs",
