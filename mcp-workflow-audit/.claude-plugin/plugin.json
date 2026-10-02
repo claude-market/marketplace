@@ -1,0 +1,24 @@
+{
+  "name": "mcp-workflow-audit",
+  "version": "0.1.0",
+  "description": "Audit and harden Claude Code, MCP, and AI-agent workflows: permissions, approval boundaries, failure recovery, verification, tests, and operator handoff.",
+  "author": {
+    "name": "OssaBellator",
+    "url": "https://github.com/OssaBellator"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/OssaBellator/claude-mcp-workflow-audit",
+  "keywords": [
+    "claude-code",
+    "mcp",
+    "audit",
+    "agent-workflows",
+    "permissions",
+    "reliability",
+    "testing",
+    "handoff"
+  ],
+  "skills": [
+    "./skills/auditing-mcp-workflows.md"
+  ]
+}
