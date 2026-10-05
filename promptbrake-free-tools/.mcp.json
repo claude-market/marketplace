@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "promptbrake-free-tools": {
+      "type": "http",
+      "url": "https://promptbrake.com/free-tools/mcp"
+    }
+  }
+}

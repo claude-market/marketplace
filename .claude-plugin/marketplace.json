@@ -1,6 +1,6 @@
 {
   "name": "claude-market",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Hand-curated open source repository for Claude Code tools, agents and skills",
   "owner": {
     "name": "Claude Market",
@@ -40,6 +40,28 @@
         "./skills/cc-hook-builder.md",
         "./skills/cc-mcp-builder.md"
       ]
+    },
+    {
+      "name": "promptbrake-free-tools",
+      "source": "./promptbrake-free-tools",
+      "version": "1.1.0",
+      "description": "Prepare AI security inputs, risk mappings, release plans, response packs and captured agent tool-call packs using free hosted MCP tools.",
+      "author": {
+        "name": "PromptBrake",
+        "url": "https://promptbrake.com",
+        "email": "support@promptbrake.com"
+      },
+      "license": "MIT",
+      "homepage": "https://promptbrake.com/free-tools",
+      "repository": "https://github.com/AJ888/promptbrake-skills",
+      "keywords": [
+        "ai-testing",
+        "mcp",
+        "agent-skills",
+        "prompt-injection"
+      ],
+      "mcpServers": "./.mcp.json",
+      "skills": "./skills/"
     },
     {
       "name": "specforge",
