@@ -1,0 +1,14 @@
+{
+  "name": "product-design-harness",
+  "version": "0.1.0",
+  "description": "Product decision workflows with structured reviews, context packs, and bounded implementation handoffs. Includes local Python validators; existing source limitations are documented in the README.",
+  "author": {
+    "name": "CIS2042",
+    "url": "https://github.com/cis2042"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/cis2042/ux3-product-design-harness",
+  "repository": "https://github.com/cis2042/ux3-product-design-harness",
+  "keywords": ["product-design", "decision-making", "handoff", "review"],
+  "skills": ["./skills/product-design-harness"]
+}
