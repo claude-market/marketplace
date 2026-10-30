@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.3.4 — 2026-10-30
+
+- License: MIT is back (`LICENSE` file and `"license": "MIT"` in `plugin.json`). Anthropic's plugin directory
+  requires a license, and 1.3.3 had none.
+
 ## 1.3.3 — 2026-10-30
 
 - License: MIT removed. From this version the code is all rights reserved. Versions up to 1.3.2 stay MIT-licensed

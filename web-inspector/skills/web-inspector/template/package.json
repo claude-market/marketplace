@@ -1,6 +1,6 @@
 {
   "name": "web-inspector",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "private": true,
   "description": "Website QA: full-site bug, accessibility, SEO, speed and HTTPS scan, plus load test. Uses Playwright, axe-core and Artillery.",
   "scripts": {

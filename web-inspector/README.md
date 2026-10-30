@@ -172,6 +172,4 @@ Built with [Playwright](https://playwright.dev), [Artillery](https://www.artille
 
 ## License
 
-All rights reserved. You may install and use web-inspector on websites you own. Please ask the author before
-copying, changing or sharing the code. (Earlier versions, up to 1.3.2, were published under the MIT license;
-copies made from those versions keep that license.)
+[MIT](LICENSE): free to use, change and share.

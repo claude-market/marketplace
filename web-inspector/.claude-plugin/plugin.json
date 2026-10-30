@@ -1,6 +1,6 @@
 {
   "name": "web-inspector",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "description": "Full QA for any website you own: a real-Chrome scan for broken pages and links, errors, accessibility (with a keyboard check), SEO, phone speed and Lighthouse scores, screenshot comparison, and HTTPS; a read-only security check; plain-word click-and-type journeys; a load test; plain-words \"how to fix\" advice, a summary for many sites, HTML reports and a GitHub Actions setup.",
   "author": {
     "name": "HengRatana404",
@@ -8,6 +8,7 @@
   },
   "homepage": "https://github.com/HengRatana404/web-inspector",
   "repository": "https://github.com/HengRatana404/web-inspector",
+  "license": "MIT",
   "keywords": [
     "website",
     "qa",
