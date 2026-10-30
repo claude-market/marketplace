@@ -1,0 +1,36 @@
+# Journeys: things a visitor does by clicking and typing (search, sign-up, contact form, checkout).
+# Write each one in plain words, then run:  npm run journeys -- https://your-site.com
+#
+# Only write journeys for your own site, and point forms at a staging copy or use test data:
+# these steps really submit forms, so a live "Buy" or "Send" button really buys or sends.
+#
+# Steps (one per line):
+#   open /path                          go to a page (or a full https:// address)
+#   click "Text"                        click a button or link by its text (or a CSS selector like #id)
+#   fill "Label" with "value"           type into a box found by its label, placeholder or name
+#   select "Label" option "Value"       pick from a dropdown
+#   check "Label"                       tick a checkbox
+#   press Enter                         press a key
+#   wait 1000                           wait in milliseconds
+#   expect text "Words"                 the page must show these words
+#   expect no text "Words"              the page must NOT show these words
+#   expect url "/part"                  the address must contain this
+#   expect title "Words"                the page title must contain this
+#   screenshot name                     save a picture of the page
+# {random} inside a value becomes a random number, e.g. "test{random}@example.com".
+# During every journey, JavaScript errors and 4xx/5xx answers from your site also count as failures.
+#
+# Example (remove the # signs and change it to match your site):
+#
+# journey: Search finds products
+# open /
+# fill "Search" with "apple"
+# press Enter
+# expect text "results"
+#
+# journey: Contact form sends
+# open /contact
+# fill "Email" with "test{random}@example.com"
+# fill "Message" with "Hello from the website test"
+# click "Send"
+# expect text "Thank you"

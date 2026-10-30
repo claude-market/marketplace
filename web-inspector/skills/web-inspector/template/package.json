@@ -1,0 +1,26 @@
+{
+  "name": "web-inspector",
+  "version": "1.3.3",
+  "private": true,
+  "description": "Website QA: full-site bug, accessibility, SEO, speed and HTTPS scan, plus load test. Uses Playwright, axe-core and Artillery.",
+  "scripts": {
+    "scan": "node scan.js",
+    "journeys": "node journeys.js",
+    "security": "node security.js",
+    "zap": "node zap.js",
+    "login": "playwright open --channel chrome --save-storage=auth.json",
+    "test:smoke": "node run-all.js smoke",
+    "test:medium": "node run-all.js medium",
+    "test:heavy": "node run-all.js heavy",
+    "lighthouse": "node lighthouse.js",
+    "visual": "node visual.js",
+    "sites": "node sites.js"
+  },
+  "devDependencies": {
+    "artillery": "^2.0.34",
+    "axe-core": "^4.14.0",
+    "lighthouse": "^12.8.2",
+    "pngjs": "^7.0.0",
+    "pixelmatch": "^5.3.0"
+  }
+}

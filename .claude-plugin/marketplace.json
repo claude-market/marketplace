@@ -1,6 +1,6 @@
 {
   "name": "claude-market",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Hand-curated open source repository for Claude Code tools, agents and skills",
   "owner": {
     "name": "Claude Market",
@@ -119,6 +119,35 @@
         "./skills/axum-timeouts.md",
         "./skills/axum-health-shutdown.md",
         "./skills/axum-rate-limiting.md"
+      ]
+    },
+    {
+      "name": "web-inspector",
+      "source": "./web-inspector",
+      "version": "1.3.3",
+      "description": "Full QA for any website you own: a real-Chrome scan for broken pages and links, errors, accessibility (with a keyboard check), SEO, phone speed and Lighthouse scores, screenshot comparison, and HTTPS; a read-only security check; plain-word click-and-type journeys; a load test; plain-words \"how to fix\" advice, a summary for many sites, HTML reports and a GitHub Actions setup.",
+      "author": {
+        "name": "HengRatana404",
+        "url": "https://github.com/HengRatana404"
+      },
+      "homepage": "https://github.com/HengRatana404/web-inspector",
+      "repository": "https://github.com/HengRatana404/web-inspector",
+      "keywords": [
+        "website",
+        "qa",
+        "testing",
+        "load-test",
+        "accessibility",
+        "seo",
+        "lighthouse",
+        "core-web-vitals",
+        "visual-regression",
+        "security",
+        "playwright",
+        "artillery"
+      ],
+      "skills": [
+        "./skills/web-inspector"
       ]
     }
   ]

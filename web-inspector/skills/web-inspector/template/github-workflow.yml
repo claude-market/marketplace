@@ -1,0 +1,92 @@
+# Automatic website checks with GitHub Actions.
+#
+# Setup (once):
+# 1. Put this kit in your repository as the folder `web-inspector/` (or change `working-directory` below).
+# 2. Copy this file to `.github/workflows/web-inspector.yml` in your repository.
+# 3. In GitHub: Settings > Secrets and variables > Actions > Variables > New variable:
+#    name SITE_URL, value the site to check (ideally your staging address).
+#
+# It runs every Monday, and whenever you start it by hand (Actions > web-inspector > Run workflow).
+# A failed check marks the run red and GitHub emails you. The reports (HTML, Markdown, JSON) are
+# attached to each run under "Artifacts", and each scan is compared with the previous run.
+name: web-inspector
+
+on:
+  workflow_dispatch:
+    inputs:
+      load_test:
+        description: Also run the small (smoke) load test
+        type: boolean
+        default: false
+  schedule:
+    - cron: '0 3 * * 1' # every Monday at 03:00 UTC
+  # To check after every push to main as well, uncomment:
+  # push:
+  #   branches: [main]
+
+jobs:
+  web-inspector:
+    runs-on: ubuntu-latest # has Google Chrome installed
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: web-inspector
+    env:
+      SITE_URL: ${{ vars.SITE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check that SITE_URL is set
+        run: test -n "$SITE_URL" || { echo "Add a SITE_URL variable in Settings > Secrets and variables > Actions"; exit 1; }
+
+      - name: Install
+        run: npm install --no-audit --no-fund
+
+      # Keeps earlier scan results so each scan can say what is new and what got fixed.
+      - name: Restore previous results
+        uses: actions/cache@v4
+        with:
+          path: web-inspector/results
+          key: web-inspector-results-${{ github.run_id }}
+          restore-keys: web-inspector-results-
+
+      - name: Site scan
+        # On a site with known problems, use `npm run scan -- "$SITE_URL" --fail-on-new` to fail only on new ones.
+        run: npm run scan -- "$SITE_URL"
+
+      # Google Lighthouse scores for the first few pages (informational; fails the run if a score is under 90).
+      - name: Lighthouse scores
+        if: always()
+        run: npm run lighthouse -- "$SITE_URL"
+
+      # Compares screenshots with the last approved look (kept in the cached results folder). The first run
+      # only saves them; after that a page that looks different fails the run. To approve a wanted change, delete
+      # the cache (Actions > Caches), or remove this step if the site changes often.
+      - name: Visual comparison
+        if: always()
+        run: npm run visual -- "$SITE_URL"
+
+      - name: Journeys (click and type checks in journeys.txt)
+        if: always()
+        run: npm run journeys -- "$SITE_URL"
+
+      - name: Small load test
+        if: always() && inputs.load_test
+        run: npm run test:smoke -- "$SITE_URL"
+
+      - name: Save reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-inspector-reports
+          path: |
+            web-inspector/results/*.html
+            web-inspector/results/*.md
+            web-inspector/results/*.json
+            web-inspector/results/*.png
+            web-inspector/results/visual/diff/*.png
+            web-inspector/results/*.log

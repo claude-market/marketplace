@@ -1,0 +1,46 @@
+﻿# Fast request users: pushes the server with many requests at once.
+# Run through run-all.js, which picks the environment and target.
+# Each user visits 3 random pages/APIs from the last site scan (see load-pages.js),
+# so this works on any site without editing. Run `npm run scan -- <url>` first for full coverage.
+config:
+  target: "https://example.com" # replaced by the URL you pass on the command line
+  processor: "./load-pages.js"
+  http:
+    timeout: 10
+  environments:
+    smoke:
+      phases:
+        - name: warm-up
+          duration: 30
+          arrivalRate: 5
+    medium:
+      phases:
+        - name: ramp-up
+          duration: 60
+          arrivalRate: 10
+          rampTo: 50
+        - name: sustained
+          duration: 60
+          arrivalRate: 50
+    heavy:
+      phases:
+        - name: ramp-up
+          duration: 60
+          arrivalRate: 50
+          rampTo: 200
+        - name: sustained
+          duration: 120
+          arrivalRate: 200
+  # Pass/fail rules live in run-all.js (LIMITS), which counts 4xx/5xx responses as errors.
+  # Per-page results are recorded by load-pages.js (recordPage).
+
+scenarios:
+  - name: "Fast user"
+    flow:
+      - loop:
+          - get:
+              url: "/__page__"
+              beforeRequest: "pickPage"
+              afterResponse: "recordPage"
+          - think: 1
+        count: 3
