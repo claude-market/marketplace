@@ -1,0 +1,30 @@
+﻿# Real browser users: real Chromium opening pages and clicking links,
+# recording console errors, failed requests and HTTP errors while the site is under load.
+# Kept small on purpose: each browser needs about 300 MB of RAM.
+config:
+  target: "https://example.com" # replaced by the URL you pass on the command line
+  engines:
+    playwright:
+      # Uses the Google Chrome installed on this PC (fresh, empty profile each time)
+      # instead of downloading Playwright's own Chromium.
+      launchOptions:
+        channel: chrome
+  processor: "./flows.js"
+  environments:
+    smoke:
+      phases:
+        - duration: 30
+          arrivalCount: 3
+    medium:
+      phases:
+        - duration: 120
+          arrivalCount: 12
+    heavy:
+      phases:
+        - duration: 180
+          arrivalCount: 18
+
+scenarios:
+  - name: "Real browser user"
+    engine: playwright
+    testFunction: "realUser"
