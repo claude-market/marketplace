@@ -1,0 +1,260 @@
+<!doctype html>
+<!--
+  PLANTILLA «PRODUCTO 3D CON MASCOTA» · un producto 3D realista y la mascota 3D de la marca, solapados, sobre un
+  degradado profundo con partículas y bokeh tenues, sombras de contacto y el logo centrado arriba. Cinco formatos de
+  una misma campaña:
+    hero (1600x900, redondeado), redes-1x1 (1080x1080), redes-4x5 (1080x1350), banner-x (1500x500) y
+    story (1080x1920).
+  Exportar a 2x (PNG nítido), desde la carpeta de esta plantilla, con producto-3d-mascota.css y recortes/ al lado:
+    node ../../piezas-graficas/scripts/exportar.mjs producto-3d-mascota.html --marca marca-ejemplo.json --escala 2
+  Reglas:
+    · La marca sale de marca.json (skill direccion-de-arte): colores y fuentes en var(--…), y nombre, web y logo en
+      los elementos con data-marca. Aquí no se escribe ningún color suelto.
+    · Producto y mascota son <img data-recorte> (WebP o PNG con alfa, renderizados con la luz de la marca): ningún
+      texto puede pisar su parte opaca. Dentro de cada .sujeto va su sombra de contacto (.contacto, data-fondo).
+    · Partículas, bokeh, luces y sombras van en capas data-fondo con aria-hidden="true" (ahí sí vale filter: blur).
+    · Nada de box-shadow de color ni text-shadow: la luz de color está en los renders y en el fondo.
+    · Zonas sin texto: banner-x, la foto de perfil (abajo a la izquierda, ~400x200) y 60 px arriba y abajo (móvil);
+      story, 250 px arriba y 340 abajo.
+  Contenido de ejemplo: Cometa, tienda de gaming ficticia; Chispa, su mascota; una torre gaming blanca sin marca.
+-->
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Producto 3D con mascota</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400..800&family=JetBrains+Mono:wght@400..600&display=block" rel="stylesheet">
+<link rel="stylesheet" href="producto-3d-mascota.css">
+<style>
+  :root {
+    /* Tokens de marca (los sustituye marca.json). Ejemplo: Cometa, marca ficticia */
+    --papel: #f5f4fb; --superficie: #ffffff; --bloque: #efedf8;
+    --tinta: #0d0b24; --texto: #2b2846; --suave: #5f5b7a; --apagado: #807c98; --linea: #e0ddef;
+    --noche: #0a0a26; --noche-2: #141238; --noche-linea: #262357; --claro: #f5f3ff; --claro-suave: #a9a4cf;
+    --acento: #8b6bff; --acento-texto: #5a37e0; --sobre-acento: #0a0a26;
+    --fuente: 'Plus Jakarta Sans', system-ui, sans-serif;   /* --fuente-display: solo si la marca la trae (tipografia.display) */
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+    --radio: 28px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0 }
+  /* La página pinta las esquinas de la pieza redondeada: --pagina (por defecto, el papel de la marca) */
+  body { background: var(--m3-pagina); padding: 60px; display: flex; flex-direction: column; align-items: flex-start; gap: 60px; font-family: var(--fuente) }
+</style>
+</head>
+<body>
+<!-- Símbolos de las partículas -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="p3m-cruz" viewBox="0 0 20 20"><path d="M10 2.5v15M2.5 10h15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></symbol>
+  <symbol id="p3m-flecha" viewBox="0 0 20 20"><path d="M4 10h11.5M11 5l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<!-- ═══ HERO · 1600x900, redondeado (radio 54 px ≈ 3,4 %): va como tarjeta en la tienda o la app. Logo centrado arriba;
+     chip, titular y CTA en el aire de la izquierda; la torre a la derecha del centro y Chispa delante de su frontal,
+     con la base más baja (más cerca). -->
+<section class="lienzo-3d redondeado" data-pieza="hero" data-estilo="producto-3d-mascota" data-ancho="1600" data-alto="900" data-margen="64" data-min-letra="20"
+         style="width:1600px;height:900px;--radio-3d:54px">
+  <i class="luz-3d halo" data-fondo aria-hidden="true" style="left:640px;top:60px;width:1000px;height:860px"></i>
+  <i class="luz-3d suelo" data-fondo aria-hidden="true" style="left:700px;top:770px;width:900px;height:200px"></i>
+  <svg class="particulas" data-fondo aria-hidden="true" viewBox="0 0 1600 900">
+    <use href="#p3m-cruz" x="74" y="96" width="30" height="30" opacity=".34"/>
+    <use href="#p3m-cruz" x="560" y="150" width="22" height="22" opacity=".26"/>
+    <use href="#p3m-cruz" x="1428" y="104" width="32" height="32" opacity=".32"/>
+    <use href="#p3m-cruz" x="1520" y="470" width="22" height="22" opacity=".24"/>
+    <use href="#p3m-cruz" x="352" y="760" width="26" height="26" opacity=".26"/>
+    <rect x="262" y="84" width="11" height="11" rx="2" fill="currentColor" opacity=".3"/>
+    <rect x="1262" y="60" width="9" height="9" rx="2" fill="currentColor" opacity=".26"/>
+    <rect x="1540" y="250" width="12" height="12" rx="2" fill="currentColor" opacity=".24"/>
+    <rect x="92" y="560" width="10" height="10" rx="2" fill="currentColor" opacity=".24"/>
+    <rect x="690" y="270" width="8" height="8" rx="2" fill="currentColor" opacity=".3"/>
+    <rect x="610" y="690" width="11" height="11" rx="2" fill="currentColor" opacity=".22"/>
+    <circle cx="470" cy="70" r="3.5" fill="currentColor" opacity=".4"/>
+    <circle cx="1120" cy="72" r="3" fill="currentColor" opacity=".35"/>
+    <circle cx="190" cy="440" r="3" fill="currentColor" opacity=".3"/>
+    <circle cx="1555" cy="700" r="3.5" fill="currentColor" opacity=".3"/>
+  </svg>
+  <div class="bokeh" data-fondo aria-hidden="true">
+    <i style="left:1360px;top:150px;width:74px;height:74px;opacity:.22"></i>
+    <i style="left:170px;top:660px;width:96px;height:96px;opacity:.16;--desenfoque:5px"></i>
+    <i style="left:640px;top:200px;width:26px;height:26px;opacity:.3;--desenfoque:2px"></i>
+    <i style="left:1500px;top:560px;width:44px;height:44px;opacity:.2"></i>
+    <i style="left:520px;top:820px;width:30px;height:30px;opacity:.2;--desenfoque:2px"></i>
+  </div>
+
+  <div class="sujeto producto" style="left:740px;top:146px;width:493px">
+    <i class="contacto" data-fondo aria-hidden="true"></i>
+    <img data-recorte src="recortes/producto-torre.webp" alt="Torre gaming blanca con cristal lateral y ventiladores con aro de luz">
+  </div>
+  <div class="sujeto mascota" style="left:1064px;top:322px;width:466px">
+    <i class="contacto" data-fondo aria-hidden="true"></i>
+    <img data-recorte src="recortes/mascota-chispa.webp" alt="Chispa, la mascota, saludando">
+  </div>
+
+  <div class="marca-3d centro" style="font-size:34px;top:70px"><span class="logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="21" cy="11" r="6.5" fill="currentColor"/><path d="M3.5 28.5 15 17M7 23.5l4.5-4.5M3.5 20.5l3-3" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none"/></svg></span><span data-marca="nombre">Cometa</span></div>
+  <span class="chip-3d" style="font-size:22px;left:128px;top:318px"><span class="punto"></span>Semana gamer</span>
+  <h1 class="titular-3d" style="font-size:86px;left:124px;top:380px;width:600px">Hasta −30&nbsp;%<br>en hardware</h1>
+  <span class="cta-3d" style="font-size:24px;left:128px;top:590px">Ver ofertas<svg aria-hidden="true"><use href="#p3m-flecha"/></svg></span>
+</section>
+
+<!-- ═══ REDES 1:1 · 1080x1080. Logo arriba, titular y CTA entre medias, la pareja grande abajo y centrada -->
+<section class="lienzo-3d" data-pieza="redes-1x1" data-estilo="producto-3d-mascota" data-ancho="1080" data-alto="1080" data-margen="72" data-min-letra="22"
+         style="width:1080px;height:1080px">
+  <i class="luz-3d halo" data-fondo aria-hidden="true" style="left:60px;top:330px;width:960px;height:820px"></i>
+  <i class="luz-3d suelo" data-fondo aria-hidden="true" style="left:120px;top:940px;width:840px;height:180px"></i>
+  <svg class="particulas" data-fondo aria-hidden="true" viewBox="0 0 1080 1080">
+    <use href="#p3m-cruz" x="80" y="120" width="28" height="28" opacity=".32"/>
+    <use href="#p3m-cruz" x="960" y="150" width="30" height="30" opacity=".3"/>
+    <use href="#p3m-cruz" x="70" y="640" width="22" height="22" opacity=".24"/>
+    <use href="#p3m-cruz" x="985" y="560" width="24" height="24" opacity=".26"/>
+    <rect x="236" y="70" width="10" height="10" rx="2" fill="currentColor" opacity=".3"/>
+    <rect x="860" y="300" width="11" height="11" rx="2" fill="currentColor" opacity=".24"/>
+    <rect x="130" y="420" width="9" height="9" rx="2" fill="currentColor" opacity=".26"/>
+    <rect x="1000" y="830" width="10" height="10" rx="2" fill="currentColor" opacity=".22"/>
+    <circle cx="820" cy="70" r="3.5" fill="currentColor" opacity=".38"/>
+    <circle cx="60" cy="900" r="3" fill="currentColor" opacity=".3"/>
+    <circle cx="930" cy="420" r="3" fill="currentColor" opacity=".3"/>
+  </svg>
+  <div class="bokeh" data-fondo aria-hidden="true">
+    <i style="left:900px;top:220px;width:70px;height:70px;opacity:.2"></i>
+    <i style="left:60px;top:250px;width:44px;height:44px;opacity:.2"></i>
+    <i style="left:110px;top:760px;width:84px;height:84px;opacity:.15;--desenfoque:5px"></i>
+    <i style="left:950px;top:700px;width:28px;height:28px;opacity:.26;--desenfoque:2px"></i>
+  </div>
+
+  <div class="sujeto producto" style="left:178px;top:420px;width:422px">
+    <i class="contacto" data-fondo aria-hidden="true"></i>
+    <img data-recorte src="recortes/producto-torre.webp" alt="Torre gaming blanca con cristal lateral y ventiladores con aro de luz">
+  </div>
+  <div class="sujeto mascota" style="left:480px;top:552px;width:422px">
+    <i class="contacto" data-fondo aria-hidden="true"></i>
+    <img data-recorte src="recortes/mascota-chispa.webp" alt="Chispa, la mascota, saludando">
+  </div>
+
+  <div class="marca-3d centro" style="font-size:30px;top:82px"><span class="logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="21" cy="11" r="6.5" fill="currentColor"/><path d="M3.5 28.5 15 17M7 23.5l4.5-4.5M3.5 20.5l3-3" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none"/></svg></span><span data-marca="nombre">Cometa</span></div>
+  <h1 class="titular-3d centro-x" style="font-size:74px;top:152px;width:860px">Hasta −30&nbsp;%<br>en hardware</h1>
+  <span class="cta-3d centro-x" style="font-size:24px;top:326px">Ver ofertas<svg aria-hidden="true"><use href="#p3m-flecha"/></svg></span>
+</section>
+
+<!-- ═══ REDES 4:5 · 1080x1350. Logo, chip, titular y CTA arriba; la pareja grande abajo, con la base cerca del borde -->
+<section class="lienzo-3d" data-pieza="redes-4x5" data-estilo="producto-3d-mascota" data-ancho="1080" data-alto="1350" data-margen="80" data-min-letra="22"
+         style="width:1080px;height:1350px">
+  <i class="luz-3d halo" data-fondo aria-hidden="true" style="left:20px;top:470px;width:1040px;height:980px"></i>
+  <i class="luz-3d suelo" data-fondo aria-hidden="true" style="left:100px;top:1190px;width:880px;height:200px"></i>
+  <svg class="particulas" data-fondo aria-hidden="true" viewBox="0 0 1080 1350">
+    <use href="#p3m-cruz" x="84" y="110" width="30" height="30" opacity=".32"/>
+    <use href="#p3m-cruz" x="958" y="196" width="28" height="28" opacity=".3"/>
+    <use href="#p3m-cruz" x="64" y="760" width="22" height="22" opacity=".24"/>
+    <use href="#p3m-cruz" x="990" y="640" width="24" height="24" opacity=".26"/>
+    <use href="#p3m-cruz" x="180" y="520" width="20" height="20" opacity=".22"/>
+    <rect x="250" y="84" width="10" height="10" rx="2" fill="currentColor" opacity=".3"/>
+    <rect x="880" y="420" width="11" height="11" rx="2" fill="currentColor" opacity=".24"/>
+    <rect x="110" y="380" width="9" height="9" rx="2" fill="currentColor" opacity=".26"/>
+    <rect x="1004" y="1010" width="10" height="10" rx="2" fill="currentColor" opacity=".22"/>
+    <circle cx="836" cy="88" r="3.5" fill="currentColor" opacity=".38"/>
+    <circle cx="56" cy="1080" r="3" fill="currentColor" opacity=".3"/>
+    <circle cx="940" cy="540" r="3" fill="currentColor" opacity=".3"/>
+  </svg>
+  <div class="bokeh" data-fondo aria-hidden="true">
+    <i style="left:890px;top:300px;width:72px;height:72px;opacity:.2"></i>
+    <i style="left:70px;top:250px;width:46px;height:46px;opacity:.2"></i>
+    <i style="left:90px;top:930px;width:90px;height:90px;opacity:.15;--desenfoque:5px"></i>
+    <i style="left:960px;top:860px;width:30px;height:30px;opacity:.26;--desenfoque:2px"></i>
+  </div>
+
+  <div class="sujeto producto" style="left:95px;top:520px;width:535px">
+    <i class="contacto" data-fondo aria-hidden="true"></i>
+    <img data-recorte src="recortes/producto-torre.webp" alt="Torre gaming blanca con cristal lateral y ventiladores con aro de luz">
+  </div>
+  <div class="sujeto mascota" style="left:473px;top:682px;width:527px">
+    <i class="contacto" data-fondo aria-hidden="true"></i>
+    <img data-recorte src="recortes/mascota-chispa.webp" alt="Chispa, la mascota, saludando">
+  </div>
+
+  <div class="marca-3d centro" style="font-size:32px;top:84px"><span class="logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="21" cy="11" r="6.5" fill="currentColor"/><path d="M3.5 28.5 15 17M7 23.5l4.5-4.5M3.5 20.5l3-3" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none"/></svg></span><span data-marca="nombre">Cometa</span></div>
+  <span class="chip-3d centro-x" style="font-size:24px;top:176px"><span class="punto"></span>Semana gamer</span>
+  <h1 class="titular-3d centro-x" style="font-size:82px;top:240px;width:880px">Hasta −30&nbsp;%<br>en hardware</h1>
+  <span class="cta-3d centro-x" style="font-size:26px;top:428px">Ver ofertas<svg aria-hidden="true"><use href="#p3m-flecha"/></svg></span>
+</section>
+
+<!-- ═══ BANNER DE X · 1500x500. La foto de perfil tapa abajo a la izquierda (~400x200) y el móvil recorta ~60 px
+     arriba y abajo: logo y titular arriba a la izquierda (acaban antes de y = 300); la pareja a la derecha, el producto
+     entero entre y = 52 e y = 450 y la mascota sangrando ~30 px por abajo, como en un escaparate -->
+<section class="lienzo-3d" data-pieza="banner-x" data-estilo="producto-3d-mascota" data-ancho="1500" data-alto="500" data-margen="64" data-min-letra="22"
+         style="width:1500px;height:500px">
+  <i class="luz-3d halo" data-fondo aria-hidden="true" style="left:800px;top:-70px;width:720px;height:640px"></i>
+  <i class="luz-3d suelo" data-fondo aria-hidden="true" style="left:860px;top:410px;width:620px;height:130px"></i>
+  <svg class="particulas" data-fondo aria-hidden="true" viewBox="0 0 1500 500">
+    <use href="#p3m-cruz" x="640" y="92" width="26" height="26" opacity=".3"/>
+    <use href="#p3m-cruz" x="1408" y="96" width="28" height="28" opacity=".3"/>
+    <use href="#p3m-cruz" x="760" y="360" width="22" height="22" opacity=".24"/>
+    <use href="#p3m-cruz" x="470" y="400" width="20" height="20" opacity=".22"/>
+    <rect x="560" y="250" width="10" height="10" rx="2" fill="currentColor" opacity=".26"/>
+    <rect x="880" y="70" width="9" height="9" rx="2" fill="currentColor" opacity=".3"/>
+    <rect x="1440" y="300" width="10" height="10" rx="2" fill="currentColor" opacity=".24"/>
+    <circle cx="440" cy="84" r="3" fill="currentColor" opacity=".36"/>
+    <circle cx="830" cy="230" r="3" fill="currentColor" opacity=".3"/>
+  </svg>
+  <div class="bokeh" data-fondo aria-hidden="true">
+    <i style="left:690px;top:170px;width:56px;height:56px;opacity:.18"></i>
+    <i style="left:1360px;top:340px;width:40px;height:40px;opacity:.2"></i>
+    <i style="left:540px;top:60px;width:24px;height:24px;opacity:.26;--desenfoque:2px"></i>
+  </div>
+
+  <div class="sujeto producto" style="left:926px;top:52px;width:281px">
+    <i class="contacto" data-fondo aria-hidden="true"></i>
+    <img data-recorte src="recortes/producto-torre.webp" alt="Torre gaming blanca con cristal lateral y ventiladores con aro de luz">
+  </div>
+  <div class="sujeto mascota" style="left:1112px;top:150px;width:321px">
+    <i class="contacto" data-fondo aria-hidden="true"></i>
+    <img data-recorte src="recortes/mascota-chispa.webp" alt="Chispa, la mascota, saludando">
+  </div>
+
+  <div class="marca-3d" style="font-size:28px;left:112px;top:96px"><span class="logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="21" cy="11" r="6.5" fill="currentColor"/><path d="M3.5 28.5 15 17M7 23.5l4.5-4.5M3.5 20.5l3-3" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none"/></svg></span><span data-marca="nombre">Cometa</span></div>
+  <h1 class="titular-3d" style="font-size:58px;left:108px;top:150px;width:720px">Semana gamer:<br>hasta −30&nbsp;% en hardware</h1>
+</section>
+
+<!-- ═══ STORY · 1080x1920. 250 px arriba y 340 abajo sin texto (la interfaz de la red los tapa). Logo, chip,
+     titular y CTA arriba; la pareja grande abajo, puede entrar en la franja inferior (no es texto) -->
+<section class="lienzo-3d" data-pieza="story" data-estilo="producto-3d-mascota" data-ancho="1080" data-alto="1920" data-margen="96" data-min-letra="28"
+         style="width:1080px;height:1920px">
+  <i class="luz-3d halo" data-fondo aria-hidden="true" style="left:-60px;top:780px;width:1200px;height:1200px"></i>
+  <i class="luz-3d suelo" data-fondo aria-hidden="true" style="left:60px;top:1700px;width:960px;height:240px"></i>
+  <svg class="particulas" data-fondo aria-hidden="true" viewBox="0 0 1080 1920">
+    <use href="#p3m-cruz" x="96" y="150" width="32" height="32" opacity=".32"/>
+    <use href="#p3m-cruz" x="950" y="250" width="30" height="30" opacity=".3"/>
+    <use href="#p3m-cruz" x="74" y="840" width="24" height="24" opacity=".24"/>
+    <use href="#p3m-cruz" x="990" y="780" width="26" height="26" opacity=".26"/>
+    <use href="#p3m-cruz" x="880" y="1820" width="22" height="22" opacity=".22"/>
+    <rect x="260" y="120" width="11" height="11" rx="2" fill="currentColor" opacity=".3"/>
+    <rect x="880" y="560" width="11" height="11" rx="2" fill="currentColor" opacity=".24"/>
+    <rect x="120" y="610" width="10" height="10" rx="2" fill="currentColor" opacity=".26"/>
+    <rect x="1000" y="1300" width="10" height="10" rx="2" fill="currentColor" opacity=".22"/>
+    <rect x="160" y="1860" width="10" height="10" rx="2" fill="currentColor" opacity=".22"/>
+    <circle cx="800" cy="120" r="4" fill="currentColor" opacity=".38"/>
+    <circle cx="60" cy="1300" r="3.5" fill="currentColor" opacity=".3"/>
+    <circle cx="960" cy="980" r="3.5" fill="currentColor" opacity=".3"/>
+  </svg>
+  <div class="bokeh" data-fondo aria-hidden="true">
+    <i style="left:900px;top:380px;width:84px;height:84px;opacity:.2"></i>
+    <i style="left:60px;top:360px;width:50px;height:50px;opacity:.2"></i>
+    <i style="left:70px;top:1100px;width:100px;height:100px;opacity:.14;--desenfoque:6px"></i>
+    <i style="left:970px;top:1120px;width:34px;height:34px;opacity:.26;--desenfoque:2px"></i>
+  </div>
+
+  <div class="sujeto producto" style="left:52px;top:934px;width:610px">
+    <i class="contacto" data-fondo aria-hidden="true"></i>
+    <img data-recorte src="recortes/producto-torre.webp" alt="Torre gaming blanca con cristal lateral y ventiladores con aro de luz">
+  </div>
+  <div class="sujeto mascota" style="left:460px;top:1144px;width:600px">
+    <i class="contacto" data-fondo aria-hidden="true"></i>
+    <img data-recorte src="recortes/mascota-chispa.webp" alt="Chispa, la mascota, saludando">
+  </div>
+
+  <div class="marca-3d centro" style="font-size:40px;top:300px"><span class="logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="21" cy="11" r="6.5" fill="currentColor"/><path d="M3.5 28.5 15 17M7 23.5l4.5-4.5M3.5 20.5l3-3" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none"/></svg></span><span data-marca="nombre">Cometa</span></div>
+  <span class="chip-3d centro-x" style="font-size:30px;top:410px"><span class="punto"></span>Semana gamer</span>
+  <h1 class="titular-3d centro-x" style="font-size:108px;top:488px;width:900px">Hasta −30&nbsp;%<br>en hardware</h1>
+  <span class="cta-3d centro-x" style="font-size:34px;top:740px">Ver ofertas<svg aria-hidden="true"><use href="#p3m-flecha"/></svg></span>
+</section>
+
+</body>
+</html>

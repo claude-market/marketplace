@@ -1,0 +1,36 @@
+{
+  "name": "visual-marketing-skills",
+  "version": "2.5.2",
+  "description": "Agency-grade visual marketing for any brand: five campaign looks (product in context, dark glow, editorial cutout, 3D product + mascot, tech grid) exported to PNG 2x in hero 16:9, 1:1, 4:5, X banner and story, plus HTML emails tested for Gmail/Outlook/dark mode and 1080x1350 Instagram carousels. Your brand goes in a marca.json; every piece goes through an automatic check and a polish loop against a reference before delivery.",
+  "author": {
+    "name": "C4rI0s",
+    "url": "https://github.com/C4rI0s"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/C4rI0s/visual-marketing-skills",
+  "repository": "https://github.com/C4rI0s/visual-marketing-skills",
+  "keywords": [
+    "marketing",
+    "design",
+    "branding",
+    "social-media",
+    "instagram",
+    "email",
+    "banner",
+    "hero-image",
+    "carousel",
+    "art-direction"
+  ],
+  "skills": [
+    "./skills/direccion-de-arte",
+    "./skills/piezas-graficas",
+    "./skills/producto-en-contexto",
+    "./skills/oscuro-glow",
+    "./skills/editorial-recorte",
+    "./skills/producto-3d-mascota",
+    "./skills/tech-grid",
+    "./skills/imagen-ia",
+    "./skills/correo-marketing-html",
+    "./skills/carrusel-instagram"
+  ]
+}

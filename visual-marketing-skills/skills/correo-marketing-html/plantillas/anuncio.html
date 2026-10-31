@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<!--
+  PLANTILLA «ANUNCIO» · novedad, cambio o noticia contada con texto (tipo newsletter de Proton).
+  Sin imagen de cabecera: marca en texto, fecha, titular, párrafos, una imagen opcional con pie,
+  una lista corta y un botón oscuro (secundario). Para lanzamientos con imagen usa «producto».
+  La marca NO se escribe a mano: los marcadores %%…%% (colores, nombre, web, tipografía) los rellena
+      node ../scripts/aplicar-marca.mjs anuncio.html marca.json -o mi-correo.html
+  con el marca.json de la skill direccion-de-arte. Después cambia solo lo marcado con EDITAR.
+  Contenido de ejemplo: Pliego, marca ficticia.
+  La imagen opcional es relativa (imagen-ejemplo.png) para previsualizar: súbela a una URL https antes de enviar.
+-->
+<html lang="es" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="x-apple-disable-message-reformatting">
+<meta name="format-detection" content="telephone=no,address=no,email=no,date=no">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<title>Ya puedes enviar facturas por WhatsApp</title><!-- EDITAR -->
+<!--[if mso]><xml><o:OfficeDocumentSettings><o:AllowPNG/><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]-->
+<style>
+  @media only screen and (max-width:480px) {
+    .m-pad { padding-left:24px !important; padding-right:24px !important }
+    .m-h1 { font-size:25px !important }
+    .m-boton a { display:block !important; text-align:center !important }
+  }
+</style>
+</head>
+<body style="margin:0;padding:0;background:#ffffff;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%">
+<div style="display:none;font-size:1px;color:#ffffff;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden">El enlace para pagar llega donde tu cliente sí mira. Sin copiar ni pegar nada.&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;</div><!-- EDITAR -->
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff" style="background:#ffffff">
+<tr><td align="center" style="padding:32px 12px 40px">
+  <!--[if mso]><table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
+  <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px">
+
+    <!-- MARCA + FECHA: en texto, así se lee con las imágenes bloqueadas. Si hay logo para fondo claro, pon <img> de 24 px de alto -->
+    <tr><td class="m-pad" style="padding:0 40px">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+        <td style="font-family:%%tipografia.correo%%;font-size:17px;font-weight:800;letter-spacing:-.01em;color:%%colores.tinta%%">%%nombre%%</td>
+        <td align="right" style="font-family:%%tipografia.correo%%;font-size:13px;color:%%colores.apagado%%">Noviembre de 2026</td><!-- EDITAR -->
+      </tr></table>
+    </td></tr>
+    <tr><td class="m-pad" style="padding:20px 40px 0"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td height="1" style="height:1px;background:%%colores.linea%%;font-size:0;line-height:0">&nbsp;</td></tr></table></td></tr>
+
+    <tr><td class="m-pad" style="padding:36px 40px 0">
+      <p style="margin:0 0 12px;font-family:%%tipografia.correo%%;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:%%colores.suave%%">Novedad</p><!-- EDITAR -->
+      <h1 class="m-h1" style="margin:0 0 22px;font-family:%%tipografia.correo%%;font-size:29px;line-height:1.2;font-weight:800;letter-spacing:-.02em;color:%%colores.tinta%%">Ya puedes enviar facturas por WhatsApp</h1><!-- EDITAR -->
+      <p style="margin:0 0 18px;font-family:%%tipografia.correo%%;font-size:16px;line-height:1.65;color:%%colores.texto%%">Hola {{nombre}},</p>
+      <p style="margin:0 0 18px;font-family:%%tipografia.correo%%;font-size:16px;line-height:1.65;color:%%colores.texto%%">Al terminar una factura, elige «Enviar por WhatsApp». Tu cliente recibe un mensaje con el PDF y el enlace para pagar, y tú ves en el panel cuándo lo abre.</p><!-- EDITAR -->
+    </td></tr>
+
+    <!-- IMAGEN OPCIONAL con pie. 1040 px exportada (520 pintada). Borra las dos filas si no hay -->
+    <tr><td class="m-pad" style="padding:6px 40px 0">
+      <img src="imagen-ejemplo.png" width="520" height="260" alt="Recordatorios a los 3 y a los 7 días, y la factura de 1.250 € marcada como pagada" style="display:block;width:100%;max-width:520px;height:auto;border:0;border-radius:10px;font-family:%%tipografia.correo%%;font-size:14px;color:%%colores.suave%%">
+    </td></tr>
+    <tr><td class="m-pad" style="padding:10px 40px 0;font-family:%%tipografia.correo%%;font-size:13px;line-height:1.5;color:%%colores.apagado%%">Las facturas enviadas por WhatsApp se pagan antes: el mensaje se abre en minutos, no en&nbsp;días.</td></tr><!-- EDITAR -->
+
+    <!-- LISTA corta: 3 puntos como mucho. Guion largo neutro como marca, nada de iconos de colores -->
+    <tr><td class="m-pad" style="padding:28px 40px 0">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr><td width="22" valign="top" style="padding:0 0 10px;font-family:%%tipografia.correo%%;font-size:16px;line-height:1.6;color:%%colores.apagado%%">—</td>
+            <td valign="top" style="padding:0 0 10px;font-family:%%tipografia.correo%%;font-size:16px;line-height:1.6;color:%%colores.texto%%"><strong style="color:%%colores.tinta%%">Desde el móvil o el ordenador</strong>, con el mismo botón.</td></tr>
+        <tr><td width="22" valign="top" style="padding:0 0 10px;font-family:%%tipografia.correo%%;font-size:16px;line-height:1.6;color:%%colores.apagado%%">—</td>
+            <td valign="top" style="padding:0 0 10px;font-family:%%tipografia.correo%%;font-size:16px;line-height:1.6;color:%%colores.texto%%"><strong style="color:%%colores.tinta%%">Con tu nombre</strong>: el mensaje sale de tu número, no de uno genérico.</td></tr>
+        <tr><td width="22" valign="top" style="padding:0;font-family:%%tipografia.correo%%;font-size:16px;line-height:1.6;color:%%colores.apagado%%">—</td>
+            <td valign="top" style="padding:0;font-family:%%tipografia.correo%%;font-size:16px;line-height:1.6;color:%%colores.texto%%"><strong style="color:%%colores.tinta%%">Sin coste extra</strong>: entra en todos los planes.</td></tr>
+      </table>
+    </td></tr><!-- EDITAR -->
+
+    <!-- BOTÓN OSCURO (secundario, para anuncios). VML para Outlook -->
+    <tr><td class="m-pad m-boton" style="padding:30px 40px 0">
+      <!--[if mso]>
+      <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="%%web%%/whatsapp" style="height:48px;v-text-anchor:middle;width:240px" arcsize="20%" stroke="f" fillcolor="%%colores.tinta%%">
+        <w:anchorlock/>
+        <center style="color:#ffffff;font-family:Segoe UI,Arial,sans-serif;font-size:15px;font-weight:bold">Ver cómo funciona</center>
+      </v:roundrect>
+      <![endif]-->
+      <!--[if !mso]><!-- -->
+      <a href="%%web%%/whatsapp" style="display:inline-block;background:%%colores.tinta%%;color:#ffffff;text-decoration:none;font-family:%%tipografia.correo%%;font-size:15px;font-weight:700;line-height:20px;padding:14px 28px;border-radius:10px">Ver cómo funciona</a>
+      <!--<![endif]-->
+    </td></tr><!-- EDITAR href y texto (2 sitios) -->
+
+    <tr><td class="m-pad" style="padding:44px 40px 0"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td height="1" style="height:1px;background:%%colores.linea%%;font-size:0;line-height:0">&nbsp;</td></tr></table></td></tr>
+    <tr><td class="m-pad" style="padding:24px 40px 0;font-family:%%tipografia.correo%%;font-size:12px;line-height:1.7;color:%%colores.apagado%%">
+      <p style="margin:0 0 8px;font-family:%%tipografia.correo%%;font-size:12px;line-height:1.7;color:%%colores.apagado%%">
+        <a href="%%web%%" style="color:%%colores.apagado%%;text-decoration:none;white-space:nowrap">%%web_texto%%</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="%%web%%/ayuda" style="color:%%colores.apagado%%;text-decoration:none;white-space:nowrap">Ayuda</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="mailto:%%correo_contacto%%" style="color:%%colores.apagado%%;text-decoration:none;white-space:nowrap">%%correo_contacto%%</a>
+      </p>
+      <p style="margin:0;font-family:%%tipografia.correo%%;font-size:12px;line-height:1.7;color:%%colores.apagado%%">Recibes este correo porque aceptaste las novedades de %%nombre%%. <a href="{{url_baja}}" style="color:%%colores.apagado%%;text-decoration:underline">Darme de baja</a></p>
+    </td></tr>
+  </table>
+  <!--[if mso]></td></tr></table><![endif]-->
+</td></tr>
+</table>
+</body>
+</html>

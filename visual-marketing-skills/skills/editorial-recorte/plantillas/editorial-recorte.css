@@ -1,0 +1,91 @@
+/* ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   editorial-recorte.css · componentes del look «editorial recorte»
+   Campaña editorial con personas o producto recortados: fondo casi negro con un degradado sutil hacia una esquina
+   más clara, un collage de 3-4 recortes con jerarquía clara de tamaños que se funden con el negro por abajo,
+   líneas finas de construcción (un arco gigante, un marco del que se sale un sujeto y cruces de registro) y el
+   texto, pequeño, en el aire. Plano: sin sombras, brillos ni desenfoques.
+
+   · Colores y fuentes solo con var(--…). La marca los pone desde marca.json (skill direccion-de-arte); los del
+     look (--ed-*) se derivan aquí de los de la marca y se pueden sobrescribir desde marca.json → colores
+     (p. ej. "ed-luz": "#2a2a2a").
+   · Medidas en px del lienzo; las que dependen del formato van como variables en la <section> (--ed-titular…).
+   Componentes: .editorial (el lienzo, en la propia <section>) · .construccion (SVG data-fondo con .trazo, .arco,
+     .marco-linea, .cruz y .cruz.detalle) · .sujeto (img[data-recorte] con fundido inferior) · .encuadre (el marco
+     que recorta a un sujeto por los lados y por abajo y lo deja salir por arriba) · .texto con .firma (logo y
+     nombre), .antetitulo, .titular, .apoyo, .llamada y .detalle
+   Tokens de marca que usa: --noche, --noche-2, --claro, --claro-suave, --acento, --acento-2 (opcional),
+     --fuente, --fuente-display (opcional), --mono
+   Tokens del look: --ed-fondo, --ed-luz, --ed-trazo, --ed-trazo-arco, --ed-texto, --ed-apoyo, --ed-detalle
+   ──────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* Fondo: el «negro» de la marca y un gris de su misma familia para la esquina clara (≈ 15-18 % hacia el claro) */
+  --ed-fondo: var(--noche);
+  --ed-luz: color-mix(in oklab, var(--noche) 78%, var(--claro-suave));
+  /* Líneas de construcción: el claro de la marca al ~62 % (finas: nunca compiten con las caras) */
+  --ed-trazo: color-mix(in oklab, var(--claro) 62%, transparent);
+  --ed-trazo-arco: color-mix(in oklab, var(--claro) 56%, transparent);
+  /* Texto: claro para lo que se lee, claro suave para el apoyo */
+  --ed-texto: var(--claro);
+  --ed-apoyo: color-mix(in oklab, var(--claro-suave) 88%, var(--claro));
+  /* El único toque de color: segundo acento si la marca lo tiene; si no, el acento */
+  --ed-detalle: var(--acento-2, var(--acento));
+}
+
+/* ── Lienzo. Va en la propia <section data-pieza>. --ed-luz-x / --ed-luz-y: la esquina clara ────────────────── */
+.editorial {
+  position: relative; overflow: hidden; isolation: isolate;
+  background-color: var(--ed-fondo);
+  background-image:
+    radial-gradient(130% 110% at var(--ed-luz-x, 100%) var(--ed-luz-y, 100%), var(--ed-luz) 0%, color-mix(in oklab, var(--ed-luz) 45%, var(--ed-fondo)) 34%, transparent 72%),
+    linear-gradient(var(--ed-fondo), var(--ed-fondo));
+  color: var(--ed-texto);
+  font-family: var(--fuente);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Líneas de construcción: un SVG a sangre con el viewBox del lienzo (data-fondo + aria-hidden) ─────────────── */
+.construccion { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; overflow: visible; pointer-events: none }
+.construccion .trazo,
+.construccion .marco-linea,
+.construccion .cruz { fill: none; stroke: var(--ed-trazo); stroke-width: 1.5; vector-effect: non-scaling-stroke; stroke-linecap: square }
+.construccion .arco { fill: none; stroke-width: 1.5; vector-effect: non-scaling-stroke }
+/* El arco puede ir un punto más bajo que el resto: es la línea más larga y la que más pesa */
+/* Sin stroke="url(#…)" en el SVG, el arco va liso; con él, se funde por abajo (el CSS no pisa el atributo) */
+.construccion .arco:not([stroke]) { stroke: var(--ed-trazo-arco) }
+.construccion .cruz.detalle { stroke: var(--ed-detalle); stroke-width: 2 }
+/* Degradado del arco (stroke="url(#arco-…)"): pleno hasta la mitad y transparente abajo, como el fundido de los sujetos */
+.construccion .luz { stop-color: var(--ed-trazo-arco) }
+.construccion .sombra { stop-color: var(--ed-trazo-arco); stop-opacity: 0 }
+
+/* ── Sujetos recortados (PNG/WebP con alfa). Se funden con el fondo por abajo con una máscara vertical ──────── */
+.sujeto {
+  position: absolute; display: block; height: auto; z-index: 1;
+  /* Fundido con curva suave (1 − smoothstep): un fundido lineal deja un «escalón» visible donde acaba */
+  --fd: var(--fundido-desde, 64%); --fh: var(--fundido-hasta, 97%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 var(--fd), rgb(0 0 0 / .84) calc(var(--fd) + (var(--fh) - var(--fd)) * .25),
+    rgb(0 0 0 / .5) calc(var(--fd) + (var(--fh) - var(--fd)) * .5), rgb(0 0 0 / .16) calc(var(--fd) + (var(--fh) - var(--fd)) * .75), transparent var(--fh));
+          mask-image: linear-gradient(to bottom, #000 0%, #000 var(--fd), rgb(0 0 0 / .84) calc(var(--fd) + (var(--fh) - var(--fd)) * .25),
+    rgb(0 0 0 / .5) calc(var(--fd) + (var(--fh) - var(--fd)) * .5), rgb(0 0 0 / .16) calc(var(--fd) + (var(--fh) - var(--fd)) * .75), transparent var(--fh));
+  user-select: none;
+}
+
+/* ── Encuadre: recorta al sujeto por los lados y por abajo; por arriba lo deja salir (la cabeza rompe el marco).
+      La línea del marco se dibuja en .construccion con las mismas medidas (.marco-linea) ─────────────────────── */
+.encuadre { position: absolute; z-index: 2; clip-path: inset(-100vh 0 0 0) }
+.encuadre .sujeto { --fundido-desde: 70%; --fundido-hasta: 100% }
+
+/* ── Texto libre: pequeño, en el aire, nunca encima de un recorte ─────────────────────────────────────────── */
+.texto { position: absolute; z-index: 5; color: var(--ed-texto) }
+.firma { display: flex; align-items: center; gap: .45em; font-weight: 650; letter-spacing: -.02em; white-space: nowrap; line-height: 1 }
+.firma .logo { display: inline-flex; width: 1.15em; height: 1.15em; color: var(--ed-texto) }
+.firma .logo svg { width: 100%; height: 100% }
+.antetitulo { font-family: var(--mono); font-weight: 500; text-transform: uppercase; letter-spacing: .16em; line-height: 1.3; color: var(--ed-apoyo) }
+.titular { font-family: var(--fuente-display, var(--fuente)); font-weight: 600; letter-spacing: -.038em; line-height: .98; text-wrap: balance }
+.apoyo { font-weight: 420; letter-spacing: -.008em; line-height: 1.42; color: var(--ed-apoyo); text-wrap: pretty }
+.llamada { display: inline-flex; align-items: center; gap: .6em; font-weight: 560; letter-spacing: -.01em; line-height: 1; white-space: nowrap }
+.llamada .flecha { width: 1.05em; height: 1.05em; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round }
+.llamada .url { font-family: var(--mono); font-weight: 450; letter-spacing: 0; color: var(--ed-apoyo) }
+/* Raya fina entre la llamada y la URL (mismo trazo que la construcción) */
+.llamada .raya { width: 2.2em; height: 0; border-top: 1.5px solid var(--ed-trazo) }
+.detalle { color: var(--ed-detalle) }

@@ -1,0 +1,306 @@
+<!doctype html>
+<!--
+  PLANTILLA DE CARRUSEL 1080x1350 (4:5) · sirve para cualquier marca
+  Cada <section class="slide"> es una diapositiva y se exporta a PNG con:
+    node ../scripts/exportar.mjs carrusel.html --marca marca.json --carrusel
+  La marca NO se escribe aquí: sale de marca.json (skill direccion-de-arte). El exportador pone sus colores y su
+  tipografía en las variables de :root y rellena todo lo marcado con data-marca (nombre, web, logo).
+  Los valores de :root son los de la marca de ejemplo (Pliego, ficticia) para que la plantilla se vea sola.
+  Cómo adaptarla:
+    1. Escribe el guion (una idea por diapositiva) y cambia SOLO los textos y las maquetas de producto.
+    2. Copia el tipo de diapositiva que necesites (portada, punto, lista, cifra, tabla, cierre).
+    3. Numera data-pieza en orden (01-…, 02-…) y actualiza el contador «0X / 0N» y la barra (style="--paso:X/N").
+    4. Nada de colores ni fuentes sueltos en el HTML: solo var(--…).
+-->
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Carrusel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400..800&family=Geist+Mono:wght@400..600&display=block" rel="stylesheet">
+<style>
+  :root {
+    /* Tokens de marca (los sustituye marca.json). Ejemplo: Pliego, marca ficticia */
+    --papel: #f3f1ec; --superficie: #ffffff; --bloque: #f5f3ef;
+    --tinta: #121418; --texto: #2b2f35; --suave: #5f656e; --apagado: #80868e; --linea: #dcd8d0;
+    --noche: #111317; --noche-2: #1b1e24; --noche-linea: #2c3038; --claro: #f3f1ec; --claro-suave: #a1a6ad;
+    --acento: #ff5b2e; --acento-texto: #b8330c; --sobre-acento: #121418;
+    --fuente: 'Geist', system-ui, sans-serif; --mono: 'Geist Mono', ui-monospace, monospace;
+    --radio: 20px;
+    /* Sistema (no depende de la marca) */
+    --margen: 88px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0 }
+  body { background: #d9d6d0; padding: 60px 0; display: flex; flex-direction: column; align-items: center; gap: 48px; font-family: var(--fuente) }
+
+  /* ── Lienzo y temas ─────────────────────────────────────── */
+  .slide {
+    position: relative; width: 1080px; height: 1350px; overflow: hidden;
+    background: var(--papel); color: var(--tinta); font-family: var(--fuente);
+    padding: var(--margen); display: flex; flex-direction: column;
+    -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums;
+  }
+  .slide.oscuro { background: var(--noche); color: var(--claro) }
+  .slide.color { background: var(--acento); color: var(--sobre-acento) }
+
+  /* Cabecera y pie: misma posición en todas, es lo que da continuidad al deslizar */
+  .cab { display: flex; justify-content: space-between; align-items: center; height: 44px; flex: none }
+  .marca { display: flex; align-items: center; gap: 14px; font-weight: 700; font-size: 30px; letter-spacing: -.02em }
+  .logo { display: inline-flex; width: 34px; height: 34px; color: var(--acento-texto) }
+  .logo svg { width: 100%; height: 100% }
+  .oscuro .logo { color: var(--acento) }
+  .color .logo { color: var(--sobre-acento) }
+  .serie { font-family: var(--mono); font-size: 22px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--suave) }
+  .oscuro .serie { color: var(--claro-suave) }
+  .color .serie { color: var(--sobre-acento) }
+
+  .cuerpo { flex: 1; display: flex; flex-direction: column; justify-content: center; min-height: 0 }
+
+  .pie { display: flex; align-items: center; gap: 28px; height: 44px; flex: none }
+  .paso { font-family: var(--mono); font-size: 22px; font-weight: 500; letter-spacing: .06em; color: var(--suave); white-space: nowrap }
+  .oscuro .paso { color: var(--claro-suave) }
+  .color .paso { color: var(--sobre-acento) }
+  .barra { flex: 1; height: 4px; background: var(--linea); border-radius: 2px; position: relative }
+  .oscuro .barra { background: var(--noche-linea) }
+  .color .barra { background: color-mix(in srgb, var(--sobre-acento) 22%, transparent) }
+  .barra::after { content: ''; position: absolute; inset: 0 auto 0 0; width: calc(var(--paso) * 100%); background: var(--tinta); border-radius: 2px }
+  .oscuro .barra::after { background: var(--acento) }
+  .color .barra::after { background: var(--sobre-acento) }
+  .desliza { font-size: 26px; font-weight: 600; white-space: nowrap; letter-spacing: -.01em }
+
+  /* ── Tipografía (escala 1,333) ─────────────────────────── */
+  .kicker { font-family: var(--mono); font-size: 24px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--acento-texto); margin-bottom: 36px }
+  .oscuro .kicker { color: var(--acento) }
+  .titular { font-size: 124px; line-height: .96; font-weight: 700; letter-spacing: -.045em }
+  .titulo { font-size: 82px; line-height: 1; font-weight: 700; letter-spacing: -.04em; max-width: 900px }
+  .titular em, .titulo em { font-style: normal; color: var(--acento-texto) }
+  .oscuro .titular em, .oscuro .titulo em { color: var(--acento) }
+  .color .titular em, .color .titulo em { color: var(--sobre-acento) }
+  .entrada { font-size: 38px; line-height: 1.35; font-weight: 400; color: var(--suave); margin-top: 36px; max-width: 860px; letter-spacing: -.015em }
+  .oscuro .entrada { color: var(--claro-suave) }
+  .num { font-family: var(--mono); font-size: 28px; font-weight: 500; color: var(--acento-texto); letter-spacing: .04em; margin-bottom: 32px }
+
+  /* ── Maquetas de producto (planas: superficie, línea fina neutra, sin sombras) ── */
+  .tarjeta { background: var(--superficie); color: var(--tinta); border: 2px solid var(--linea); border-radius: var(--radio) }
+  .oscuro .tarjeta { border-color: transparent }
+  .etq { font-family: var(--mono); font-size: 22px; font-weight: 500; letter-spacing: .06em; color: var(--suave); text-transform: uppercase }
+  .estado { display: inline-flex; align-items: center; gap: 10px; font-size: 22px; font-weight: 600; padding: 8px 16px; border-radius: 999px; white-space: nowrap; background: var(--bloque); color: var(--texto) }
+  .estado::before { content: ''; width: 10px; height: 10px; border-radius: 50%; background: currentColor }
+  .estado.pagada { background: var(--acento); color: var(--sobre-acento) }
+
+  /* Factura grande (portada) */
+  .factura { position: absolute; left: var(--margen); right: -80px; bottom: -60px; padding: 48px 160px 148px 52px }
+  .factura .fila { display: flex; justify-content: space-between; align-items: center }
+  .factura .cliente { font-size: 34px; font-weight: 600; margin-top: 30px; letter-spacing: -.02em }
+  .factura .importe { font-size: 112px; font-weight: 700; letter-spacing: -.05em; line-height: 1; margin-top: 16px }
+  .factura .importe small { font-size: 56px; letter-spacing: -.03em; color: var(--suave) }
+  .factura .detalle { display: flex; gap: 40px; margin-top: 30px; padding-top: 26px; border-top: 2px solid var(--linea); font-size: 24px; color: var(--suave) }
+  .factura .detalle b { color: var(--tinta); font-weight: 600 }
+
+  /* Lista de facturas */
+  .facturas { margin-top: 64px; padding: 8px 40px }
+  .facturas .f { display: grid; grid-template-columns: 1fr auto 168px; align-items: center; gap: 28px; padding: 30px 0; border-bottom: 2px solid var(--linea) }
+  .facturas .f:last-child { border-bottom: 0 }
+  .facturas .quien { font-size: 32px; font-weight: 600; letter-spacing: -.02em }
+  .facturas .n { font-family: var(--mono); font-size: 22px; color: var(--suave); margin-top: 6px }
+  .facturas .eur { font-size: 32px; font-weight: 600; letter-spacing: -.02em; white-space: nowrap }
+  .facturas .estado { justify-self: end }
+
+  /* Línea de tiempo */
+  .tiempo { margin-top: 64px; padding: 44px 48px; display: grid; gap: 0 }
+  .tiempo .h { display: grid; grid-template-columns: 120px 28px 1fr; align-items: start; gap: 0 24px; position: relative; padding-bottom: 40px }
+  .tiempo .h:last-child { padding-bottom: 0 }
+  .tiempo .dia { font-family: var(--mono); font-size: 24px; font-weight: 500; color: var(--suave); padding-top: 4px; white-space: nowrap }
+  .tiempo .punto { width: 28px; height: 28px; border-radius: 50%; background: var(--tinta); margin-top: 6px; position: relative; z-index: 1 }
+  .tiempo .h:not(:last-child) .punto::after { content: ''; position: absolute; left: 13px; top: 28px; width: 2px; height: 90px; background: var(--linea) }
+  .tiempo .h.ahora .punto { background: var(--acento) }
+  .tiempo .que { font-size: 32px; font-weight: 600; letter-spacing: -.02em }
+  .tiempo .nota { font-size: 24px; color: var(--suave); margin-top: 6px; line-height: 1.35 }
+
+  /* Lista de opciones */
+  .lista { list-style: none; margin-top: 64px; border-top: 2px solid var(--linea) }
+  .lista li { display: grid; grid-template-columns: 76px 1fr; align-items: baseline; padding: 36px 0; border-bottom: 2px solid var(--linea) }
+  .lista .ico { font-family: var(--mono); font-size: 28px; font-weight: 500; color: var(--acento-texto) }
+  .lista .t { font-size: 44px; font-weight: 600; letter-spacing: -.03em }
+  .lista .d { font-size: 30px; color: var(--suave); margin-top: 10px; line-height: 1.35 }
+
+  /* Cifra */
+  .cifra { font-size: 400px; line-height: .8; font-weight: 700; letter-spacing: -.07em; color: var(--acento); margin-left: -16px }
+  .cifra small { font-size: 120px; letter-spacing: -.04em; color: var(--claro); margin-left: 18px }
+
+  /* Tabla de planes */
+  .tabla { width: 100%; border-collapse: collapse; margin-top: 60px }
+  .tabla td { padding: 34px 0; border-bottom: 2px solid var(--linea); font-size: 36px; vertical-align: baseline }
+  .tabla tr:first-child td { border-top: 2px solid var(--tinta) }
+  .tabla .plan { font-weight: 700; letter-spacing: -.02em; width: 34% }
+  .tabla .que { font-size: 28px; color: var(--suave) }
+  .tabla .precio { text-align: right; font-weight: 700; letter-spacing: -.02em; white-space: nowrap }
+  .tabla .precio span { font-size: 24px; font-weight: 500; color: var(--suave); letter-spacing: 0 }
+  .tabla tr.destacado .plan { color: var(--acento-texto) }
+  .tabla .marca-plan { display: inline-block; font-family: var(--mono); font-size: 20px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--suave); margin-left: 14px; vertical-align: 6px }
+
+  /* Cierre */
+  .cta { display: inline-flex; align-items: center; gap: 20px; margin-top: 72px; background: var(--sobre-acento); color: var(--acento); font-weight: 600; font-size: 40px; padding: 30px 46px; border-radius: calc(var(--radio) * .8); align-self: flex-start; letter-spacing: -.02em }
+  .url { font-family: var(--mono); font-size: 30px; font-weight: 500; margin-top: 32px }
+
+  /* ── Diapositivas «producto en contexto» (producto.css, enlazado abajo): fondo degradado, la app de verdad en
+        una ventana que sangra y 1-2 capas flotantes que cuentan la idea de la diapositiva ── */
+  .slide.escena { --margen: 88px }
+  .escena:not(.clara) .logo, .escena:not(.clara) .kicker, .escena:not(.clara) .num, .escena:not(.clara) .desliza { color: var(--sobre-escena) }
+  .escena:not(.clara) .serie, .escena:not(.clara) .paso { color: color-mix(in oklab, var(--sobre-escena) 75%, transparent) }
+  .escena:not(.clara) .entrada { color: color-mix(in oklab, var(--sobre-escena) 82%, transparent) }
+  .escena:not(.clara) .titular em, .escena:not(.clara) .titulo em { color: inherit }
+  .escena:not(.clara) .barra { background: color-mix(in oklab, var(--sobre-escena) 20%, transparent) }
+  .escena:not(.clara) .barra::after { background: var(--sobre-escena) }
+  .escena .titular, .escena .titulo { font-weight: 600 }
+  .escena .cuerpo { justify-content: flex-start }
+</style>
+<!-- Después del <style>: .escena tiene que ganar al fondo de .slide -->
+<link rel="stylesheet" href="producto.css">
+<script src="producto.js" defer></script>
+</head>
+<body>
+
+<!-- 01 · PORTADA «producto en contexto»: el gancho sobre el fondo degradado y la app de verdad sangrando por abajo
+     a la derecha, con la fila que cuenta la promesa destacada encima (data-sobre la coloca sola) y un aviso -->
+<section class="slide escena" data-pieza="01-portada" data-estilo="producto" data-ancho="1080" data-alto="1350" style="--radio-escena:20px">
+  <header class="cab">
+    <div class="marca"><span class="logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 3h14l7 7v19H6z" fill="currentColor"/><path d="M20 3v7h7z" fill="currentColor" opacity=".45"/></svg></span><span data-marca="nombre">Pliego</span></div>
+    <div class="serie">Guía · 7 pasos</div>
+  </header>
+  <div class="cuerpo" style="padding-top:72px">
+    <p class="kicker">Para autónomos</p>
+    <h1 class="titular">Cobra en 7 días,<br>no en 45.</h1>
+    <p class="entrada" style="max-width:780px;margin-top:30px">Cuatro cambios pequeños que adelantan cada&nbsp;pago.</p>
+    <p class="desliza" style="margin-top:34px">Desliza →</p>
+  </div>
+  <div class="ventana" data-maqueta style="font-size:21px;left:88px;top:820px;width:1100px;height:640px;--sangra-d:108px;--sangra-a:110px">
+    <aside class="ui-lateral">
+      <div class="ui-marca"><span class="ui-logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 3h14l7 7v19H6z" fill="currentColor"/><path d="M20 3v7h7z" fill="currentColor" opacity=".45"/></svg></span><span data-marca="nombre">Pliego</span></div>
+      <div class="ui-item activo"><svg class="i"><use href="#i-factura"/></svg>Facturas<span class="ui-num">24</span></div>
+    </aside>
+    <main class="ui-principal">
+      <div class="ui-barra"><div class="ui-buscador"><svg class="i"><use href="#i-buscar"/></svg>Buscar</div></div>
+      <div class="ui-lista atenuado" style="padding-top:.6em">
+        <div class="ui-fila"><span class="ui-avatar" style="--tono:var(--ok)">CL</span><div class="ui-quien"><b>Café Lumbre</b><small>F-2026-119</small></div><span class="ui-eur">480 €</span><span class="ui-chip">Enviada</span></div>
+        <div class="ui-fila oculta"><span class="ui-avatar">EM</span><div class="ui-quien"><b>Estudio Marea</b><small>F-2026-118</small></div><span class="ui-eur">1.250 €</span><span class="ui-chip ok">Pagada</span></div>
+      </div>
+    </main>
+  </div>
+  <div class="flotante destacada" data-maqueta data-sobre=".ui-fila.oculta" style="font-size:25px;left:56px;top:1020px;width:820px">
+    <span class="ui-avatar">EM</span><div class="ui-quien"><b>Estudio Marea</b><small>Emitida el 3 nov · cobrada el 9</small></div><span class="ui-eur">1.250,00 €</span><span class="ui-chip ok">Pagada</span>
+  </div>
+</section>
+
+<!-- 02 · PUNTO con producto (modo claro): la idea arriba y el modal que la hace, sobre la app atenuada -->
+<section class="slide escena clara" data-pieza="02-mismo-dia" data-estilo="producto" data-ancho="1080" data-alto="1350" style="--radio-escena:20px">
+  <header class="cab"><div class="marca"><span class="logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 3h14l7 7v19H6z" fill="currentColor"/><path d="M20 3v7h7z" fill="currentColor" opacity=".45"/></svg></span><span data-marca="nombre">Pliego</span></div><div class="serie">Enviar</div></header>
+  <div class="cuerpo" style="padding-top:64px">
+    <p class="num">01</p>
+    <h2 class="titulo">Factura el mismo día <em>que&nbsp;entregas.</em></h2>
+    <p class="entrada">Cada día que tarda en salir la factura es un día más que tardas en cobrarla.</p>
+  </div>
+  <div class="ventana clara" data-maqueta style="font-size:21px;left:88px;top:690px;width:1100px;height:480px;--sangra-d:108px">
+    <aside class="ui-lateral">
+      <div class="ui-marca"><span class="ui-logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 3h14l7 7v19H6z" fill="currentColor"/><path d="M20 3v7h7z" fill="currentColor" opacity=".45"/></svg></span><span data-marca="nombre">Pliego</span></div>
+      <div class="ui-item activo"><svg class="i"><use href="#i-factura"/></svg>Facturas</div>
+      <div class="ui-item"><svg class="i"><use href="#i-clientes"/></svg>Clientes</div>
+    </aside>
+    <main class="ui-principal atenuado">
+      <div class="ui-barra"><div class="ui-buscador"><svg class="i"><use href="#i-buscar"/></svg>Buscar</div></div>
+    </main>
+  </div>
+  <div class="flotante modal clara" data-maqueta style="font-size:24px;left:330px;top:640px;width:700px">
+    <p class="modal-cab"><svg class="i"><use href="#i-factura"/></svg>Nueva factura<svg class="i cerrar"><use href="#i-cerrar"/></svg></p>
+    <div class="ui-campo"><label>Cliente</label><span>Estudio Marea<svg class="i"><use href="#i-abajo"/></svg></span></div>
+    <div class="ui-campo foco"><label>Importe</label><span><span>1.250,00 €<span class="cursor"></span></span></span></div>
+    <div class="modal-acciones"><span class="ui-boton sec">Guardar borrador</span><span class="ui-boton"><svg class="i"><use href="#i-enviar"/></svg>Enviar</span></div>
+  </div>
+  <footer class="pie"><span class="paso">02 / 07</span><span class="barra" style="--paso:2/7"></span></footer>
+</section>
+
+<!-- 03 · PUNTO con producto (modo oscuro): los ajustes de la función en un modal sobre la app -->
+<section class="slide escena malla" data-pieza="03-recordatorios" data-estilo="producto" data-ancho="1080" data-alto="1350" style="--radio-escena:20px">
+  <header class="cab"><div class="marca"><span class="logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 3h14l7 7v19H6z" fill="currentColor"/><path d="M20 3v7h7z" fill="currentColor" opacity=".45"/></svg></span><span data-marca="nombre">Pliego</span></div><div class="serie">Recordar</div></header>
+  <div class="cuerpo" style="padding-top:64px">
+    <p class="num">02</p>
+    <h2 class="titulo">Recordatorios que salen&nbsp;solos.</h2>
+    <p class="entrada">Nadie tiene que acordarse de escribir «¿lo has podido&nbsp;mirar?».</p>
+  </div>
+  <div class="ventana" data-maqueta style="font-size:21px;left:88px;top:690px;width:1100px;height:480px;--sangra-d:108px">
+    <aside class="ui-lateral">
+      <div class="ui-marca"><span class="ui-logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 3h14l7 7v19H6z" fill="currentColor"/><path d="M20 3v7h7z" fill="currentColor" opacity=".45"/></svg></span><span data-marca="nombre">Pliego</span></div>
+      <div class="ui-item"><svg class="i"><use href="#i-factura"/></svg>Facturas</div>
+      <div class="ui-item activo"><svg class="i"><use href="#i-campana"/></svg>Avisos</div>
+    </aside>
+    <main class="ui-principal atenuado">
+      <div class="ui-barra"><div class="ui-buscador"><svg class="i"><use href="#i-buscar"/></svg>Buscar</div></div>
+    </main>
+  </div>
+  <div class="flotante modal" data-maqueta style="font-size:24px;left:330px;top:640px;width:700px">
+    <p class="modal-cab"><svg class="i"><use href="#i-campana"/></svg>Recordatorios<svg class="i cerrar"><use href="#i-cerrar"/></svg></p>
+    <div style="margin-top:.5em">
+      <div class="ui-opcion"><div>Día 3 · Recordatorio amable<small>Si aún no la han abierto</small></div><span class="ui-interruptor"></span></div>
+      <div class="ui-opcion"><div>Día 7 · Aviso de vencimiento<small>Con el enlace para pagar</small></div><span class="ui-interruptor"></span></div>
+      <div class="ui-opcion"><div>Avisarme a mí<small>Si sigue sin pagar</small></div><span class="ui-interruptor apagado"></span></div>
+    </div>
+  </div>
+  <footer class="pie"><span class="paso">03 / 07</span><span class="barra" style="--paso:3/7"></span></footer>
+</section>
+
+<!-- 04 · LISTA: tres opciones, cuatro como mucho -->
+<section class="slide" data-pieza="04-pagar" data-ancho="1080" data-alto="1350">
+  <header class="cab"><div class="marca"><span class="logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 3h14l7 7v19H6z" fill="currentColor"/><path d="M20 3v7h7z" fill="currentColor" opacity=".45"/></svg></span><span data-marca="nombre">Pliego</span></div><div class="serie">Cobrar</div></header>
+  <div class="cuerpo">
+    <p class="num">03</p>
+    <h2 class="titulo">Ponle fácil <em>pagarte.</em></h2>
+    <ul class="lista">
+      <li><span class="ico">→</span><div><p class="t">Tarjeta</p><p class="d">Desde el enlace de la propia factura.</p></div></li>
+      <li><span class="ico">→</span><div><p class="t">Bizum</p><p class="d">Con tu número impreso en el PDF.</p></div></li>
+      <li><span class="ico">→</span><div><p class="t">Transferencia</p><p class="d">IBAN y concepto ya rellenos.</p></div></li>
+    </ul>
+  </div>
+  <footer class="pie"><span class="paso">04 / 07</span><span class="barra" style="--paso:4/7"></span></footer>
+</section>
+
+<!-- 05 · CIFRA: un número grande que resume. Fondo oscuro para romper el ritmo -->
+<section class="slide oscuro" data-pieza="05-cifra" data-ancho="1080" data-alto="1350">
+  <header class="cab"><div class="marca"><span class="logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 3h14l7 7v19H6z" fill="currentColor"/><path d="M20 3v7h7z" fill="currentColor" opacity=".45"/></svg></span><span data-marca="nombre">Pliego</span></div><div class="serie">Resultado</div></header>
+  <div class="cuerpo">
+    <p class="kicker">Plazo medio de cobro</p>
+    <p class="cifra">7<small>días</small></p>
+    <h2 class="titulo" style="margin-top:72px">Con recordatorios y pago en un clic.</h2>
+    <p class="entrada">Sin ellos, la media entre autónomos ronda los 45&nbsp;días.</p>
+  </div>
+  <footer class="pie"><span class="paso">05 / 07</span><span class="barra" style="--paso:5/7"></span></footer>
+</section>
+
+<!-- 06 · TABLA: precios o comparativa. Cifras alineadas a la derecha y tabulares -->
+<section class="slide" data-pieza="06-planes" data-ancho="1080" data-alto="1350">
+  <header class="cab"><div class="marca"><span class="logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 3h14l7 7v19H6z" fill="currentColor"/><path d="M20 3v7h7z" fill="currentColor" opacity=".45"/></svg></span><span data-marca="nombre">Pliego</span></div><div class="serie">Planes</div></header>
+  <div class="cuerpo">
+    <h2 class="titulo">Empieza gratis. <em>Paga cuando crezcas.</em></h2>
+    <table class="tabla">
+      <tr><td class="plan">Gratis</td><td class="que">5 facturas al mes</td><td class="precio">0 €</td></tr>
+      <tr class="destacado"><td class="plan">Autónomo</td><td class="que">Sin límite</td><td class="precio">9 € <span>/mes</span></td></tr>
+      <tr><td class="plan">Equipo</td><td class="que">Hasta 3 personas</td><td class="precio">19 € <span>/mes</span></td></tr>
+    </table>
+    <p class="entrada" style="font-size:30px;margin-top:40px">Precios sin IVA. Sin permanencia.</p>
+  </div>
+  <footer class="pie"><span class="paso">06 / 07</span><span class="barra" style="--paso:6/7"></span></footer>
+</section>
+
+<!-- 07 · CIERRE: una sola acción y dónde hacerla. Fondo del color de marca para cerrar la serie -->
+<section class="slide color" data-pieza="07-cierre" data-ancho="1080" data-alto="1350">
+  <header class="cab"><div class="marca"><span class="logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 3h14l7 7v19H6z" fill="currentColor"/><path d="M20 3v7h7z" fill="currentColor" opacity=".45"/></svg></span><span data-marca="nombre">Pliego</span></div><div class="serie">Empieza</div></header>
+  <div class="cuerpo">
+    <h2 class="titular" style="font-size:132px">Tu próxima<br>factura en<br>dos minutos.</h2>
+    <span class="cta">Crear mi cuenta gratis</span>
+    <p class="url" data-marca="web_texto">pliego.app</p>
+  </div>
+  <footer class="pie"><span class="paso">07 / 07</span><span class="barra" style="--paso:7/7"></span><span class="desliza">Guárdalo</span></footer>
+</section>
+
+</body>
+</html>

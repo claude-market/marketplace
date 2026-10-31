@@ -1,0 +1,149 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:transparent}</style>
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script></head><body>
+<script type="module">
+// Teclado mecánico completo y sin marca (tech-grid y producto-3d-mascota). Parámetros: cuerpo, oscuro, rgb1, rgb2,
+// acento (tecla Esc), recorte, giro. Ej.: --param cuerpo=1c1f26 --param acento=ff6a13 --param rgb1=ff6a13. Unidad: 1 u = paso de una tecla.
+// Teclas con perfil esculpido por filas (escalón e inclinación), leyendas tenues, luz RGB entre teclas (azul →
+// violeta), rueda de volumen moleteada, botones multimedia con icono y LEDs de estado. Luz común: tg-comun.js.
+import * as THREE from 'three'
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js'
+import { preparar, luces, camara, BLANCO, OSCURO, RGB1, RGB2, ACENTO, GIRO, CLARO } from './estudio-producto.js'
+const { r, s, W, H } = preparar()
+
+const blanco = new THREE.MeshPhysicalMaterial({ color: BLANCO, roughness: 0.5, clearcoat: 0.15, clearcoatRoughness: 0.4 })
+const carcasa = new THREE.MeshPhysicalMaterial({ color: new THREE.Color(BLANCO).multiplyScalar(CLARO ? 0.95 : 1.25), roughness: 0.34, metalness: 0.15, clearcoat: 0.5, clearcoatRoughness: 0.22 })
+const oscuro = new THREE.MeshPhysicalMaterial({ color: OSCURO, roughness: 0.45, metalness: 0.3 })
+const metal = new THREE.MeshPhysicalMaterial({ color: 0x9aa2ad, roughness: 0.3, metalness: 0.85 })
+
+// Luz RGB en la placa (solo se ve entre teclas): azul → violeta → azul
+const cv = document.createElement('canvas'); cv.width = 512; cv.height = 8
+const cx = cv.getContext('2d'); const g = cx.createLinearGradient(0, 0, 512, 0)
+const _h = k => '#' + new THREE.Color(k).getHexString(); g.addColorStop(0, _h(RGB1)); g.addColorStop(0.5, '#' + new THREE.Color(RGB1).lerp(new THREE.Color(RGB2), 0.5).getHexString()); g.addColorStop(1, _h(RGB2))
+cx.fillStyle = g; cx.fillRect(0, 0, 512, 8)
+const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace
+const placa = new THREE.MeshStandardMaterial({ color: CLARO ? 0xd2d6dd : new THREE.Color(BLANCO).multiplyScalar(1.5), roughness: 0.6 })
+// halo RGB bajo cada tecla: textura de caja difuminada (se ve solo el borde que asoma entre teclas)
+const hc = document.createElement('canvas'); hc.width = hc.height = 128
+{ const x = hc.getContext('2d'); x.filter = 'blur(10px)'; x.fillStyle = '#fff'; x.fillRect(22, 22, 84, 84) }
+const htex = new THREE.CanvasTexture(hc)
+const colRGB = t => new THREE.Color().lerpColors(new THREE.Color(RGB1), new THREE.Color(RGB2), Math.min(1, Math.max(0, t)))
+const matHalo = new Map()
+function halo(t) { const k = Math.round(t * 12); if (!matHalo.has(k)) matHalo.set(k, new THREE.MeshBasicMaterial({ color: colRGB(k / 12).lerp(new THREE.Color(0xffffff), 0.12), alphaMap: htex, transparent: true, opacity: 0.72, depthWrite: false })); return matHalo.get(k) }
+
+// leyendas: textura de canvas por etiqueta (gris tenue sobre transparente)
+const cacheEt = new Map()
+function etiqueta(txt, w) {
+  const k = txt + '|' + w
+  if (cacheEt.has(k)) return cacheEt.get(k)
+  const c = document.createElement('canvas'); c.width = Math.round(128 * w); c.height = 128
+  const x = c.getContext('2d'); const _ley = CLARO ? '#737a86' : '#aeb4bf'; x.fillStyle = _ley; x.strokeStyle = _ley; x.lineWidth = 7; x.lineCap = 'round'; x.lineJoin = 'round'
+  if (txt.startsWith('@')) { // iconos multimedia
+    const m = 64, t = txt.slice(1)
+    if (t === 'play') { x.beginPath(); x.moveTo(40, 38); x.lineTo(40, 90); x.lineTo(72, 64); x.closePath(); x.fill(); x.fillRect(80, 38, 9, 52); x.fillRect(95, 38, 9, 52) }
+    if (t === 'prev') { x.fillRect(30, 40, 9, 48); x.beginPath(); x.moveTo(90, 40); x.lineTo(90, 88); x.lineTo(42, 64); x.closePath(); x.fill() }
+    if (t === 'next') { x.fillRect(89, 40, 9, 48); x.beginPath(); x.moveTo(38, 40); x.lineTo(38, 88); x.lineTo(86, 64); x.closePath(); x.fill() }
+    if (t === 'mute') { x.beginPath(); x.moveTo(30, 52); x.lineTo(46, 52); x.lineTo(66, 34); x.lineTo(66, 94); x.lineTo(46, 76); x.lineTo(30, 76); x.closePath(); x.fill(); x.beginPath(); x.moveTo(78, 50); x.lineTo(102, 78); x.moveTo(102, 50); x.lineTo(78, 78); x.stroke() }
+  } else {
+    x.font = `600 ${txt.length > 3 ? 30 : 38}px Arial, sans-serif`; x.textBaseline = 'top'; x.fillText(txt, 18, 16)
+  }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8
+  const m = new THREE.MeshStandardMaterial({ map: t, transparent: true, roughness: 0.6, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 })
+  cacheEt.set(k, m); return m
+}
+
+// Distribución ANSI completa: [ancho] o [ancho, alto]; negativo = hueco. Leyendas en el mismo orden.
+const filas = [
+  [1, -1, 1, 1, 1, 1, -0.5, 1, 1, 1, 1, -0.5, 1, 1, 1, 1, -0.25, 1, 1, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, -0.25, 1, 1, 1, -0.25, 1, 1, 1, 1],
+  [1.5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1.5, -0.25, 1, 1, 1, -0.25, 1, 1, 1, [1, 2]],
+  [1.75, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2.25, -3.5, 1, 1, 1],
+  [2.25, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2.75, -1.25, 1, -1.25, 1, 1, 1, [1, 2]],
+  [1.25, 1.25, 1.25, 6.25, 1.25, 1.25, 1.25, 1.25, -0.25, 1, 1, 1, -0.25, 2, 1]
+]
+const leyendas = [
+  'esc F1 F2 F3 F4 F5 F6 F7 F8 F9 F10 F11 F12 prt scr pau',
+  '` 1 2 3 4 5 6 7 8 9 0 - = ⌫ ins ini re↑ num / * -',
+  'tab Q W E R T Y U I O P [ ] \\ supr fin re↓ 7 8 9 +',
+  'mayús A S D F G H J K L Ñ \' intro 4 5 6',
+  '⇧ Z X C V B N M , . - ⇧ ↑ 1 2 3 ↵',
+  'ctrl · alt _ altgr fn ≡ ctrl ← ↓ → 0 .'
+].map(f => f.split(' '))
+// perfil esculpido (tipo OEM): altura y caída de cada fila (fila 0 = funciones, atrás)
+const altoFila = [0.06, 0.07, 0.03, 0.0, 0.01, 0.03]
+const caidaFila = [-0.2, -0.16, -0.08, 0.0, 0.08, 0.13]
+const ALTO = 0.36, HUECO = 0.07, AFILA = 0.11
+const cache = new Map()
+function tecla(w, d) {
+  const k = w + 'x' + d
+  if (cache.has(k)) return cache.get(k)
+  const ww = w - HUECO, dd = d - HUECO
+  const geo = new RoundedBoxGeometry(ww, ALTO, dd, 4, 0.06)
+  const p = geo.attributes.position
+  for (let i = 0; i < p.count; i++) {
+    const y = p.getY(i), f = (y + ALTO / 2) / ALTO
+    // falda recta abajo y escalón a 1/3 de la altura: la parte de arriba se estrecha
+    const t = f < 0.3 ? 0 : (f - 0.3) / 0.7
+    p.setX(i, p.getX(i) * (1 - (AFILA * (0.25 * (f < 0.3 ? 0 : 1) + 0.75 * t)) / (ww / 2)))
+    p.setZ(i, p.getZ(i) * (1 - (AFILA * (0.25 * (f < 0.3 ? 0 : 1) + 0.75 * t)) / (dd / 2)))
+    if (y > ALTO / 2 - 0.01) p.setY(i, y - 0.01 * (1 - Math.min(1, Math.abs(p.getX(i)) / (ww / 2))))
+  }
+  geo.computeVertexNormals(); cache.set(k, geo); return geo
+}
+const teclado = new THREE.Group()
+const ANCHO = 22.5, FONDO = 6.5
+let z = 0
+filas.forEach((fila, i) => {
+  let x = 0, n = 0
+  for (const t of fila) {
+    const w = Array.isArray(t) ? t[0] : t, d = Array.isArray(t) ? t[1] : 1
+    if (w < 0) { x += -w; continue }
+    const m = new THREE.Mesh(tecla(w, d), ACENTO !== null && i === 0 && n === 0 ? new THREE.MeshPhysicalMaterial({ color: ACENTO, roughness: 0.45, clearcoat: 0.3 }) : blanco)
+    m.position.set(x + w / 2 - ANCHO / 2, 0.42 + ALTO / 2 + altoFila[i], z + d / 2 - FONDO / 2)
+    m.rotation.x = caidaFila[i]
+    const txt = leyendas[i][n++]
+    if (txt && txt !== '_' && txt !== '·') {
+      const ew = Math.max(1, w - 0.36)
+      const pl = new THREE.Mesh(new THREE.PlaneGeometry((ew - 0.0) * 0.62, 0.62), etiqueta(txt, ew))
+      pl.rotation.x = -Math.PI / 2; pl.position.set(0, ALTO / 2 + 0.003, (d > 1 ? -0.5 : 0)); m.add(pl)
+    }
+    teclado.add(m)
+    const hq = new THREE.Mesh(new THREE.PlaneGeometry(w + 0.3, d + 0.3), halo((x + w / 2) / ANCHO * 0.8 + (i / 5) * 0.2))
+    hq.rotation.x = -Math.PI / 2; hq.position.set(x + w / 2 - ANCHO / 2, 0.365, z + d / 2 - FONDO / 2); teclado.add(hq)
+    x += w
+  }
+  z += i === 0 ? 1.5 : 1
+})
+// carcasa fina con bisel, placa con luz
+const caja = new THREE.Mesh(new RoundedBoxGeometry(ANCHO + 0.8, 0.5, FONDO + 1.0, 6, 0.2), carcasa)
+caja.position.set(0, 0.06, -0.12); teclado.add(caja)
+const pl = new THREE.Mesh(new THREE.BoxGeometry(ANCHO + 0.1, 0.06, FONDO + 0.1), placa)
+pl.position.y = 0.33; teclado.add(pl)
+// zona multimedia arriba a la derecha: 4 botones con icono, rueda de volumen moleteada y LEDs de estado
+const zM = -FONDO / 2 + 0.5
+{
+  const RW = 0.3, banda = new THREE.CylinderGeometry(RW, RW, 0.62, 144, 1, true), bp = banda.attributes.position
+  for (let i = 0; i < bp.count; i++) { const x = bp.getX(i), zz = bp.getZ(i), a = Math.atan2(zz, x), f = RW + 0.02 * (0.5 + 0.5 * Math.tanh(3 * Math.cos(a * 36))); bp.setX(i, Math.cos(a) * f); bp.setZ(i, Math.sin(a) * f) }
+  banda.computeVertexNormals()
+  const rueda = new THREE.Group(); rueda.add(new THREE.Mesh(banda, metal))
+  for (const sx of [-1, 1]) { const t = new THREE.Mesh(new THREE.CylinderGeometry(RW - 0.01, RW - 0.01, 0.02, 64), oscuro); t.position.y = sx * 0.31; rueda.add(t) }
+  rueda.rotation.z = Math.PI / 2; rueda.position.set(ANCHO / 2 - 0.5, 0.6, zM); teclado.add(rueda)
+  const hueco = new THREE.Mesh(new RoundedBoxGeometry(0.86, 0.1, 0.5, 3, 0.04), oscuro); hueco.position.set(ANCHO / 2 - 0.5, 0.36, zM); teclado.add(hueco)
+  const iconos = ['@prev', '@play', '@next', '@mute']
+  iconos.forEach((ic, i) => {
+    const b = new THREE.Mesh(new RoundedBoxGeometry(0.62, 0.14, 0.4, 3, 0.06), blanco)
+    b.position.set(ANCHO / 2 - 3.65 + i * 0.75, 0.5, zM); teclado.add(b)
+    const e = new THREE.Mesh(new THREE.PlaneGeometry(0.34, 0.34), etiqueta(ic, 1)); e.rotation.x = -Math.PI / 2; e.position.set(0, 0.072, 0); b.add(e)
+  })
+  for (let i = 0; i < 3; i++) {
+    const led = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.02, 20), new THREE.MeshBasicMaterial({ color: i === 0 ? 0x6fb4ff : 0xa58bff }))
+    led.position.set(ANCHO / 2 - 3.1 + i * 0.45, 0.32, -FONDO / 2 - 0.42); teclado.add(led)
+  }
+}
+teclado.rotation.y = -0.5 + GIRO
+teclado.rotation.x = 0.02
+s.add(teclado)
+
+const c = camara(teclado, W, H, [-0.12, 0.85, 1], [0, 1, 0], 20, 0.56)
+luces(s, c)
+r.render(s, c); window.listo = true
+</script></body></html>

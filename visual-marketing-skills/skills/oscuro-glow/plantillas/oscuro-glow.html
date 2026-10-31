@@ -1,0 +1,283 @@
+<!doctype html>
+<!--
+  PLANTILLA «OSCURO-GLOW» · lanzamiento u oferta sobre azul noche: titular enorme en mayúsculas y plateado, dos
+  tarjetas oscuras con borde luminoso fino y halo contenido (las cifras de la campaña), CTA en píldora clara y, al
+  fondo, desenfocados, un gráfico de velas y el portátil del producto con una luz grande detrás. Cinco formatos:
+    hero (1600x900), redes-1x1 (1080x1080), redes-4x5 (1080x1350), banner-x (1500x500) y story (1080x1920).
+  Exportar a 2x (PNG nítido), desde la carpeta de esta plantilla, con oscuro-glow.css al lado:
+    node ../../piezas-graficas/scripts/exportar.mjs oscuro-glow.html --marca marca.json --escala 2
+  Reglas:
+    · La marca sale de marca.json (skill direccion-de-arte): colores y fuentes en var(--…), y nombre, web y logo en
+      los elementos con data-marca. Aquí no se escribe ningún color suelto; los tokens del look (--glow, --fondo-1…)
+      se derivan en oscuro-glow.css y se pueden fijar en marca.json → colores.
+    · Cada pieza lleva data-estilo="oscuro-glow": el exportador acepta los halos de las tarjetas (alfa ≤ 0,6,
+      desenfoque ≤ 8 % del lado corto, 3 como mucho) y avisa de text-shadow y de desenfoques fuera del fondo.
+    · Velas y portátil son capas de fondo: data-fondo + aria-hidden, sin texto, en SVG (los dibuja el script del
+      final con una semilla fija: misma semilla, mismo dibujo; data-paso fija la separación de las velas, 15 px por
+      defecto). Solo ahí vale el blur.
+    · El texto siempre en HTML. Jerarquía: titular → tarjetas → CTA. Dos tarjetas, una cifra en cada una.
+  Contenido de ejemplo: Vértice, app de inversión ficticia (cámbialo por la oferta y las cifras reales de tu marca;
+  nada de prometer rentabilidad).
+-->
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Oscuro glow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=block" rel="stylesheet">
+<link rel="stylesheet" href="oscuro-glow.css">
+<style>
+  :root {
+    /* Tokens de marca (los sustituye marca.json). Ejemplo: Vértice, marca ficticia */
+    --papel: #f4f6fb; --superficie: #ffffff; --bloque: #eef1f8;
+    --tinta: #0a1024; --texto: #273049; --suave: #59627a; --apagado: #7a8399; --linea: #dde2ee;
+    --noche: #050a1a; --noche-2: #0c1530; --noche-linea: #1c2747; --claro: #f2f5ff; --claro-suave: #a3afcf;
+    --acento: #3d8bff; --acento-texto: #1f56d6; --sobre-acento: #050a1a;
+    --fuente: 'Poppins', system-ui, sans-serif; --mono: ui-monospace, monospace;
+    --radio: 22px;
+    /* --fuente-display: sale de tipografia.display; si la marca no la trae, el titular usa --fuente */
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0 }
+  body { background: #11131a; padding: 60px; display: flex; flex-direction: column; align-items: flex-start; gap: 60px; font-family: var(--fuente) }
+</style>
+</head>
+<body>
+
+<!-- ═══ HERO 16:9 · 1600x900. Como la referencia: logo centrado arriba; a la izquierda la columna de texto centrada
+     en su eje (x ≈ 28 %); a la derecha las dos tarjetas (x 53-93 %, y 30-60 %) con el portátil desenfocado debajo
+     y la luz grande detrás. Radio de tarjeta 28 px (1,75 % del ancho); halo de 40 px (4,4 % del lado corto) -->
+<section class="og-escena" data-pieza="hero" data-estilo="oscuro-glow" data-ancho="1600" data-alto="900" data-margen="64" data-min-letra="18"
+         style="width:1600px;height:900px;--og-radio:28px;--halo:40px;--luz-x:73%;--luz-y:62%;--luz-w:40%;--luz-h:62%">
+  <div class="og-velas" data-fondo aria-hidden="true" data-semilla="11" style="left:20px;top:96px;width:900px;height:330px;--velas-opacidad:.2;--velas-blur:2.5px"></div>
+  <div class="og-velas" data-fondo aria-hidden="true" data-semilla="27" style="left:1020px;top:430px;width:600px;height:440px;--velas-opacidad:.24;--velas-blur:3px"></div>
+  <div class="og-velas" data-fondo aria-hidden="true" data-semilla="41" data-paso="17" style="left:1360px;top:250px;width:300px;height:470px;--velas-opacidad:.26;--velas-blur:2.5px;--velas-mascara:linear-gradient(90deg,transparent,#000 40%,#000);"></div>
+  <div class="og-portatil" data-fondo aria-hidden="true" data-semilla="5" style="left:857px;top:322px;width:620px"></div>
+
+  <div class="og-marca" style="left:800px;top:72px;font-size:34px"><span class="og-logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 6h7.2L16 21.5 21.8 6H29L19.4 27h-6.8z" fill="currentColor"/></svg></span><span data-marca="nombre">Vértice</span></div>
+
+  <div class="og-columna" style="left:452px;top:236px">
+    <h1 class="og-titular" style="font-size:92px">Opera sin<br>comisiones</h1>
+    <p class="og-sub" style="font-size:35px;margin-top:12px">Tu primer mes en <span data-marca="nombre">Vértice</span>, gratis</p>
+    <p class="og-apoyo" style="font-size:30px;margin-top:46px">Abres tu cuenta en minutos,<br><b>operas desde el primer día.</b></p>
+    <span class="og-cta" style="font-size:26px;margin-top:46px">Abre tu cuenta</span>
+    <p class="og-url" style="font-size:24px;margin-top:20px">En <span data-marca="web_texto">vertice.app</span></p>
+  </div>
+
+  <div class="og-tarjeta" style="font-size:22px;left:850px;top:270px;width:290px;height:262px">
+    <p class="og-cifra">0<span class="og-unidad">%</span></p>
+    <p class="og-pie">de comisión<br>durante 30 días</p>
+  </div>
+  <div class="og-tarjeta" style="font-size:22px;left:1194px;top:270px;width:290px;height:262px">
+    <p class="og-cifra"><span class="og-unidad antes">+</span>120</p>
+    <p class="og-pie">mercados<br>para operar</p>
+  </div>
+</section>
+
+<!-- ═══ REDES 1:1 · 1080x1080. Logo arriba centrado, titular centrado, tarjetas lado a lado con el portátil detrás
+     (asoma su base) y la CTA abajo. Sin apoyo: no cabe con aire -->
+<section class="og-escena" data-pieza="redes-1x1" data-estilo="oscuro-glow" data-ancho="1080" data-alto="1080" data-margen="80" data-min-letra="22"
+         style="width:1080px;height:1080px;--og-radio:22px;--halo:38px;--luz-x:50%;--luz-y:62%;--luz-w:62%;--luz-h:46%">
+  <div class="og-velas" data-fondo aria-hidden="true" data-semilla="11" style="left:0;top:120px;width:1080px;height:330px;--velas-opacidad:.15;--velas-blur:2.5px"></div>
+  <div class="og-velas" data-fondo aria-hidden="true" data-semilla="27" style="left:0;top:640px;width:1080px;height:420px;--velas-opacidad:.2;--velas-blur:3px"></div>
+  <div class="og-portatil" data-fondo aria-hidden="true" data-semilla="5" style="left:250px;top:490px;width:580px"></div>
+
+  <div class="og-marca" style="left:540px;top:92px;font-size:30px"><span class="og-logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 6h7.2L16 21.5 21.8 6H29L19.4 27h-6.8z" fill="currentColor"/></svg></span><span data-marca="nombre">Vértice</span></div>
+
+  <div class="og-columna" style="left:540px;top:150px">
+    <h1 class="og-titular" style="font-size:112px">Opera sin<br>comisiones</h1>
+    <p class="og-sub" style="font-size:36px;margin-top:12px">Tu primer mes en <span data-marca="nombre">Vértice</span>, gratis</p>
+  </div>
+
+  <div class="og-tarjeta" style="font-size:22px;--cifra:4.8em;--pie:1.4em;left:170px;top:468px;width:344px;height:286px">
+    <p class="og-cifra">0<span class="og-unidad">%</span></p>
+    <p class="og-pie">de comisión<br>durante 30 días</p>
+  </div>
+  <div class="og-tarjeta" style="font-size:22px;--cifra:4.8em;--pie:1.4em;left:566px;top:468px;width:344px;height:286px">
+    <p class="og-cifra"><span class="og-unidad antes">+</span>120</p>
+    <p class="og-pie">mercados<br>para operar</p>
+  </div>
+
+  <div class="og-columna" style="left:540px;top:846px">
+    <span class="og-cta" style="font-size:28px">Abre tu cuenta</span>
+    <p class="og-url" style="font-size:26px;margin-top:20px">En <span data-marca="web_texto">vertice.app</span></p>
+  </div>
+</section>
+
+<!-- ═══ REDES 4:5 · 1080x1350 (post o diapositiva). Como el 1:1, más grande y con el apoyo de dos líneas: titular a
+     128 px (≈ 70 % del ancho), tarjetas de 432x350 a todo el ancho útil con cifras de 150 px, y el portátil detrás
+     (su pantalla empieza bajo el borde de arriba de las tarjetas y su base acaba antes del apoyo) -->
+<section class="og-escena" data-pieza="redes-4x5" data-estilo="oscuro-glow" data-ancho="1080" data-alto="1350" data-margen="80" data-min-letra="22"
+         style="width:1080px;height:1350px;--og-radio:24px;--halo:40px;--luz-x:50%;--luz-y:52%;--luz-w:80%;--luz-h:36%">
+  <div class="og-velas" data-fondo aria-hidden="true" data-semilla="11" style="left:0;top:130px;width:1080px;height:420px;--velas-opacidad:.15;--velas-blur:2.5px"></div>
+  <div class="og-velas" data-fondo aria-hidden="true" data-semilla="27" style="left:0;top:900px;width:1080px;height:450px;--velas-opacidad:.18;--velas-blur:3px"></div>
+  <div class="og-portatil" data-fondo aria-hidden="true" data-semilla="5" style="left:210px;top:560px;width:660px"></div>
+
+  <div class="og-marca" style="left:540px;top:92px;font-size:32px"><span class="og-logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 6h7.2L16 21.5 21.8 6H29L19.4 27h-6.8z" fill="currentColor"/></svg></span><span data-marca="nombre">Vértice</span></div>
+
+  <div class="og-columna" style="left:540px;top:146px">
+    <h1 class="og-titular" style="font-size:128px">Opera sin<br>comisiones</h1>
+    <p class="og-sub" style="font-size:40px;margin-top:14px">Tu primer mes en <span data-marca="nombre">Vértice</span>, gratis</p>
+  </div>
+
+  <div class="og-tarjeta" style="font-size:30px;--cifra:5em;--pie:1.07em;left:88px;top:530px;width:432px;height:350px">
+    <p class="og-cifra">0<span class="og-unidad">%</span></p>
+    <p class="og-pie">de comisión<br>durante 30 días</p>
+  </div>
+  <div class="og-tarjeta" style="font-size:30px;--cifra:5em;--pie:1.07em;left:560px;top:530px;width:432px;height:350px">
+    <p class="og-cifra"><span class="og-unidad antes">+</span>120</p>
+    <p class="og-pie">mercados<br>para operar</p>
+  </div>
+
+  <div class="og-columna" style="left:540px;top:976px">
+    <p class="og-apoyo" style="font-size:32px">Abres tu cuenta en minutos,<br><b>operas desde el primer día.</b></p>
+    <span class="og-cta" style="font-size:34px;margin-top:34px">Abre tu cuenta</span>
+    <p class="og-url" style="font-size:28px;margin-top:16px">En <span data-marca="web_texto">vertice.app</span></p>
+  </div>
+</section>
+
+<!-- ═══ BANNER DE X · 1500x500. La foto de perfil tapa abajo a la izquierda (≈ 400x200) y el móvil recorta ~60 px
+     arriba y abajo: texto y tarjetas entre y = 64 e y = 436, y nada de texto en x < 400 por debajo de y = 300 -->
+<section class="og-escena" data-pieza="banner-x" data-estilo="oscuro-glow" data-ancho="1500" data-alto="500" data-margen="64" data-min-letra="18"
+         style="width:1500px;height:500px;--og-radio:22px;--halo:26px;--luz-x:77%;--luz-y:66%;--luz-w:34%;--luz-h:80%">
+  <div class="og-velas" data-fondo aria-hidden="true" data-semilla="11" style="left:0;top:60px;width:820px;height:260px;--velas-opacidad:.16;--velas-blur:2px"></div>
+  <div class="og-velas" data-fondo aria-hidden="true" data-semilla="27" style="left:860px;top:250px;width:640px;height:250px;--velas-opacidad:.22;--velas-blur:2.5px"></div>
+  <div class="og-portatil" data-fondo aria-hidden="true" data-semilla="5" style="left:946px;top:196px;width:440px;--portatil-blur:4px"></div>
+
+  <div class="og-marca" style="left:580px;top:72px;font-size:26px"><span class="og-logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 6h7.2L16 21.5 21.8 6H29L19.4 27h-6.8z" fill="currentColor"/></svg></span><span data-marca="nombre">Vértice</span></div>
+
+  <div class="og-columna" style="left:580px;top:122px">
+    <h1 class="og-titular" style="font-size:62px">Opera sin<br>comisiones</h1>
+    <p class="og-sub" style="font-size:25px;margin-top:8px">Tu primer mes en <span data-marca="nombre">Vértice</span>, gratis</p>
+    <span class="og-cta" style="font-size:21px;margin-top:24px">Abre tu cuenta</span>
+    <p class="og-url" style="font-size:19px;margin-top:12px">En <span data-marca="web_texto">vertice.app</span></p>
+  </div>
+
+  <div class="og-tarjeta" style="font-size:15px;left:930px;top:120px;width:226px;height:214px">
+    <p class="og-cifra">0<span class="og-unidad">%</span></p>
+    <p class="og-pie">de comisión<br>durante 30 días</p>
+  </div>
+  <div class="og-tarjeta" style="font-size:15px;left:1186px;top:120px;width:226px;height:214px">
+    <p class="og-cifra"><span class="og-unidad antes">+</span>120</p>
+    <p class="og-pie">mercados<br>para operar</p>
+  </div>
+</section>
+
+<!-- ═══ STORY · 1080x1920. Instagram tapa 250 px arriba y 340 abajo: todo el texto entre y = 278 e y = 1572.
+     Titular a 150 px (≈ 83 % del ancho, margen de 80), tarjetas de 424x384 a todo el ancho útil con cifras de
+     170 px y pie de 38 px, el portátil detrás (800 px), apoyo, CTA de 42 px y web -->
+<section class="og-escena" data-pieza="story" data-estilo="oscuro-glow" data-ancho="1080" data-alto="1920" data-margen="80" data-min-letra="28"
+         style="width:1080px;height:1920px;--og-radio:24px;--halo:44px;--luz-x:50%;--luz-y:52%;--luz-w:85%;--luz-h:32%">
+  <div class="og-velas" data-fondo aria-hidden="true" data-semilla="11" style="left:0;top:170px;width:1080px;height:480px;--velas-opacidad:.15;--velas-blur:3px"></div>
+  <div class="og-velas" data-fondo aria-hidden="true" data-semilla="27" style="left:0;top:1240px;width:1080px;height:640px;--velas-opacidad:.18;--velas-blur:3px"></div>
+  <div class="og-portatil" data-fondo aria-hidden="true" data-semilla="5" style="left:140px;top:800px;width:800px;--portatil-blur:6px"></div>
+
+  <div class="og-marca" style="left:540px;top:286px;font-size:42px"><span class="og-logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 6h7.2L16 21.5 21.8 6H29L19.4 27h-6.8z" fill="currentColor"/></svg></span><span data-marca="nombre">Vértice</span></div>
+
+  <div class="og-columna" style="left:540px;top:346px">
+    <h1 class="og-titular" style="font-size:150px">Opera sin<br>comisiones</h1>
+    <p class="og-sub" style="font-size:46px;margin-top:14px">Tu primer mes en <span data-marca="nombre">Vértice</span>, gratis</p>
+  </div>
+
+  <div class="og-tarjeta" style="font-size:34px;--cifra:5em;--pie:1.12em;left:96px;top:780px;width:424px;height:384px">
+    <p class="og-cifra">0<span class="og-unidad">%</span></p>
+    <p class="og-pie">de comisión<br>durante 30 días</p>
+  </div>
+  <div class="og-tarjeta" style="font-size:34px;--cifra:5em;--pie:1.12em;left:560px;top:780px;width:424px;height:384px">
+    <p class="og-cifra"><span class="og-unidad antes">+</span>120</p>
+    <p class="og-pie">mercados<br>para operar</p>
+  </div>
+
+  <div class="og-columna" style="left:540px;top:1296px">
+    <p class="og-apoyo" style="font-size:38px">Abres tu cuenta en minutos,<br><b>operas desde el primer día.</b></p>
+    <span class="og-cta" style="font-size:42px;margin-top:32px">Abre tu cuenta</span>
+    <p class="og-url" style="font-size:34px;margin-top:14px">En <span data-marca="web_texto">vertice.app</span></p>
+  </div>
+</section>
+
+<script>
+/* Material de fondo en SVG, determinista: la semilla (data-semilla) fija el dibujo. Colores por clase, con var(--…),
+   así cambian con la marca. Las velas se ajustan al tamaño de su capa; el portátil escala con su ancho. */
+(() => {
+  const azar = s => () => { s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296 }
+  const f = n => n.toFixed(1)
+
+  // Velas: paseo aleatorio con tendencia suave al alza. Como un gráfico de verdad: rejilla con su eje de precios
+  // (pastillas sin texto), velas con mecha, volumen abajo, dos medias móviles y la línea del último precio
+  for (const el of document.querySelectorAll('.og-velas')) {
+    const W = el.clientWidth, H = el.clientHeight, r = azar(+el.dataset.semilla || 7)
+    const n = Math.max(14, Math.round(W / (+el.dataset.paso || 15))), tend = +(el.dataset.tendencia ?? .1)
+    const v = []; let p = 0
+    for (let i = 0; i < n; i++) { const a = p, c = a + (r() - .5 + tend) * 4; v.push({ a, c, h: Math.max(a, c) + r() * 1.8, l: Math.min(a, c) - r() * 1.8, vol: .2 + r() * .8 }); p = c }
+    const lo = Math.min(...v.map(x => x.l)), hi = Math.max(...v.map(x => x.h))
+    const Y = q => H * .06 + (1 - (q - lo) / (hi - lo)) * H * .7
+    const paso = W / n, ancho = Math.max(3, paso * .56), eje = W * .76
+    let s = `<svg viewBox="0 0 ${W} ${H}">`
+    for (let i = 1; i < 6; i++) { const y = H * .8 * i / 6; s += `<rect class="og-rejilla" x="0" y="${f(y)}" width="${W}" height="1"/><rect class="og-etiqueta" x="${f(eje)}" y="${f(y - 6)}" width="34" height="12" rx="3"/>` }
+    for (let i = 8; i < n; i += 8) s += `<rect class="og-rejilla og-rejilla-v" x="${f(i * paso)}" y="0" width="1" height="${f(H * .82)}"/>`
+    v.forEach((x, i) => {
+      const cx = (i + .5) * paso, y1 = Y(Math.max(x.a, x.c)), y2 = Y(Math.min(x.a, x.c)), hv = H * .13 * x.vol
+      s += `<g class="${x.c >= x.a ? 'og-sube' : 'og-baja'}"><rect x="${f(cx - .8)}" y="${f(Y(x.h))}" width="1.6" height="${f(Y(x.l) - Y(x.h))}"/>`
+        + `<rect x="${f(cx - ancho / 2)}" y="${f(y1)}" width="${f(ancho)}" height="${f(Math.max(2, y2 - y1))}" rx="1"/>`
+        + `<rect class="og-volumen" x="${f(cx - ancho / 2)}" y="${f(H - hv)}" width="${f(ancho)}" height="${f(hv)}" rx="1"/></g>`
+    })
+    const media = k => v.map((x, i) => { const t = v.slice(Math.max(0, i - k), i + 1); return t.reduce((m, q) => m + q.c, 0) / t.length })
+    const trazo = m => m.map((q, i) => `${i ? 'L' : 'M'}${f((i + .5) * paso)} ${f(Y(q))}`).join('')
+    const ult = Y(v[n - 1].c)
+    s += `<path class="og-media" d="${trazo(media(7))}"/><path class="og-media og-media-lenta" d="${trazo(media(21))}"/>`
+      + `<rect class="og-ultimo" x="0" y="${f(ult)}" width="${f(eje)}" height="1.2"/><rect class="og-etiqueta-viva" x="${f(eje)}" y="${f(ult - 7)}" width="40" height="14" rx="3"/></svg>`
+    el.innerHTML = s
+  }
+
+  // Portátil con el panel del producto, de frente: pantalla con su brillo, barra con pestañas, lateral, gráfico
+  // grande, lista de mercados y una fila de 6 indicadores con icono y minigráfico; barbilla oscura y base de aluminio
+  // con reflejo y muesca, y su sombra. Sin texto
+  for (const el of document.querySelectorAll('.og-portatil')) {
+    const sem = +el.dataset.semilla || 5, r = azar(sem), id = `og-p-${sem}-${Math.round(el.offsetLeft)}-${Math.round(el.offsetTop)}`
+    const n = 44, pts = []; let p = 0
+    for (let i = 0; i < n; i++) { p += (r() - .4) * 5; pts.push(p) }
+    const lo = Math.min(...pts), hi = Math.max(...pts)
+    const X = i => 262 + 430 * i / (n - 1), Y = q => 352 - (q - lo) / (hi - lo) * 170
+    const linea = pts.map((q, i) => `${i ? 'L' : 'M'}${f(X(i))} ${f(Y(q))}`).join('')
+    const parada = (o, c, a) => `<stop offset="${o}" style="stop-color:var(${c});stop-opacity:${a}"/>`
+    let s = `<svg viewBox="0 0 1000 610"><defs>`
+      + `<linearGradient id="${id}-a" x1="0" y1="0" x2="0" y2="1">${parada(0, '--glow', .55)}${parada(1, '--glow', 0)}</linearGradient>`
+      + `<radialGradient id="${id}-b" cx=".5" cy=".28" r=".62">${parada(0, '--glow', .34)}${parada(.6, '--glow', .08)}${parada(1, '--glow', 0)}</radialGradient>`
+      + `<linearGradient id="${id}-c" x1="0" y1="0" x2="1" y2="0">${parada(0, '--claro-suave', .5)}${parada(.22, '--claro', .95)}${parada(.43, '--claro-suave', .75)}${parada(.57, '--claro-suave', .75)}${parada(.78, '--claro', .92)}${parada(1, '--claro-suave', .45)}</linearGradient>`
+      + `<radialGradient id="${id}-d" cx=".5" cy=".5" r=".5">${parada(0, '--noche', .8)}${parada(1, '--noche', 0)}</radialGradient></defs>`
+      + `<ellipse cx="500" cy="590" rx="520" ry="22" style="fill:url(#${id}-d)"/>`
+      + `<rect class="p-marco" x="90" y="0" width="820" height="548" rx="22"/><rect class="p-pantalla" x="106" y="16" width="788" height="502" rx="10"/>`
+      + `<rect x="106" y="16" width="788" height="502" rx="10" style="fill:url(#${id}-b)"/>`
+      + `<circle class="p-acento" cx="138" cy="44" r="10"/>`
+    for (let i = 0; i < 5; i++) s += i === 1 ? `<rect class="p-pestana" x="${168 + i * 72}" y="34" width="62" height="20" rx="10"/>` : `<rect class="p-tenue" x="${168 + i * 72}" y="39" width="${50 - (i % 2) * 12}" height="10" rx="5"/>`
+    s += `<rect class="p-panel" x="676" y="32" width="164" height="24" rx="12"/><rect class="p-tenue" x="690" y="41" width="70" height="6" rx="3"/><circle class="p-claro" cx="866" cy="44" r="12"/>`
+    for (let i = 0; i < 8; i++) s += `<rect class="${i === 1 ? 'p-acento' : 'p-tenue'}" x="126" y="${92 + i * 36}" width="${70 + (i * 17) % 34}" height="9" rx="4.5"/>`
+    s += `<rect class="p-panel" x="244" y="80" width="466" height="300" rx="12"/><rect class="p-claro" x="262" y="100" width="120" height="10" rx="5"/>`
+      + `<rect class="p-claro" x="262" y="122" width="170" height="22" rx="7"/><rect class="p-acento" x="446" y="126" width="58" height="15" rx="7.5"/>`
+    for (let i = 0; i < 4; i++) s += `<rect class="p-rejilla" x="262" y="${196 + i * 44}" width="430" height="1.2"/>`
+    s += `<path d="${linea}L${X(n - 1)} 372L262 372Z" style="fill:url(#${id}-a)"/><path class="p-linea" d="${linea}"/>`
+      + `<circle class="p-claro" cx="${f(X(n - 1))}" cy="${f(Y(pts[n - 1]))}" r="7"/>`
+      + `<rect class="p-panel" x="726" y="80" width="150" height="300" rx="12"/>`
+    for (let i = 0; i < 7; i++) {
+      const y = 100 + i * 39
+      s += `<circle class="p-tenue" cx="748" cy="${y + 5}" r="8"/><rect class="p-tenue" x="764" y="${y}" width="${42 + (i * 13) % 24}" height="9" rx="4.5"/>`
+        + `<rect class="${r() > .35 ? 'p-acento' : 'p-claro'}" x="836" y="${y}" width="24" height="9" rx="4.5"/>`
+    }
+    for (let i = 0; i < 6; i++) {
+      const x = 126 + i * 128, k = []; let q = 0
+      for (let j = 0; j < 9; j++) { q += (r() - .42) * 4; k.push(q) }
+      const kl = Math.min(...k), kh = Math.max(...k)
+      const mini = k.map((u, j) => `${j ? 'L' : 'M'}${f(x + 56 + j * 6.5)} ${f(478 - (u - kl) / ((kh - kl) || 1) * 18)}`).join('')
+      s += `<rect class="p-panel" x="${x}" y="396" width="116" height="108" rx="12"/><rect class="p-icono" x="${x + 14}" y="412" width="22" height="22" rx="6"/>`
+        + `<rect class="p-tenue" x="${x + 44}" y="414" width="${44 + (i * 11) % 20}" height="7" rx="3.5"/><rect class="p-tenue" x="${x + 44}" y="426" width="${28 + (i * 7) % 16}" height="5" rx="2.5"/>`
+        + `<rect class="p-claro" x="${x + 14}" y="452" width="${30 + (i * 13) % 14}" height="11" rx="4"/><path class="p-mini" d="${mini}"/>`
+    }
+    s += `<rect class="p-barbilla" x="106" y="518" width="788" height="18" rx="2"/>`
+      + `<path d="M0 552H1000V562Q1000 584 958 588H42Q0 584 0 562Z" style="fill:url(#${id}-c)"/><rect class="p-filo" x="0" y="549" width="1000" height="4" rx="2"/>`
+      + `<path class="p-muesca" d="M428 552H572V556Q572 562 564 562H436Q428 562 428 556Z"/></svg>`
+    el.innerHTML = s
+  }
+})()
+</script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+{
+  "nombre": "Pliego",
+  "ficticia": true,
+  "sector": "Aplicación de facturación para autónomos y estudios pequeños",
+  "lema": "Facturas claras, cobros a tiempo.",
+  "web": "https://pliego.app",
+  "web_texto": "pliego.app",
+  "correo_contacto": "hola@pliego.app",
+  "tono": "Cercano y directo, de tú. Frases cortas con datos concretos. Sin emojis ni exclamaciones.",
+  "logo": {
+    "svg": "<svg viewBox=\"0 0 32 32\" aria-hidden=\"true\"><path d=\"M6 3h14l7 7v19H6z\" fill=\"currentColor\"/><path d=\"M20 3v7h7z\" fill=\"currentColor\" opacity=\".45\"/></svg>",
+    "png_claro": "",
+    "png_oscuro": ""
+  },
+  "colores": {
+    "papel": "#f3f1ec",
+    "superficie": "#ffffff",
+    "tinta": "#121418",
+    "texto": "#2b2f35",
+    "suave": "#5f656e",
+    "apagado": "#80868e",
+    "linea": "#dcd8d0",
+    "bloque": "#f5f3ef",
+    "noche": "#111317",
+    "noche-2": "#1b1e24",
+    "noche-linea": "#2c3038",
+    "claro": "#f3f1ec",
+    "claro-suave": "#a1a6ad",
+    "acento": "#ff5b2e",
+    "acento-texto": "#b8330c",
+    "sobre-acento": "#121418"
+  },
+  "tipografia": {
+    "fuente": "Geist",
+    "mono": "Geist Mono",
+    "google_fonts": "family=Geist:wght@400..800&family=Geist+Mono:wght@400..600",
+    "correo": "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif"
+  },
+  "forma": {
+    "radio": "20px"
+  }
+}

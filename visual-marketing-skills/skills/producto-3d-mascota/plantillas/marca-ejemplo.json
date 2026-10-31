@@ -1,0 +1,30 @@
+{
+  "nombre": "Cometa",
+  "ficticia": true,
+  "sector": "Tienda online de videojuegos, tarjetas regalo y hardware gaming",
+  "lema": "Tu próxima partida, al mejor precio.",
+  "web": "https://cometa.store",
+  "web_texto": "cometa.store",
+  "correo_contacto": "hola@cometa.store",
+  "tono": "Cercano y con chispa, de tú. Sin emojis ni exclamaciones.",
+  "logo": {
+    "svg": "<svg viewBox=\"0 0 32 32\" aria-hidden=\"true\"><circle cx=\"21\" cy=\"11\" r=\"6.5\" fill=\"currentColor\"/><path d=\"M3.5 28.5 15 17M7 23.5l4.5-4.5M3.5 20.5l3-3\" stroke=\"currentColor\" stroke-width=\"2.6\" stroke-linecap=\"round\" fill=\"none\"/></svg>",
+    "png_claro": "",
+    "png_oscuro": ""
+  },
+  "colores": {
+    "papel": "#f5f4fb", "superficie": "#ffffff", "bloque": "#efedf8",
+    "tinta": "#0d0b24", "texto": "#2b2846", "suave": "#5f5b7a", "apagado": "#807c98", "linea": "#e0ddef",
+    "noche": "#0a0a26", "noche-2": "#141238", "noche-linea": "#262357",
+    "claro": "#f5f3ff", "claro-suave": "#a9a4cf",
+    "acento": "#8b6bff", "acento-texto": "#5a37e0", "sobre-acento": "#0a0a26"
+  },
+  "tipografia": {
+    "fuente": "Plus Jakarta Sans",
+    "display": "Plus Jakarta Sans",
+    "mono": "JetBrains Mono",
+    "google_fonts": "family=Plus+Jakarta+Sans:wght@400..800&family=JetBrains+Mono:wght@400..600",
+    "correo": "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif"
+  },
+  "forma": { "radio": "28px" }
+}

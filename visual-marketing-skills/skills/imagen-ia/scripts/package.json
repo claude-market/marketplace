@@ -1,0 +1,12 @@
+{
+  "name": "imagen-ia-scripts",
+  "private": true,
+  "type": "module",
+  "description": "Quita el fondo de fotos y renders para usarlos como recortes (data-recorte) en los looks.",
+  "dependencies": {
+    "@imgly/background-removal-node": "^1.4.5"
+  },
+  "optionalDependencies": {
+    "playwright-core": "^1.48.0"
+  }
+}

@@ -1,0 +1,253 @@
+/* ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   producto.css · componentes «producto en contexto»
+   La interfaz del producto, de verdad y con detalle, en una ventana que sangra sobre un fondo degradado suave, y
+   1-2 capas flotantes (modal, fila destacada, aviso) que cuentan UNA función. Profundidad con contención: borde de
+   ~1 px degradado, una sombra larga y suave teñida del fondo, contexto atenuado (sin desenfocar). Nada de neón ni glow.
+
+   · Todo se mide en em: el font-size del componente lo escala entero (ventana de 16-22 px en una pieza de 1080;
+     9-10 px en la cabecera de un correo de 600). El radio de las capas sale de --radio-escena (≈1,7 % del ancho
+     del lienzo: 18 px en 1080, 27 px en 1600, 10 px en 600) y es el mismo en ventana, modal y fila destacada.
+   · Colores solo con var(--…). La marca los pone desde marca.json (skill direccion-de-arte). Los de la escena
+     (--escena-1/2/3, --sobre-escena) y los estados (--ok, --pendiente, --vencida) se derivan si la marca no los trae.
+   · Este fichero es el mismo en producto-en-contexto, piezas-graficas y carrusel-instagram (con producto.js):
+     si cambias uno, copia los otros.
+   Componentes: .escena (.malla, .clara, .noche) · .ventana (.clara) con .ui-lateral, .ui-principal, .ui-barra,
+   .ui-buscador, .ui-cab, .ui-pestanas, .ui-lista, .ui-fila, .ui-avatar, .ui-chip, .ui-boton, .ui-accion ·
+   .flotante (.clara, .neutra) con .destacada, .modal, .toast, .ui-campo, .ui-opcion, .ui-interruptor ·
+   .atenuado · .i (iconos de línea de producto.js)
+   ──────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* Escena: degradado del acento a un tono claro y cálido de baja saturación (como violeta → melocotón) */
+  --escena-1: var(--acento);
+  --escena-2: color-mix(in oklab, var(--acento) 60%, #e7b9c2);
+  --escena-3: color-mix(in oklab, var(--acento) 20%, #f0d3c6);
+  --sobre-escena: var(--tinta);
+  /* Sombra teñida del fondo: oscura y de poca saturación (nunca de color vivo) */
+  --sombra: oklch(from var(--escena-1) .2 calc(c * .35) h);
+  /* Estados de la interfaz, apagados */
+  --ok: #3fae85; --pendiente: #dc9f3a; --vencida: #e0645c;
+}
+
+/* ── Escena (el lienzo). Va en la propia <section data-pieza>, no en un div hijo ────────────────────────────── */
+.escena {
+  background-color: var(--escena-2);
+  background-image: linear-gradient(200deg, var(--escena-1) 0%, color-mix(in oklab, var(--escena-1) 60%, var(--escena-2)) 35%, var(--escena-2) 65%, var(--escena-3) 100%);
+  color: var(--sobre-escena);
+}
+/* Malla: tres manchas grandes y suaves en lugar de un degradado lineal (más movimiento, mismo color) */
+.escena.malla {
+  background-image:
+    radial-gradient(60% 75% at 92% 4%, var(--escena-1) 0%, transparent 70%),
+    radial-gradient(65% 80% at 0% 100%, var(--escena-3) 0%, transparent 72%),
+    linear-gradient(200deg, color-mix(in oklab, var(--escena-1) 70%, var(--escena-2)) 0%, var(--escena-2) 60%, var(--escena-3) 100%);
+}
+/* Clara: papel con tintes muy bajos de la escena (correos claros, marcas muy sobrias) */
+.escena.clara {
+  --sombra: oklch(from var(--escena-1) .28 calc(c * .25) h);
+  background-color: var(--papel);
+  background-image:
+    radial-gradient(70% 90% at 100% 0%, color-mix(in oklab, var(--escena-2) 42%, transparent) 0%, transparent 70%),
+    radial-gradient(70% 90% at 0% 100%, color-mix(in oklab, var(--escena-3) 55%, transparent) 0%, transparent 70%);
+  color: var(--tinta);
+}
+/* Noche: fondo oscuro con una bruma del acento (grande, baja y sin borde definido: no es un brillo) */
+.escena.noche {
+  --sombra: oklch(from var(--noche) .06 c h);
+  background-color: var(--noche);
+  background-image:
+    radial-gradient(60% 70% at 88% 0%, color-mix(in oklab, var(--escena-1) 20%, transparent) 0%, transparent 70%),
+    radial-gradient(55% 65% at 0% 100%, color-mix(in oklab, var(--escena-3) 14%, transparent) 0%, transparent 70%);
+  color: var(--claro);
+}
+
+/* ── Iconos de línea (producto.js añade el sprite: <svg class="i"><use href="#i-buscar"/></svg>) ─────────────── */
+.i { width: 1.2em; height: 1.2em; flex: none; fill: none; stroke: currentColor; stroke-width: 1.6;
+     stroke-linecap: round; stroke-linejoin: round; overflow: visible }
+.i.relleno { fill: currentColor; stroke: none }
+
+/* ── Ventana de app (oscura por defecto; .clara para el modo claro) ──────────────────────────────────────────── */
+.ventana {
+  --v-fondo: var(--noche-2);
+  --v-lateral: color-mix(in oklab, var(--noche-2) 50%, var(--noche));
+  --v-texto: var(--claro);
+  --v-suave: var(--claro-suave);
+  --v-linea: color-mix(in oklab, var(--claro) 8%, transparent);
+  --v-borde: color-mix(in oklab, var(--claro) 8%, transparent);
+  --v-hover: color-mix(in oklab, var(--claro) 7%, transparent);
+  --v-campo: color-mix(in oklab, var(--claro) 3%, var(--noche-2));
+  position: absolute; display: flex; overflow: hidden;
+  background: var(--v-fondo); color: var(--v-texto);
+  border-radius: var(--radio-escena, 1.15em);
+  font-family: var(--fuente); font-size: 16px; line-height: 1.3; letter-spacing: -.006em;
+  -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums;
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--sombra) 16%, transparent),
+    0 1.6em 3.2em -.8em color-mix(in oklab, var(--sombra) 42%, transparent);
+}
+.ventana::after { content: ''; position: absolute; inset: 0; border-radius: inherit; border: 1px solid var(--v-borde); pointer-events: none }
+.ventana.clara {
+  --v-fondo: var(--superficie);
+  --v-lateral: var(--bloque);
+  --v-texto: var(--tinta);
+  --v-suave: var(--suave);
+  --v-linea: color-mix(in oklab, var(--tinta) 8%, transparent);
+  --v-borde: color-mix(in oklab, var(--tinta) 10%, transparent);
+  --v-hover: color-mix(in oklab, var(--tinta) 6%, transparent);
+  --v-campo: var(--bloque);
+}
+
+/* Sangrado: si la ventana sale del lienzo por la derecha o por abajo, pon en ella --sangra-d / --sangra-a (px que
+   salen) y su contenido se queda dentro del lienzo: la ventana se corta, el texto no */
+.ventana > .ui-principal { padding-right: var(--sangra-d, 0px); padding-bottom: var(--sangra-a, 0px) }
+.ventana > .ui-lateral { padding-bottom: calc(1.35em + var(--sangra-a, 0px)) }
+
+/* Barra lateral */
+.ui-lateral { flex: none; width: 15em; background: var(--v-lateral); border-right: 1px solid var(--v-linea);
+              padding: 1.35em .9em; display: flex; flex-direction: column; gap: .12em }
+.ui-marca { display: flex; align-items: center; gap: .6em; padding: 0 .5em; margin-bottom: 1.4em; font-size: 1.12em;
+            font-weight: 650; letter-spacing: -.025em; white-space: nowrap }
+.ui-marca > .i { margin-left: auto; color: var(--v-suave) }
+.ui-logo { flex: none; width: 1.75em; height: 1.75em; border-radius: .5em; display: grid; place-items: center;
+           background: var(--acento); color: var(--sobre-acento) }
+.ui-logo svg { width: 60%; height: 60% }
+.ui-seccion { display: flex; align-items: center; justify-content: space-between; padding: 1em .6em .45em;
+              font-size: .86em; color: var(--v-suave); white-space: nowrap }
+.ui-item { display: flex; align-items: center; gap: .7em; padding: .56em .6em; border-radius: .55em; font-size: .95em;
+           white-space: nowrap }
+.ui-item > .i { color: var(--v-suave) }
+.ui-item.activo { background: var(--v-hover) }
+.ui-item.activo > .i { color: var(--acento) }
+.ui-item.sub { padding-left: 2.25em }
+.ui-num { margin-left: auto; font-size: .9em; color: var(--v-suave) }
+.ui-punto { flex: none; width: .55em; height: .55em; border-radius: 50%; background: var(--tono, var(--acento)); margin: 0 .32em }
+
+/* Zona principal */
+.ui-principal { flex: 1; min-width: 0; display: flex; flex-direction: column }
+.ui-barra { display: flex; align-items: center; gap: .8em; padding: .95em 1.3em; border-bottom: 1px solid var(--v-linea) }
+.ui-buscador { flex: 1; max-width: 24em; display: flex; align-items: center; gap: .6em; padding: .6em .8em;
+               border-radius: .6em; background: var(--v-campo); border: 1px solid var(--v-linea);
+               color: var(--v-suave); font-size: .92em; white-space: nowrap }
+.ui-buscador kbd { margin-left: auto; font-family: var(--fuente); font-size: .9em; padding: .06em .45em;
+                   border-radius: .35em; border: 1px solid var(--v-linea); color: var(--v-suave) }
+.ui-cab { display: flex; align-items: center; justify-content: space-between; gap: 1em; padding: 1.25em 1.6em .85em }
+.ui-cab .titulo-ui { font-size: 1.35em; font-weight: 650; letter-spacing: -.025em; white-space: nowrap }
+.ui-pestanas { display: flex; gap: .3em; padding: 0 1.4em .9em; border-bottom: 1px solid var(--v-linea);
+               font-size: .88em; color: var(--v-suave) }
+.ui-pestanas span { padding: .36em .78em; border-radius: 999px; white-space: nowrap }
+.ui-pestanas .activa { background: var(--v-hover); color: var(--v-texto) }
+
+/* Lista */
+.ui-lista { padding: .35em 1em }
+.ui-fila { display: grid; grid-template-columns: auto 1fr auto 7.4em; align-items: center; gap: 1em;
+           padding: .78em .6em; border-bottom: 1px solid var(--v-linea) }
+.ui-fila:last-child { border-bottom: 0 }
+.ui-fila.oculta { visibility: hidden }
+.ui-quien { min-width: 0 }
+.ui-quien b { display: block; font-weight: 560; white-space: nowrap }
+.ui-quien small { display: block; margin-top: .2em; font-size: .8em; color: var(--v-suave); white-space: nowrap }
+.ui-eur { font-weight: 600; letter-spacing: -.01em; white-space: nowrap }
+.ui-avatar { flex: none; width: 2.25em; height: 2.25em; border-radius: 50%; display: grid; place-items: center;
+             font-size: .8em; font-weight: 650; letter-spacing: 0;
+             background: color-mix(in oklab, var(--tono, var(--acento)) 22%, transparent);
+             color: color-mix(in oklab, var(--tono, var(--acento)) 75%, var(--v-texto)) }
+
+/* Acciones del contexto (botones teñidos al ~10 % con el texto a media luz, como el fondo de un modal) */
+.ui-accion { display: flex; align-items: center; justify-content: center; gap: .7em; padding: .8em 1.2em; border-radius: .75em;
+             font-size: .95em; white-space: nowrap; color: var(--v-suave);
+             background: color-mix(in oklab, var(--tono, var(--acento)) 11%, var(--v-fondo)) }
+.ui-accion > .i { color: color-mix(in oklab, var(--tono, var(--acento)) 55%, var(--v-suave)) }
+
+/* Chips de estado */
+.ui-chip { display: inline-flex; align-items: center; gap: .42em; padding: .3em .72em; border-radius: 999px;
+           font-size: .8em; font-weight: 600; white-space: nowrap;
+           background: color-mix(in oklab, var(--tono, var(--v-suave)) 17%, transparent);
+           color: color-mix(in oklab, var(--tono, var(--v-suave)) 80%, var(--v-texto)) }
+.ui-chip::before { content: ''; width: .46em; height: .46em; border-radius: 50%; background: currentColor }
+.ui-chip.sin-punto::before { display: none }
+.ui-chip.ok { --tono: var(--ok) }
+.ui-chip.pendiente { --tono: var(--pendiente) }
+.ui-chip.vencida { --tono: var(--vencida) }
+.ui-chip.marca { --tono: var(--acento) }
+.ventana.clara .ui-chip, .flotante.clara .ui-chip { color: color-mix(in oklab, var(--tono, var(--suave)) 62%, var(--tinta)) }
+
+/* Botones de la interfaz (radio pequeño: ~8 px) */
+.ui-boton { display: inline-flex; align-items: center; gap: .45em; padding: .6em 1.05em; border-radius: .5em;
+            font-size: .92em; font-weight: 600; letter-spacing: -.01em; white-space: nowrap;
+            background: var(--acento); color: var(--sobre-acento) }
+.ui-boton.sec { background: color-mix(in oklab, var(--claro) 12%, transparent); color: var(--claro) }
+.ventana.clara .ui-boton.sec, .flotante.clara .ui-boton.sec { background: var(--bloque); color: var(--tinta) }
+
+/* ── Capas flotantes: más oscuras que lo que tapan, borde degradado de ~1 px y una sombra larga ──────────────── */
+.flotante {
+  --f-fondo: var(--noche);
+  --f-texto: var(--claro);
+  --f-suave: var(--claro-suave);
+  --f-linea: color-mix(in oklab, var(--claro) 10%, transparent);
+  --f-campo: color-mix(in oklab, var(--claro) 3%, var(--noche));
+  --borde-1: color-mix(in oklab, var(--escena-3) 80%, white);
+  --borde-2: color-mix(in oklab, var(--escena-1) 85%, white);
+  --borde-grosor: max(1px, .075em);
+  position: absolute; isolation: isolate; border-radius: var(--radio-escena, 1.15em);
+  background: var(--f-fondo); color: var(--f-texto);
+  font-family: var(--fuente); font-size: 18px; line-height: 1.3; letter-spacing: -.006em;
+  -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums;
+  box-shadow:
+    0 .12em .3em color-mix(in oklab, var(--sombra) 22%, transparent),
+    0 1.4em 2.8em -.5em color-mix(in oklab, var(--sombra) 48%, transparent);
+}
+.flotante::before {
+  content: ''; position: absolute; inset: 0; z-index: 2; border-radius: inherit; padding: var(--borde-grosor); pointer-events: none;
+  background: linear-gradient(180deg, var(--borde-1), var(--borde-2));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+}
+.flotante.clara {
+  --f-fondo: var(--superficie);
+  --f-texto: var(--tinta);
+  --f-suave: var(--suave);
+  --f-linea: var(--linea);
+  --f-campo: var(--bloque);
+  --borde-1: color-mix(in oklab, var(--escena-3) 45%, white);
+  --borde-2: color-mix(in oklab, var(--escena-1) 42%, white);
+}
+/* Borde neutro: para la segunda capa cuando ya hay una con degradado (el foco es uno) */
+.flotante.neutra { --borde-1: color-mix(in oklab, var(--claro) 16%, transparent); --borde-2: color-mix(in oklab, var(--claro) 8%, transparent) }
+.flotante.clara.neutra { --borde-1: color-mix(in oklab, var(--tinta) 12%, transparent); --borde-2: color-mix(in oklab, var(--tinta) 8%, transparent) }
+
+/* Fila destacada: la misma fila de la lista, ~1,15 veces más grande y por encima (sale ~2 em del borde de la ventana) */
+.destacada { display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 1em; padding: .95em 1.15em }
+.destacada .ui-quien small { color: var(--f-suave) }
+
+/* Modal */
+.modal { padding: 1.35em 1.45em 1.45em }
+.modal-cab { display: flex; align-items: center; gap: .62em; font-size: 1.2em; font-weight: 650; letter-spacing: -.025em; white-space: nowrap }
+.modal-cab > .i { color: var(--acento) }
+.modal-cab > .i.cerrar { margin-left: auto; color: var(--f-suave); width: 1em; height: 1em }
+.modal-texto { margin-top: .5em; font-size: .9em; line-height: 1.45; color: var(--f-suave) }
+.modal-acciones { display: flex; justify-content: space-between; align-items: center; gap: 1em; margin-top: 1.25em }
+.ui-campo { margin-top: 1.05em; padding: .66em .9em .7em; border-radius: .6em; border: 1px solid var(--f-linea); background: var(--f-campo) }
+.ui-campo label { display: block; margin-bottom: .22em; font-size: .78em; color: var(--f-suave); white-space: nowrap }
+.ui-campo > span { display: flex; align-items: center; justify-content: space-between; gap: 1em; white-space: nowrap }
+.ui-campo > span .i { color: var(--f-suave) }
+.ui-campo.foco { border-color: color-mix(in oklab, var(--acento) 70%, transparent) }
+.cursor { display: inline-block; width: 1.5px; height: 1.1em; margin-left: 1px; vertical-align: -.18em; background: var(--acento) }
+.ui-opcion { display: flex; align-items: center; justify-content: space-between; gap: 1.2em; padding: .78em 0; border-bottom: 1px solid var(--f-linea); white-space: nowrap }
+.ui-opcion:last-child { border-bottom: 0 }
+.ui-opcion small { display: block; margin-top: .18em; font-size: .8em; color: var(--f-suave) }
+.ui-interruptor { flex: none; position: relative; width: 2.35em; height: 1.38em; border-radius: 999px; background: var(--acento) }
+.ui-interruptor::after { content: ''; position: absolute; top: .19em; right: .19em; width: 1em; height: 1em; border-radius: 50%; background: var(--sobre-acento) }
+.ui-interruptor.apagado { background: color-mix(in oklab, var(--f-suave) 35%, transparent) }
+.ui-interruptor.apagado::after { right: auto; left: .19em; background: var(--f-texto) }
+
+/* Aviso (toast) */
+.toast { display: flex; align-items: center; gap: .85em; padding: .85em 1.15em .85em .85em; white-space: nowrap }
+.toast-ico { flex: none; width: 2.3em; height: 2.3em; border-radius: .7em; display: grid; place-items: center;
+             background: color-mix(in oklab, var(--tono, var(--ok)) 20%, transparent);
+             color: color-mix(in oklab, var(--tono, var(--ok)) 80%, var(--f-texto)) }
+.toast b { display: block; font-weight: 600 }
+.toast small { display: block; margin-top: .14em; font-size: .86em; color: var(--f-suave) }
+.toast .hora { align-self: flex-start; margin-left: 1.4em; font-size: .78em; color: var(--f-suave) }
+
+/* ── Atenuar el contexto: baja el contraste, no desenfoques. El foco es la capa flotante ────────────────────── */
+.atenuado { opacity: .5 }

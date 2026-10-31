@@ -1,0 +1,191 @@
+<!doctype html>
+<!--
+  PLANTILLA DE PIEZAS · una misma campaña en todos los formatos (hero de correo, OG, miniatura,
+  banner de X, story). Sirve para cualquier marca. Cada <section data-pieza> se exporta a PNG con:
+    node ../scripts/exportar.mjs piezas.html --marca marca.json
+    node ../scripts/exportar.mjs piezas.html --marca marca.json --solo og
+  Reglas:
+    · La marca sale de marca.json (skill direccion-de-arte): colores y fuente en las variables de :root, y
+      nombre, web y logo en los elementos con data-marca. Aquí no se escribe ningún color suelto.
+    · El texto SIEMPRE en HTML (nítido y corregible). Debajo puede ir una captura real, una foto o un fondo de IA.
+    · Las maquetas de producto (.factura, .filas) se miden en em: cambia el font-size del contenedor y escalan enteras.
+    · Recortes de capturas reales con <div class="recorte" data-crop="x,y,ancho,alto"> (ver el script del final).
+    · Zonas seguras: data-margen en cada pieza (la story deja 250 px arriba y 340 abajo para la interfaz).
+  Contenido de ejemplo: Pliego, marca ficticia (cámbialo todo por los datos reales de tu marca).
+-->
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Piezas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400..800&family=Geist+Mono:wght@400..600&display=block" rel="stylesheet">
+<style>
+  :root {
+    /* Tokens de marca (los sustituye marca.json). Ejemplo: Pliego, marca ficticia */
+    --papel: #f3f1ec; --superficie: #ffffff; --bloque: #f5f3ef;
+    --tinta: #121418; --texto: #2b2f35; --suave: #5f656e; --apagado: #80868e; --linea: #dcd8d0;
+    --noche: #111317; --noche-2: #1b1e24; --noche-linea: #2c3038; --claro: #f3f1ec; --claro-suave: #a1a6ad;
+    --acento: #ff5b2e; --acento-texto: #b8330c; --sobre-acento: #121418;
+    --fuente: 'Geist', system-ui, sans-serif; --mono: 'Geist Mono', ui-monospace, monospace;
+    --radio: 20px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0 }
+  body { background: #d9d6d0; padding: 60px; display: flex; flex-direction: column; align-items: flex-start; gap: 60px; font-family: var(--fuente) }
+  section { position: relative; overflow: hidden; background: var(--papel); color: var(--tinta); font-family: var(--fuente); -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums }
+  .oscuro { background: var(--noche); color: var(--claro) }
+  .color { background: var(--acento); color: var(--sobre-acento) }
+
+  .marca { display: flex; align-items: center; gap: .42em; font-weight: 700; letter-spacing: -.02em; white-space: nowrap }
+  .logo { display: inline-flex; width: 1.15em; height: 1.15em; color: var(--acento-texto) }
+  .logo svg { width: 100%; height: 100% }
+  .oscuro .logo { color: var(--acento) }
+  .color .logo { color: var(--sobre-acento) }
+  .kicker { font-family: var(--mono); font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--acento-texto) }
+  .oscuro .kicker { color: var(--acento) }
+  .tit { font-weight: 700; letter-spacing: -.045em; line-height: .98 }
+  .tit em { font-style: normal; color: var(--acento-texto) }
+  .oscuro .tit em { color: var(--acento) }
+  .sub { font-weight: 400; color: var(--suave); letter-spacing: -.015em; line-height: 1.35 }
+  .oscuro .sub { color: var(--claro-suave) }
+  .url { font-family: var(--mono); font-weight: 500; color: var(--suave) }
+  .oscuro .url { color: var(--claro-suave) }
+  .boton { display: inline-flex; align-items: center; font-weight: 600; letter-spacing: -.02em; background: var(--acento); color: var(--sobre-acento); border-radius: calc(var(--radio) * .8); white-space: nowrap }
+
+  /* ── Maquetas de producto en em (planas: superficie, línea fina neutra, sin sombras) ── */
+  .tarjeta { position: absolute; background: var(--superficie); color: var(--tinta); border: 2px solid var(--linea); border-radius: var(--radio) }
+  .oscuro .tarjeta { border-color: transparent }
+  .etq { font-family: var(--mono); font-size: .69em; font-weight: 500; letter-spacing: .06em; color: var(--suave); text-transform: uppercase; white-space: nowrap }
+  .estado { display: inline-flex; align-items: center; gap: .45em; font-size: .69em; font-weight: 600; padding: .36em .75em; border-radius: 999px; white-space: nowrap; background: var(--bloque); color: var(--texto) }
+  .estado::before { content: ''; width: .45em; height: .45em; border-radius: 50%; background: currentColor }
+  .estado.pagada { background: var(--acento); color: var(--sobre-acento) }
+
+  .factura { padding: 1.5em 1.65em }
+  .factura .fila { display: flex; justify-content: space-between; align-items: center; gap: 1em }
+  .factura .cliente { font-size: 1.06em; font-weight: 600; margin-top: .9em; letter-spacing: -.02em; white-space: nowrap }
+  .factura .importe { font-size: 3.4em; font-weight: 700; letter-spacing: -.05em; line-height: 1; margin-top: .14em; white-space: nowrap }
+  .factura .importe small { font-size: .5em; letter-spacing: -.03em; color: var(--suave) }
+  .factura .detalle { display: flex; gap: 1.6em; margin-top: .9em; padding-top: .8em; border-top: 2px solid var(--linea); font-size: .75em; color: var(--suave); white-space: nowrap }
+  .factura .detalle b { color: var(--tinta); font-weight: 600 }
+  .factura .lineas { margin-top: 1em; border-top: 2px solid var(--linea); font-size: .8em }
+  .factura .lineas p { display: flex; justify-content: space-between; gap: 1em; padding: .75em 0; border-bottom: 2px solid var(--linea); color: var(--texto); white-space: nowrap }
+  .factura .lineas p span:last-child { font-weight: 600; color: var(--tinta) }
+
+  .filas { padding: .3em 1.3em }
+  .filas .f { display: grid; grid-template-columns: 1fr auto 5.4em; align-items: center; gap: 1em; padding: .95em 0; border-bottom: 2px solid var(--linea) }
+  .filas .f:last-child { border-bottom: 0 }
+  .filas .quien { font-weight: 600; letter-spacing: -.02em; white-space: nowrap }
+  .filas .n { font-family: var(--mono); font-size: .69em; color: var(--suave); margin-top: .2em }
+  .filas .eur { font-weight: 600; letter-spacing: -.02em; white-space: nowrap }
+  .filas .estado { justify-self: end }
+
+  /* Recorte exacto de una captura real (opcional) */
+  .recorte { position: absolute; overflow: hidden; border-radius: var(--radio); border: 2px solid var(--linea); background: var(--noche) }
+  .recorte img { position: absolute; left: 0; top: 0; transform-origin: 0 0; display: block; max-width: none }
+
+  /* ── Con profundidad (producto.css, enlazado abajo): fondo .escena y la maqueta como capa .flotante, con borde de
+        ~1 px degradado y sombra suave. La pieza lleva data-estilo="producto". Sin profundidad: quita .escena y
+        cambia .flotante por .tarjeta (estilo plano) ── */
+  .escena .tit { font-weight: 600; letter-spacing: -.042em }
+  .escena:not(.clara):not(.noche) .tit em { color: inherit }
+  .escena:not(.clara):not(.noche) .logo { color: var(--sobre-escena) }
+  .escena:not(.clara):not(.noche) .url { color: color-mix(in oklab, var(--sobre-escena) 80%, transparent) }
+  .escena.noche .tit em { color: var(--acento) }
+  .flotante.factura, .flotante.filas { --radio-escena: var(--radio) }
+</style>
+<!-- Después del <style>: .escena tiene que ganar al fondo de section -->
+<link rel="stylesheet" href="producto.css">
+<script src="producto.js" defer></script>
+</head>
+<body>
+
+<!-- HERO DE CORREO · 1200x680 (se pinta a 600x340 en el correo: letra mínima 26 px aquí = 13 px allí).
+     Fondo papel: casa con un correo blanco porque va con esquinas redondeadas y aire alrededor -->
+<section class="escena clara" data-pieza="hero-correo" data-estilo="producto" data-ancho="1200" data-alto="680" data-margen="56" data-min-letra="26" style="width:1200px;height:680px;padding:72px">
+  <div class="marca" style="font-size:34px"><span class="logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 3h14l7 7v19H6z" fill="currentColor"/><path d="M20 3v7h7z" fill="currentColor" opacity=".45"/></svg></span><span data-marca="nombre">Pliego</span></div>
+  <h1 class="tit" style="font-size:80px;margin-top:84px">Cobra en<br>7&nbsp;días,<br><em>no en&nbsp;45.</em></h1>
+  <p class="sub" style="font-size:30px;margin-top:30px;max-width:420px">Recordatorios automáticos y pago en un&nbsp;clic.</p>
+  <!-- La maqueta sangra por abajo: el padding inferior deja su contenido dentro del lienzo -->
+  <div class="flotante clara factura" data-maqueta style="font-size:28px;left:612px;right:72px;top:150px;bottom:-40px">
+    <div class="fila"><span class="etq">F-2026-118</span><span class="estado pagada">Pagada</span></div>
+    <p class="cliente">Estudio Marea</p>
+    <p class="importe">1.250<small>,00 €</small></p>
+    <div class="lineas"><p><span>Identidad de marca</span><span>1.000,00 €</span></p><p><span>Ajustes de logotipo</span><span>250,00 €</span></p></div>
+  </div>
+</section>
+
+<!-- OG / VISTA PREVIA DE ENLACE · 1200x630. Se ve a ≈ 500 px: pocas palabras y grandes; lo esencial en el centro-izquierda -->
+<section class="escena" data-pieza="og" data-estilo="producto" data-ancho="1200" data-alto="630" data-margen="64" data-min-letra="26" style="width:1200px;height:630px;padding:72px">
+  <div class="marca" style="font-size:36px"><span class="logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 3h14l7 7v19H6z" fill="currentColor"/><path d="M20 3v7h7z" fill="currentColor" opacity=".45"/></svg></span><span data-marca="nombre">Pliego</span></div>
+  <h1 class="tit" style="font-size:96px;margin-top:72px">Factura hoy,<br><em>cobra antes.</em></h1>
+  <p class="url" style="font-size:28px;position:absolute;left:72px;bottom:72px" data-marca="web_texto">pliego.app</p>
+  <!-- Sangra 80 px por la derecha: el padding derecho suma esos 80 px para que nada quede cortado -->
+  <div class="flotante clara factura" data-maqueta style="font-size:26px;left:720px;top:160px;width:560px;padding-right:calc(1.65em + 80px)">
+    <div class="fila"><span class="etq">F-2026-118</span><span class="estado pagada">Pagada</span></div>
+    <p class="cliente">Estudio Marea</p>
+    <p class="importe">1.250<small>,00 €</small></p>
+    <div class="detalle"><span>Cobrada en <b>6 días</b></span></div>
+  </div>
+</section>
+
+<!-- MINIATURA DE YOUTUBE · 1280x720. Se juzga a 320 px: 2-4 palabras, contraste máximo, una sola imagen.
+     La esquina inferior derecha (≈ 200x80) la tapa la duración -->
+<section class="oscuro escena noche" data-pieza="miniatura" data-estilo="producto" data-ancho="1280" data-alto="720" data-margen="64" data-min-letra="30" style="width:1280px;height:720px;padding:80px">
+  <p class="tit" style="font-size:136px;margin-top:56px">Cobra en</p>
+  <p class="tit" style="font-size:264px;color:var(--acento);letter-spacing:-.065em;line-height:.85;margin-top:20px">7&nbsp;días</p>
+  <div class="flotante clara factura" data-maqueta style="font-size:32px;left:830px;top:150px;width:530px;padding-right:calc(1.65em + 80px)">
+    <div class="fila"><span class="estado pagada">Pagada</span></div>
+    <p class="importe" style="margin-top:.35em">1.250<small> €</small></p>
+    <div class="detalle"><span>en <b>6 días</b></span></div>
+  </div>
+</section>
+
+<!-- BANNER DE X · 1500x500. La foto de perfil tapa la esquina inferior izquierda (≈ 400x200)
+     y el móvil recorta ~60 px arriba y abajo: el texto va centrado en vertical, a partir de x = 440 -->
+<section class="escena clara" data-pieza="banner-x" data-estilo="producto" data-ancho="1500" data-alto="500" data-margen="64" data-min-letra="24" style="width:1500px;height:500px">
+  <div style="position:absolute;left:440px;top:120px">
+    <div class="marca" style="font-size:30px"><span class="logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 3h14l7 7v19H6z" fill="currentColor"/><path d="M20 3v7h7z" fill="currentColor" opacity=".45"/></svg></span><span data-marca="nombre">Pliego</span></div>
+    <h1 class="tit" style="font-size:66px;margin-top:28px">Facturas claras,<br><em>cobros a tiempo.</em></h1>
+    <p class="url" style="font-size:26px;margin-top:26px" data-marca="web_texto">pliego.app</p>
+  </div>
+  <div class="flotante clara filas" data-maqueta style="font-size:23px;left:1020px;top:86px;width:560px;padding-right:calc(1.3em + 80px)">
+    <div class="f" style="grid-template-columns:1fr auto auto"><div><p class="quien">Estudio Marea</p><p class="n">F-2026-118</p></div><span class="eur">1.250 €</span><span class="estado pagada">Pagada</span></div>
+    <div class="f" style="grid-template-columns:1fr auto auto"><div><p class="quien">Café Lumbre</p><p class="n">F-2026-119</p></div><span class="eur">480 €</span><span class="estado">Enviada</span></div>
+    <div class="f" style="grid-template-columns:1fr auto auto"><div><p class="quien">Norte Arq.</p><p class="n">F-2026-120</p></div><span class="eur">2.900 €</span><span class="estado">Enviada</span></div>
+  </div>
+</section>
+
+<!-- STORY · 1080x1920. Interfaz de Instagram: 250 px arriba y 340 abajo no son tuyos. Una acción -->
+<section class="oscuro escena noche" data-pieza="story" data-estilo="producto" data-ancho="1080" data-alto="1920" data-margen="96" data-min-letra="30" style="width:1080px;height:1920px">
+  <div style="position:absolute;left:96px;right:96px;top:300px">
+    <div class="marca" style="font-size:40px"><span class="logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 3h14l7 7v19H6z" fill="currentColor"/><path d="M20 3v7h7z" fill="currentColor" opacity=".45"/></svg></span><span data-marca="nombre">Pliego</span></div>
+    <h1 class="tit" style="font-size:164px;margin-top:84px">Cobra en<br>7&nbsp;días,<br><em>no en 45.</em></h1>
+  </div>
+  <div class="flotante clara factura" data-maqueta style="font-size:34px;left:96px;right:96px;top:964px">
+    <div class="fila"><span class="etq">Factura F-2026-118</span><span class="estado pagada">Pagada</span></div>
+    <p class="cliente">Estudio Marea</p>
+    <p class="importe">1.250<small>,00 €</small></p>
+    <div class="detalle"><span>Emitida <b>3 nov</b></span><span>Cobrada <b>9 nov</b></span></div>
+  </div>
+  <div style="position:absolute;left:96px;right:96px;top:1468px;display:flex;align-items:center;justify-content:space-between">
+    <span class="boton" style="font-size:40px;padding:28px 44px">Prueba gratis</span>
+    <span class="url" style="font-size:34px" data-marca="web_texto">pliego.app</span>
+  </div>
+</section>
+
+<script>
+  // Recorte exacto: data-crop="x,y,ancho,alto" en píxeles de la imagen original → llena la caja.
+  // Escala por el lado que manda (cover) y centra el sobrante.
+  for (const caja of document.querySelectorAll('.recorte[data-crop]')) {
+    const img = caja.querySelector('img')
+    const aplicar = () => {
+      const [x, y, w, h] = caja.dataset.crop.split(',').map(Number)
+      const k = Math.max(caja.clientWidth / w, caja.clientHeight / h)
+      img.style.width = `${img.naturalWidth * k}px`
+      img.style.transform = `translate(${-x * k + (caja.clientWidth - w * k) / 2}px, ${-y * k + (caja.clientHeight - h * k) / 2}px)`
+    }
+    img.complete && img.naturalWidth ? aplicar() : img.addEventListener('load', aplicar)
+  }
+</script>
+</body>
+</html>

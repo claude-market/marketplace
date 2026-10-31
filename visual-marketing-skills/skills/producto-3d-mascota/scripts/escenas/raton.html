@@ -1,0 +1,170 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:transparent}</style>
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script></head><body>
+<script type="module">
+// Ratón gaming blanco, sin marca (look tech-grid). Diestro; delante = -z, izquierda (pulgar) = -x.
+// Carcasa ergonómica (joroba, cintura, canal del pulgar), botones separados por ranuras, rueda con goma estriada
+// y eje, botón de DPI, 2 botones laterales con su canto, agarre lateral con rombos en relieve, tira RGB difusa
+// (azul → violeta), patas de PTFE. Ranuras, rombos y tira se pintan en el shader (relieve por derivadas).
+import * as THREE from 'three'
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js'
+import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js'
+import { preparar, luces, camara, BLANCO, OSCURO, RGB1, RGB2, GIRO } from './estudio-producto.js'
+const _v3 = k => { const x = new THREE.Color(k); return 'vec3(' + [x.r, x.g, x.b].map(v => v.toFixed(3)).join(', ') + ')' }
+const { r, s, W, H } = preparar()
+const q = new URLSearchParams(location.search)
+
+// ── carcasa ────────────────────────────────────────────────────────────────────────────────────────────────
+let geo = new THREE.IcosahedronGeometry(1, 80)
+geo.deleteAttribute('normal'); geo.deleteAttribute('uv'); geo = mergeVertices(geo)
+const L = 1.2, A = 0.54, ALT = 0.42
+const p = geo.attributes.position
+for (let i = 0; i < p.count; i++) {
+  let x = p.getX(i), y = p.getY(i), z = p.getZ(i)
+  { const n = 3.0, k = 1 / Math.pow(Math.abs(x) ** n + Math.abs(y) ** n + Math.abs(z) ** n, 1 / n); x *= k; y *= k; z *= k }
+  const xn = x, yn = y, zn = z
+  const ancho = A * (1 - 0.1 * Math.exp(-(((zn + 0.05) / 0.36) ** 2)) + 0.1 * zn)
+  const alto = ALT * (0.46 + 0.58 * Math.exp(-(((zn - 0.28) / 0.62) ** 2)))
+  x *= ancho
+  z *= L * (zn < 0 ? 0.97 : 1)
+  y = y < 0 ? y * 0.16 : y * alto * (1 + 0.06 * xn)
+  if (xn < 0 && yn > 0) { // canal del pulgar
+    const g = Math.exp(-(((zn + 0.05) / 0.5) ** 2)) * Math.exp(-(((yn - 0.45) / 0.28) ** 2)); x *= 1 - 0.09 * g }
+  if (xn < 0 && yn >= 0 && yn < 0.3) x *= 1 + 0.07 * (1 - yn / 0.3) * Math.exp(-(((zn - 0.05) / 0.6) ** 2)) // ala del pulgar
+  p.setXYZ(i, x, y, z)
+}
+geo.computeVertexNormals()
+
+const ZW = -0.6 // centro de la rueda
+const carcasa = new THREE.MeshPhysicalMaterial({ color: BLANCO, roughness: 0.52, clearcoat: 0.7, clearcoatRoughness: 0.26 })
+carcasa.onBeforeCompile = sh => {
+  sh.vertexShader = 'varying vec3 vObj;\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvObj = position;')
+  sh.fragmentShader = `varying vec3 vObj;
+float zE(float x){ return -0.04 + 0.11 * pow(x / 0.40, 2.0); }
+float ySt(float z){ float zn = z / (z < 0.0 ? 1.164 : 1.2); float hz = 0.397 * (0.46 + 0.58 * exp(-pow((zn - 0.28) / 0.62, 2.0))); return 0.62 * hz * pow(max(1.0 - pow(abs(zn), 3.0), 0.0), 1.0 / 3.0); }
+float gS(float d, float w){ return 1.0 - smoothstep(0.0, w, d); }
+float sdCaja(vec2 p, vec2 b, float r){ vec2 q = abs(p) - b + r; return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r; }
+float rombos(vec2 p, float s){ vec2 q = vec2(p.x + p.y, p.x - p.y) / s; vec2 f = abs(fract(q) - 0.5); return 1.0 - smoothstep(0.26, 0.44, max(f.x, f.y)); }
+` + sh.fragmentShader
+    .replace('#include <color_fragment>', `#include <color_fragment>
+vec3 P = vObj; float ax = abs(P.x);
+float gw = 0.0075;
+float dHueco = sdCaja(vec2(P.x, P.z - ${ZW.toFixed(3)}), vec2(0.075, 0.19), 0.035);
+float dSplit = (P.z < zE(0.0) && P.y > 0.06 && dHueco > 0.006) ? ax : 1.0;
+float dRear = (ax < 0.43 && P.y > 0.12) ? abs(P.z - zE(P.x)) : 1.0;
+float dSide = (P.z < zE(0.43) && P.y > 0.13) ? abs(ax - 0.43) : 1.0;
+float dCola = P.y > 0.1 ? abs(P.z - (0.86 - 0.16 * pow(P.x / 0.5, 2.0))) : 1.0;
+float surco = max(max(max(gS(dSplit, gw), gS(dRear, gw)), gS(dSide, gw)), gS(dCola, gw * 0.85));
+float enBot = smoothstep(0.12, 0.14, P.y) * (1.0 - smoothstep(-0.004, 0.004, P.z - zE(P.x))) * (1.0 - smoothstep(0.426, 0.434, ax));
+// hueco de la rueda (caja redondeada en planta)
+
+float hueco = P.y > 0.15 ? 1.0 - smoothstep(-0.003, 0.003, dHueco) : 0.0;
+// agarre lateral: panel con rombos en relieve, con su junta
+float dGrip = sdCaja(vec2(P.z - 0.46, P.y - 0.165), vec2(0.31, 0.115), 0.06);
+float lado = smoothstep(0.26, 0.34, ax);
+float grip = lado * (1.0 - smoothstep(-0.004, 0.0, dGrip));
+float rom = rombos(vec2(P.z, P.y), 0.042);
+float juntaGrip = lado * gS(abs(dGrip), gw * 0.9);
+// tira RGB difusa en el costado, de delante hacia atrás
+float tz = smoothstep(-1.02, -0.92, P.z) * (1.0 - smoothstep(0.02, 0.1, P.z));
+float dT = abs(P.y - ySt(P.z));
+float ladoT = smoothstep(0.18, 0.28, ax);
+float tira = ladoT * tz * (1.0 - smoothstep(0.015, 0.02, dT));
+float halo = ladoT * tz * exp(-pow(dT / 0.04, 2.0));
+vec3 rgb = mix(${_v3(RGB1)}, ${_v3(RGB2)}, smoothstep(-0.95, 0.0, P.z));
+surco = max(surco, juntaGrip);
+float tgH = -0.007 * surco - 0.025 * hueco + 0.0032 * grip * rom - 0.0025 * tz * ladoT * gS(abs(dT - 0.019), 0.004);
+diffuseColor.rgb *= mix(1.0, 0.16, surco);
+diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.03), hueco);
+diffuseColor.rgb *= mix(1.0, mix(0.8, 0.9, rom), grip);
+float falda = ladoT * (1.0 - smoothstep(-0.03, -0.018, P.y - ySt(P.z))) * (1.0 - grip) * step(P.z, 0.1);
+diffuseColor.rgb *= mix(1.0, 0.86, falda);
+diffuseColor.rgb = mix(diffuseColor.rgb, mix(vec3(0.8), rgb, 0.7) * 0.4, tira);
+float tgCC = mix(0.22, 1.0, enBot) * (1.0 - grip) * (1.0 - hueco) * (1.0 - tira);`)
+    .replace('#include <roughnessmap_fragment>', `#include <roughnessmap_fragment>
+roughnessFactor = mix(roughnessFactor, 0.42, enBot);
+roughnessFactor = mix(roughnessFactor, 0.82, max(grip, hueco));
+roughnessFactor = mix(roughnessFactor, 0.9, tira);`)
+    .replace('#include <normal_fragment_maps>', `#include <normal_fragment_maps>
+{ vec3 sp = -vViewPosition; vec3 sx = dFdx(sp), sy = dFdy(sp);
+  vec3 R1 = cross(sy, normal), R2 = cross(normal, sx); float det = dot(sx, R1);
+  vec3 grad = sign(det) * (dFdx(tgH) * R1 + dFdy(tgH) * R2);
+  normal = normalize(abs(det) * normal - grad); }`)
+    .replace('#include <clearcoat_normal_fragment_maps>', `#include <clearcoat_normal_fragment_maps>
+#ifdef USE_CLEARCOAT
+clearcoatNormal = normal;
+#endif`)
+    .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
+totalEmissiveRadiance += rgb * (tira * (1.8 + 1.6 * (1.0 - dT / 0.02)) + halo * 0.5);`)
+    .replace('#include <lights_physical_fragment>', `#include <lights_physical_fragment>
+#ifdef USE_CLEARCOAT
+material.clearcoat *= tgCC;
+#endif`)
+}
+const cuerpo = new THREE.Mesh(geo, carcasa)
+const raton = new THREE.Group(); raton.add(cuerpo)
+
+const oscuro = new THREE.MeshPhysicalMaterial({ color: OSCURO, roughness: 0.6 })
+const goma = new THREE.MeshPhysicalMaterial({ color: 0x23262d, roughness: 0.86 })
+const flanco = new THREE.MeshPhysicalMaterial({ color: 0x8d949f, roughness: 0.32, metalness: 0.75 })
+const metal = new THREE.MeshPhysicalMaterial({ color: 0xb4bbc6, roughness: 0.28, metalness: 0.9 })
+const boton = new THREE.MeshPhysicalMaterial({ color: BLANCO, roughness: 0.4, clearcoat: 0.8, clearcoatRoughness: 0.2 })
+const ptfe = new THREE.MeshPhysicalMaterial({ color: 0xf1f0ec, roughness: 0.22 })
+
+// base oscura fina (se ve como un filo oscuro abajo)
+const base = new THREE.Mesh(geo.clone(), oscuro)
+base.scale.set(0.985, 0.12, 0.985); base.position.y = -0.035; raton.add(base)
+// patas de PTFE
+const patas = []
+for (const [z, w] of [[-0.74, 0.42], [0.74, 0.46]]) {
+  const pata = new THREE.Mesh(new RoundedBoxGeometry(w, 0.014, 0.09, 2, 0.006), ptfe); pata.userData.z = z; patas.push(pata) }
+
+// utilidades de superficie
+const ray = new THREE.Raycaster()
+function golpe(origen, dir) { ray.set(origen, dir); const h = ray.intersectObject(cuerpo)[0]; return h ? { p: h.point.clone(), n: h.face.normal.clone() } : null }
+const desdeArriba = (x, z) => golpe(new THREE.Vector3(x, 5, z), new THREE.Vector3(0, -1, 0))
+function orientar(m, n, largo = new THREE.Vector3(0, 0, 1)) { // y local = normal, z local = a lo largo
+  const t = largo.clone().addScaledVector(n, -largo.dot(n)).normalize(), b = new THREE.Vector3().crossVectors(n, t)
+  m.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(b, n, t)) }
+
+// rueda: banda de goma estriada, flancos metálicos y eje
+{
+  const RW = 0.118, ySup = desdeArriba(0, ZW).p.y
+  const g = new THREE.Group()
+  const banda = new THREE.CylinderGeometry(RW, RW, 0.058, 288, 1, true), bp = banda.attributes.position
+  for (let i = 0; i < bp.count; i++) { const x = bp.getX(i), z = bp.getZ(i), a = Math.atan2(z, x), f = RW + 0.009 * (0.5 + 0.5 * Math.tanh(3.2 * Math.cos(a * 30))); bp.setX(i, Math.cos(a) * f); bp.setZ(i, Math.sin(a) * f) }
+  banda.computeVertexNormals(); g.add(new THREE.Mesh(banda, goma))
+  for (const sx of [-1, 1]) { const f = new THREE.Mesh(new THREE.CylinderGeometry(RW - 0.002, RW - 0.002, 0.014, 96), flanco); f.position.y = sx * 0.036; g.add(f)
+    const tapa = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.016, 48), oscuro); tapa.position.y = sx * 0.038; g.add(tapa) }
+  g.add(new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.16, 24), metal))
+  g.rotation.z = Math.PI / 2; g.position.set(0, ySup - 0.04, ZW); raton.add(g)
+}
+
+// botón de DPI detrás de la rueda (con su junta) y un LED pequeño
+{
+  const h = desdeArriba(0, -0.25)
+  const zocalo = new RoundedBoxGeometry(0.088, 0.04, 0.13, 3, 0.019), b = new RoundedBoxGeometry(0.07, 0.04, 0.112, 3, 0.017)
+  const z1 = new THREE.Mesh(zocalo, oscuro); orientar(z1, h.n); z1.position.copy(h.p).addScaledVector(h.n, -0.017); raton.add(z1)
+  const b1 = new THREE.Mesh(b, boton); orientar(b1, h.n); b1.position.copy(h.p).addScaledVector(h.n, -0.009); raton.add(b1)
+  const hl = desdeArriba(0, -0.13)
+  const led = new THREE.Mesh(new THREE.CylinderGeometry(0.009, 0.009, 0.01, 16), new THREE.MeshBasicMaterial({ color: RGB1 }))
+  orientar(led, hl.n); led.position.copy(hl.p).addScaledVector(hl.n, 0.0); raton.add(led)
+}
+
+// dos botones laterales (pulgar) con su canto y su junta
+for (const [zc, lz] of [[-0.43, 0.3], [-0.09, 0.28]]) {
+  const h = golpe(new THREE.Vector3(-3, 0.104, zc), new THREE.Vector3(1, 0, 0))
+  const zocalo = new THREE.Mesh(new RoundedBoxGeometry(0.074, 0.05, lz + 0.016, 3, 0.02), oscuro)
+  orientar(zocalo, h.n); zocalo.position.copy(h.p).addScaledVector(h.n, -0.021); raton.add(zocalo)
+  const b = new THREE.Mesh(new RoundedBoxGeometry(0.06, 0.05, lz, 4, 0.018), boton)
+  orientar(b, h.n); b.position.copy(h.p).addScaledVector(h.n, -0.011); raton.add(b)
+}
+
+for (const pata of patas) { ray.set(new THREE.Vector3(0, -5, pata.userData.z), new THREE.Vector3(0, 1, 0)); const hb = ray.intersectObject(cuerpo)[0]; pata.position.set(0, hb.point.y - 0.004, pata.userData.z); raton.add(pata) }
+raton.rotation.z = -0.18 + GIRO
+s.add(raton)
+const dir = (q.get('dir') || '-0.8,1,-0.4').split(',').map(Number)
+const arriba = (q.get('arriba') || '0.75,0,-1').split(',').map(Number)
+const c = camara(raton, W, H, dir, arriba, 24, 0.86)
+luces(s, c)
+r.render(s, c); window.listo = true
+</script></body></html>

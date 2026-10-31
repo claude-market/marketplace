@@ -1,0 +1,199 @@
+<!doctype html>
+<!--
+  PLANTILLA «EDITORIAL RECORTE» · campaña editorial con personas o producto recortados: fondo casi negro con un
+  degradado sutil hacia una esquina, un collage de 3 recortes con jerarquía clara (uno dominante y dos medianos
+  delante, solapados), líneas finas de construcción (arco gigante, marco del que se sale un sujeto, cruces de
+  registro) y el texto, pequeño, en el aire. Cinco formatos de una misma campaña:
+    hero (1600x900), redes-1x1 (1080x1080), redes-4x5 (1080x1350), banner-x (1500x500) y story (1080x1920).
+  Exportar a 2x (PNG nítido), desde la carpeta de esta plantilla, con editorial-recorte.css y recortes/ al lado:
+    node ../../piezas-graficas/scripts/exportar.mjs editorial-recorte.html --marca marca-ejemplo.json --escala 2
+  Reglas:
+    · La marca sale de marca.json (skill direccion-de-arte): colores y fuentes en var(--…), y nombre, lema, web y
+      logo en los elementos con data-marca. Aquí no se escribe ningún color suelto.
+    · Cada sujeto es un <img data-recorte> (WebP o PNG con alfa). El texto libre NUNCA pisa la parte opaca de un
+      recorte (el exportador lo mira píxel a píxel, descontando el fundido inferior).
+    · Lo decorativo (arco, marco, cruces) va en un SVG con data-fondo y aria-hidden: no cuenta como bloque.
+    · Plano: sin sombras, brillos ni desenfoques. Solo el degradado del fondo y el fundido inferior de los recortes.
+    · Las medidas de cada collage (left/top/width de cada recorte, el marco y el arco) están calculadas para estos
+      recortes; con otros, vuelve a encajarlos con las proporciones de references/estilo.md.
+  Contenido de ejemplo: Pulso, marca ficticia de periféricos gaming y club de esports. Personas generadas con IA.
+-->
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Editorial recorte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=JetBrains+Mono:wght@400..600&display=block" rel="stylesheet">
+<link rel="stylesheet" href="editorial-recorte.css">
+<style>
+  :root {
+    /* Tokens de marca (los sustituye marca.json). Ejemplo: Pulso, marca ficticia. --acento-2 y --fuente-display
+       no se ponen aquí: si la marca no los trae, el look usa --acento y --fuente */
+    --papel: #f3f5f8; --superficie: #ffffff; --bloque: #eceff4;
+    --tinta: #07090f; --texto: #252a35; --suave: #5a6170; --apagado: #7b8291; --linea: #dfe3ea;
+    --noche: #04060c; --noche-2: #0b1220; --noche-linea: #1a2436; --claro: #f4f6fa; --claro-suave: #9aa3b5;
+    --acento: #19a7ff; --acento-texto: #0a6fc2; --sobre-acento: #04060c;
+    --fuente: 'Archivo', system-ui, sans-serif; --mono: 'JetBrains Mono', ui-monospace, monospace;
+    --radio: 6px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0 }
+  body { background: #1d1f24; padding: 60px; display: flex; flex-direction: column; align-items: flex-start; gap: 60px; font-family: var(--fuente) }
+</style>
+</head>
+<body>
+
+<!-- ═══ HERO 16:9 · 1600x900. Collage en el centro-derecha dentro del arco; texto a la izquierda, en el aire.
+     Arco: centro (1040, 450), radio 425 (47 % del alto). Dominante a escala 0,40 (cabeza = 47 % del alto);
+     medianos a ~0,5 de su cabeza. El diámetro del arco y el marco quedan detrás de los sujetos -->
+<section class="editorial" data-pieza="hero" data-estilo="editorial-recorte" data-ancho="1600" data-alto="900" data-margen="64" data-min-letra="14"
+         style="width:1600px;height:900px">
+  <svg class="construccion" data-fondo aria-hidden="true" viewBox="0 0 1600 900">
+    <defs><linearGradient id="arco-hero" x1="0" y1="0" x2="0" y2="1"><stop offset=".5" class="luz"/><stop offset="1" class="sombra"/></linearGradient></defs>
+    <path class="arco" stroke="url(#arco-hero)" d="M1040 25A425 425 0 0 0 1040 875"/>
+    <path class="trazo" d="M1040 25V140"/>
+    <rect class="marco-linea" x="1122" y="470" width="340" height="310"/>
+    <path class="cruz" d="M678 120H702M690 108V132"/>
+    <path class="cruz detalle" d="M1478 262H1502M1490 250V274"/>
+    <path class="cruz" d="M1532 840H1556M1544 828V852"/>
+    <path class="cruz" d="M548 560H572M560 548V572"/>
+  </svg>
+  <img class="sujeto" data-recorte src="recortes/jugador-perfil.webp" alt="" style="left:853px;top:38px;width:433px">
+  <div class="encuadre" style="left:1122px;top:470px;width:340px;height:310px">
+    <img class="sujeto" data-recorte src="recortes/jugador-tres-cuartos.webp" alt="" style="left:-2px;top:-64px;width:361px;--fundido-desde:58%;--fundido-hasta:82%">
+  </div>
+  <img class="sujeto" data-recorte src="recortes/jugadora-raton.webp" alt="" style="left:497px;top:355px;width:548px;z-index:3;--fundido-desde:57%;--fundido-hasta:89%">
+
+  <div class="texto firma" style="left:96px;top:84px;font-size:24px">
+    <span class="logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M2 17h6l3-8 5 15 4-11 2 4h8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span data-marca="nombre">Pulso</span>
+  </div>
+  <div class="texto" style="left:96px;top:322px;width:440px">
+    <p class="antetitulo" style="font-size:14px">Equipo <span data-marca="nombre">Pulso</span> · Temporada 2027</p>
+    <h1 class="titular" style="font-size:68px;margin-top:22px" data-marca="lema">Juega en serio.</h1>
+    <p class="apoyo" style="font-size:19px;margin-top:22px;max-width:380px">Tres jugadores, un año de torneos y los periféricos con los que compiten.</p>
+  </div>
+  <p class="texto llamada" style="left:96px;top:772px;font-size:17px">Conoce al equipo<span class="raya"></span><span class="url" data-marca="web_texto">pulso.gg</span></p>
+</section>
+
+<!-- ═══ POST 1:1 · 1080x1080. Collage centrado con aire alrededor; firma arriba, titular y llamada abajo, debajo del
+     fundido (los recortes llegan a transparente antes de y = 860) -->
+<section class="editorial" data-pieza="redes-1x1" data-estilo="editorial-recorte" data-ancho="1080" data-alto="1080" data-margen="64" data-min-letra="14"
+         style="width:1080px;height:1080px">
+  <svg class="construccion" data-fondo aria-hidden="true" viewBox="0 0 1080 1080">
+    <defs><linearGradient id="arco-1x1" x1="0" y1="0" x2="0" y2="1"><stop offset=".5" class="luz"/><stop offset="1" class="sombra"/></linearGradient></defs>
+    <path class="arco" stroke="url(#arco-1x1)" d="M600 92A362 362 0 0 0 600 816"/>
+    <path class="trazo" d="M600 92V170"/>
+    <rect class="marco-linea" x="700" y="440" width="262" height="282"/>
+    <path class="cruz" d="M152 214H176M164 202V226"/>
+    <path class="cruz detalle" d="M984 300H1008M996 288V312"/>
+    <path class="cruz" d="M972 812H996M984 800V824"/>
+  </svg>
+  <img class="sujeto" data-recorte src="recortes/jugador-perfil.webp" alt="" style="left:400px;top:66px;width:390px">
+  <div class="encuadre" style="left:700px;top:440px;width:262px;height:282px">
+    <img class="sujeto" data-recorte src="recortes/jugador-tres-cuartos.webp" alt="" style="left:-1px;top:-53px;width:276px;--fundido-desde:58%;--fundido-hasta:86%">
+  </div>
+  <img class="sujeto" data-recorte src="recortes/jugadora-raton.webp" alt="" style="left:42px;top:345px;width:488px;z-index:3;--fundido-desde:57%;--fundido-hasta:90%">
+
+  <div class="texto firma" style="left:64px;top:66px;font-size:26px">
+    <span class="logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M2 17h6l3-8 5 15 4-11 2 4h8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span data-marca="nombre">Pulso</span>
+  </div>
+  <p class="texto antetitulo" style="right:64px;top:72px;font-size:17px;text-align:right">Temporada 2027</p>
+  <!-- Anclado abajo: si el titular de la marca ocupa dos líneas, crece hacia arriba (hacia el fundido) -->
+  <div class="texto" style="left:64px;bottom:64px;width:640px">
+    <h1 class="titular" style="font-size:72px" data-marca="lema">Juega en serio.</h1>
+    <p class="apoyo" style="font-size:27px;margin-top:16px">Tres jugadores, un año de torneos.</p>
+  </div>
+  <p class="texto llamada" style="right:64px;bottom:68px;font-size:24px"><span class="url" data-marca="web_texto">pulso.gg</span></p>
+</section>
+
+<!-- ═══ POST 4:5 · 1080x1350. Firma y antetítulo arriba; collage grande en el centro (se funde antes de y = 960);
+     titular, apoyo y llamada abajo, anclados al margen inferior (si el titular ocupa dos líneas, crece hacia arriba) -->
+<section class="editorial" data-pieza="redes-4x5" data-estilo="editorial-recorte" data-ancho="1080" data-alto="1350" data-margen="64" data-min-letra="16"
+         style="width:1080px;height:1350px">
+  <svg class="construccion" data-fondo aria-hidden="true" viewBox="0 0 1080 1350">
+    <defs><linearGradient id="arco-4x5" x1="0" y1="0" x2="0" y2="1"><stop offset=".5" class="luz"/><stop offset="1" class="sombra"/></linearGradient></defs>
+    <path class="arco" stroke="url(#arco-4x5)" d="M600 140A420 420 0 0 0 600 980"/>
+    <path class="trazo" d="M600 140V196"/>
+    <rect class="marco-linea" x="734" y="575" width="282" height="300"/>
+    <path class="cruz" d="M138 300H162M150 288V312"/>
+    <path class="cruz detalle" d="M972 380H996M984 368V392"/>
+    <path class="cruz" d="M978 940H1002M990 928V952"/>
+  </svg>
+  <img class="sujeto" data-recorte src="recortes/jugador-perfil.webp" alt="" style="left:382px;top:140px;width:454px;--fundido-desde:60%;--fundido-hasta:93%">
+  <div class="encuadre" style="left:734px;top:575px;width:282px;height:300px">
+    <img class="sujeto" data-recorte src="recortes/jugador-tres-cuartos.webp" alt="" style="left:-4px;top:-59px;width:315px;--fundido-desde:60%;--fundido-hasta:90%">
+  </div>
+  <img class="sujeto" data-recorte src="recortes/jugadora-raton.webp" alt="" style="left:-20px;top:428px;width:592px;z-index:3;--fundido-desde:58%;--fundido-hasta:84%">
+
+  <div class="texto firma" style="left:64px;top:68px;font-size:26px">
+    <span class="logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M2 17h6l3-8 5 15 4-11 2 4h8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span data-marca="nombre">Pulso</span>
+  </div>
+  <p class="texto antetitulo" style="right:64px;top:74px;font-size:20px;text-align:right">Temporada 2027</p>
+  <div class="texto" style="left:64px;bottom:72px;width:952px">
+    <h1 class="titular" style="font-size:104px" data-marca="lema">Juega en serio.</h1>
+    <p class="apoyo" style="font-size:30px;margin-top:22px">Tres jugadores. Un año de torneos.</p>
+    <p class="llamada" style="font-size:28px;margin-top:30px">Conoce al equipo<span class="raya"></span><span class="url" data-marca="web_texto">pulso.gg</span></p>
+  </div>
+</section>
+
+<!-- ═══ BANNER DE X · 1500x500. La foto de perfil tapa abajo a la izquierda (~400x200) y el móvil recorta ~60 px arriba y
+     abajo: collage a la derecha, texto a la izquierda entre y = 84 y y = 290 -->
+<section class="editorial" data-pieza="banner-x" data-estilo="editorial-recorte" data-ancho="1500" data-alto="500" data-margen="60" data-min-letra="13"
+         style="width:1500px;height:500px">
+  <svg class="construccion" data-fondo aria-hidden="true" viewBox="0 0 1500 500">
+    <defs><linearGradient id="arco-banner" x1="0" y1="0" x2="0" y2="1"><stop offset=".5" class="luz"/><stop offset="1" class="sombra"/></linearGradient></defs>
+    <path class="arco" stroke="url(#arco-banner)" d="M1140 32A220 220 0 0 0 1140 472"/>
+    <path class="trazo" d="M1140 32V70"/>
+    <rect class="marco-linea" x="1240" y="212" width="164" height="190"/>
+    <path class="cruz" d="M858 92H882M870 80V104"/>
+    <path class="cruz detalle" d="M1428 112H1452M1440 100V124"/>
+    <path class="cruz" d="M1428 430H1452M1440 418V442"/>
+  </svg>
+  <img class="sujeto" data-recorte src="recortes/jugador-perfil.webp" alt="" style="left:1046px;top:64px;width:216px">
+  <div class="encuadre" style="left:1240px;top:212px;width:164px;height:190px">
+    <img class="sujeto" data-recorte src="recortes/jugador-tres-cuartos.webp" alt="" style="left:-4px;top:-34px;width:177px;--fundido-desde:58%;--fundido-hasta:92%">
+  </div>
+  <img class="sujeto" data-recorte src="recortes/jugadora-raton.webp" alt="" style="left:817px;top:195px;width:281px;z-index:3;--fundido-desde:57%;--fundido-hasta:93%">
+
+  <div class="texto firma" style="left:96px;top:84px;font-size:20px">
+    <span class="logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M2 17h6l3-8 5 15 4-11 2 4h8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span data-marca="nombre">Pulso</span>
+  </div>
+  <div class="texto" style="left:96px;top:146px;width:560px">
+    <h1 class="titular" style="font-size:50px" data-marca="lema">Juega en serio.</h1>
+    <p class="llamada" style="font-size:16px;margin-top:26px">Conoce al equipo<span class="raya"></span><span class="url" data-marca="web_texto">pulso.gg</span></p>
+  </div>
+</section>
+
+<!-- ═══ STORY 9:16 · 1080x1920. 250 px arriba y 340 abajo sin texto (interfaz de la app): todo el texto va en un
+     bloque anclado a 340 px del borde de abajo (crece hacia arriba si el titular ocupa dos líneas). El collage puede
+     entrar en la franja de arriba (solo es imagen) y se funde antes de y = 1100 -->
+<section class="editorial" data-pieza="story" data-estilo="editorial-recorte" data-ancho="1080" data-alto="1920" data-margen="72" data-min-letra="18"
+         style="width:1080px;height:1920px">
+  <svg class="construccion" data-fondo aria-hidden="true" viewBox="0 0 1080 1920">
+    <defs><linearGradient id="arco-story" x1="0" y1="0" x2="0" y2="1"><stop offset=".5" class="luz"/><stop offset="1" class="sombra"/></linearGradient></defs>
+    <path class="arco" stroke="url(#arco-story)" d="M560 150A490 490 0 0 0 560 1130"/>
+    <path class="trazo" d="M560 150V176"/>
+    <rect class="marco-linea" x="716" y="665" width="292" height="330"/>
+    <path class="cruz" d="M138 330H162M150 318V342"/>
+    <path class="cruz detalle" d="M956 262H980M968 250V274"/>
+    <path class="cruz" d="M978 1060H1002M990 1048V1072"/>
+  </svg>
+  <img class="sujeto" data-recorte src="recortes/jugador-perfil.webp" alt="" style="left:391px;top:170px;width:519px;--fundido-desde:60%;--fundido-hasta:92%">
+  <div class="encuadre" style="left:716px;top:665px;width:292px;height:330px">
+    <img class="sujeto" data-recorte src="recortes/jugador-tres-cuartos.webp" alt="" style="left:-3px;top:-59px;width:330px;--fundido-desde:62%;--fundido-hasta:92%">
+  </div>
+  <img class="sujeto" data-recorte src="recortes/jugadora-raton.webp" alt="" style="left:-45px;top:476px;width:622px;z-index:3;--fundido-desde:62%;--fundido-hasta:92%">
+
+  <div class="texto" style="left:72px;bottom:340px;width:936px">
+    <div class="firma" style="font-size:28px">
+      <span class="logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M2 17h6l3-8 5 15 4-11 2 4h8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span data-marca="nombre">Pulso</span>
+    </div>
+    <p class="antetitulo" style="font-size:22px;margin-top:40px">Equipo <span data-marca="nombre">Pulso</span> · Temporada 2027</p>
+    <h1 class="titular" style="font-size:124px;margin-top:18px" data-marca="lema">Juega en serio.</h1>
+    <p class="apoyo" style="font-size:36px;margin-top:26px">Tres jugadores. Un año de torneos.</p>
+    <p class="llamada" style="font-size:32px;margin-top:34px">Conoce al equipo<span class="raya"></span><span class="url" data-marca="web_texto">pulso.gg</span></p>
+  </div>
+</section>
+
+</body>
+</html>
