@@ -1,0 +1,9 @@
+{
+  "name": "piezas-graficas-scripts",
+  "private": true,
+  "type": "module",
+  "description": "Exporta piezas HTML a PNG con Chrome/Edge del sistema y revisa margen, contraste, cortes y resolución.",
+  "dependencies": {
+    "playwright-core": "^1.48.0"
+  }
+}

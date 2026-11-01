@@ -1,0 +1,72 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:transparent}</style>
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script></head><body>
+<script type="module">
+// Cascos gaming blancos, sin marca (look tech-grid): diadema con cojín, deslizadores metálicos con marcas,
+// horquillas con pivote, copas con tapa y junta, almohadillas de polipiel con costura y anillo de luz RGB fino.
+// Luz y blanco comunes: tg-comun.js.
+import * as THREE from 'three'
+import { preparar, luces, camara, BLANCO, OSCURO, RGB1, RGB2, GIRO } from './estudio-producto.js'
+const { r, s, W, H } = preparar()
+
+const blanco = new THREE.MeshPhysicalMaterial({ color: BLANCO, roughness: 0.4, clearcoat: 0.5, clearcoatRoughness: 0.25 })
+const mate = new THREE.MeshPhysicalMaterial({ color: 0xd3d7dd, roughness: 0.58 })
+const tela = new THREE.MeshPhysicalMaterial({ color: 0x2a2e36, roughness: 0.82, sheen: 0.7, sheenRoughness: 0.5, sheenColor: 0x6a7484 })
+const costura = new THREE.MeshPhysicalMaterial({ color: 0x4a515d, roughness: 0.9 })
+const metal = new THREE.MeshPhysicalMaterial({ color: 0xb8bec8, roughness: 0.26, metalness: 0.9 })
+const oscuro = new THREE.MeshPhysicalMaterial({ color: OSCURO, roughness: 0.5 })
+const rgb = (t) => new THREE.MeshBasicMaterial({ color: new THREE.Color().lerpColors(new THREE.Color(RGB1), new THREE.Color(RGB2), t) })
+
+const cascos = new THREE.Group()
+// diadema exterior blanca y cojín interior con costura central
+const arco = new THREE.Mesh(new THREE.TorusGeometry(1.0, 0.075, 32, 160, Math.PI), blanco)
+arco.scale.z = 1.9; cascos.add(arco)
+const acol = new THREE.Mesh(new THREE.TorusGeometry(0.925, 0.062, 32, 160, Math.PI * 0.78), tela)
+acol.rotation.z = Math.PI * 0.11; acol.scale.z = 2.6; cascos.add(acol)
+const cosA = new THREE.Mesh(new THREE.TorusGeometry(0.866, 0.006, 8, 160, Math.PI * 0.74), costura)
+cosA.rotation.z = Math.PI * 0.13; cascos.add(cosA)
+
+for (const lado of [-1, 1]) {
+  const cx = lado * 0.98, cy = -0.86
+  // deslizador metálico (banda) con tres marcas de talla
+  const des = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.36, 0.11), metal)
+  des.position.set(lado * 1.0, -0.12, 0); cascos.add(des)
+  for (let k = 0; k < 3; k++) { const m = new THREE.Mesh(new THREE.BoxGeometry(0.034, 0.008, 0.07), oscuro); m.position.set(lado * 1.0, -0.2 + k * 0.06, 0); cascos.add(m) }
+  // tope de la diadema donde entra el deslizador
+  const tope = new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.085, 0.07, 32), blanco); tope.position.set(lado * 1.0, 0.0, 0); tope.scale.z = 1.6; cascos.add(tope)
+  // horquilla (media vuelta sobre la copa) con pivotes
+  const hor = new THREE.Mesh(new THREE.TorusGeometry(0.66, 0.036, 24, 120, Math.PI), mate)
+  hor.rotation.y = Math.PI / 2; hor.position.set(cx, cy, 0); cascos.add(hor)
+  for (const zz of [-0.66, 0.66]) { const pv = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.05, 24), metal); pv.rotation.z = Math.PI / 2; pv.position.set(cx + lado * 0.02, cy, zz); cascos.add(pv) }
+  // copa: perfil torneado (eje x)
+  const perfil = []
+  for (let i = 0; i <= 24; i++) { const a = (i / 24) * Math.PI / 2; perfil.push(new THREE.Vector2(0.001 + Math.sin(a) * 0.6, -Math.cos(a) * 0.2 + 0.2)) }
+  perfil.push(new THREE.Vector2(0.6, 0.34)); perfil.push(new THREE.Vector2(0.56, 0.36))
+  const copa = new THREE.Mesh(new THREE.LatheGeometry(perfil, 128), blanco)
+  copa.rotation.z = lado * Math.PI / 2; copa.position.set(cx + lado * 0.22, cy, 0); cascos.add(copa)
+  // tapa exterior mate con junta y anillo de luz fino
+  const tapa = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.42, 0.05, 128), mate)
+  tapa.rotation.z = Math.PI / 2; tapa.position.set(cx + lado * 0.43, cy, 0); cascos.add(tapa)
+  const junta = new THREE.Mesh(new THREE.TorusGeometry(0.425, 0.007, 8, 160), oscuro)
+  junta.rotation.y = Math.PI / 2; junta.position.set(cx + lado * 0.41, cy, 0); cascos.add(junta)
+  const luz = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.008, 12, 160), rgb(lado < 0 ? 0.15 : 0.85))
+  luz.rotation.y = Math.PI / 2; luz.position.set(cx + lado * 0.458, cy, 0); cascos.add(luz)
+  // almohadilla de polipiel con costura en la cara exterior
+  const alm = new THREE.Mesh(new THREE.TorusGeometry(0.45, 0.162, 40, 140), tela)
+  alm.rotation.y = Math.PI / 2; alm.scale.set(1, 1.05, 1.03); alm.position.set(cx - lado * 0.06, cy, 0); cascos.add(alm)
+  const cos = new THREE.Mesh(new THREE.TorusGeometry(0.611, 0.005, 8, 160), costura)
+  cos.rotation.y = Math.PI / 2; cos.scale.set(1, 1.05, 1.03); cos.position.set(cx - lado * 0.06, cy, 0); cascos.add(cos)
+  const fondo = new THREE.Mesh(new THREE.CircleGeometry(0.42, 64), oscuro)
+  fondo.rotation.y = lado * -Math.PI / 2; fondo.position.set(cx, cy, 0); cascos.add(fondo)
+}
+// micrófono plegado en la copa izquierda
+const mic = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([
+  new THREE.Vector3(-1.32, -1.1, 0.25), new THREE.Vector3(-1.36, -1.25, 0.55), new THREE.Vector3(-1.3, -1.35, 0.85)]), 40, 0.035, 16), oscuro)
+cascos.add(mic)
+const punta = new THREE.Mesh(new THREE.SphereGeometry(0.06, 24, 16), oscuro); punta.position.set(-1.3, -1.35, 0.86); cascos.add(punta)
+
+cascos.rotation.y = 0.5 + GIRO
+s.add(cascos)
+const c = camara(cascos, W, H, [-0.35, 0.28, 1], [0, 1, 0], 24, 0.8)
+luces(s, c)
+r.render(s, c); window.listo = true
+</script></body></html>

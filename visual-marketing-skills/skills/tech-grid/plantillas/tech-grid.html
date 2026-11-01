@@ -1,0 +1,248 @@
+<!doctype html>
+<!--
+  PLANTILLA «TECH-GRID» · campaña de catálogo tech: fondo negro-azulado con cuadrícula fina y degradado a azul abajo,
+  productos recortados que se salen de marcos de borde fino con relleno degradado, marcos unidos por pistas de
+  circuito (solo ángulos rectos) con nodos cuadrados, y un arco fino alrededor del bloque logo + titular. Cinco
+  formatos de una misma campaña:
+    hero (1600x900), redes-1x1 (1080x1080), redes-4x5 (1080x1350), banner-x (1500x500) y story (1080x1920).
+  Exportar a 2x (PNG nítido), desde la carpeta de esta plantilla, con tech-grid.css y recortes/ al lado:
+    node ../../piezas-graficas/scripts/exportar.mjs tech-grid.html --marca marca-ejemplo.json --escala 2
+  Reglas:
+    · La marca sale de marca.json (skill direccion-de-arte): colores y fuentes en var(--…) (titular con
+      --fuente-display), y nombre, web y logo en los elementos con data-marca. Aquí no se escribe ningún color suelto.
+    · Cuadrícula, pistas, nodos, arco y marcos son decoración: data-fondo + aria-hidden="true". Todo en SVG con
+      viewBox = px de la pieza (1 unidad = 1 px), así las coordenadas de pistas y nodos son las de los marcos.
+    · Cada producto o persona es un <img data-recorte> con alfa: ningún texto puede pisar su parte opaca.
+    · Cada pista sale del borde de un marco (con su nodo) y acaba en otro marco o fuera del lienzo: nunca suelta.
+    · Plano: sin glow, sin sombras de color, sin desenfoques. La sombra de contacto es un radial-gradient.
+  Contenido de ejemplo: Pulso, marca ficticia de periféricos gaming. Recortes: renders 3D propios (teclado, ratón,
+  cascos) y una persona generada con IA (no es real). Cámbialos por los productos de tu marca.
+-->
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Tech-grid</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=JetBrains+Mono:wght@400..600&display=block" rel="stylesheet">
+<link rel="stylesheet" href="tech-grid.css">
+<style>
+  :root {
+    /* Tokens de marca (los sustituye marca.json). Ejemplo: Pulso, marca ficticia. --acento-2 y --fuente-display no se definen aquí:
+       si la marca no los trae, tech-grid.css deriva el acento-2 del acento y el titular usa --fuente */
+    --papel: #f3f5f8; --superficie: #ffffff; --bloque: #eceff4;
+    --tinta: #07090f; --texto: #252a35; --suave: #5a6170; --apagado: #7b8291; --linea: #dfe3ea;
+    --noche: #04060c; --noche-2: #0b1220; --noche-linea: #1a2436; --claro: #f4f6fa; --claro-suave: #9aa3b5;
+    --acento: #19a7ff; --acento-texto: #0a6fc2; --sobre-acento: #04060c;
+    --fuente: 'Archivo', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+    --radio: 6px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0 }
+  body { background: #2a2f38; padding: 60px; display: flex; flex-direction: column; align-items: flex-start; gap: 60px; font-family: var(--fuente) }
+</style>
+</head>
+<body>
+
+<!-- ═══ HERO · 1600x900. Cuatro marcos a la izquierda en composición asimétrica (cascos, ratón, teclado, persona) unidos
+     por pistas; bloque logo + titular con su arco a la derecha y el apoyo debajo del arco. Celda de 128 px (8 %) -->
+<section class="tg" data-pieza="hero" data-estilo="tech-grid" data-ancho="1600" data-alto="900" data-margen="64" data-min-letra="18"
+         style="width:1600px;height:900px;--trazo:2px">
+  <svg class="tg-rejilla" data-fondo aria-hidden="true" viewBox="0 0 1600 900"><defs><pattern id="rj-hero" width="128" height="128" x="32" y="66" patternUnits="userSpaceOnUse"><path d="M.5 0V128M0 .5H128"/></pattern></defs><rect width="1600" height="900" fill="url(#rj-hero)"/></svg>
+  <svg class="tg-pistas" data-fondo aria-hidden="true" viewBox="0 0 1600 900">
+    <path class="pista t2" d="M625 0V96"/>
+    <path class="pista" d="M360 390V480"/>
+    <path class="pista" d="M120 300H64V900"/>
+    <path class="pista t2" d="M750 210H1000V470"/>
+    <path class="pista" d="M330 710V900"/>
+    <path class="pista t2" d="M790 770V900"/>
+  </svg>
+  <div class="marco" data-fondo aria-hidden="true" style="left:120px;top:150px;width:290px;height:240px"></div>
+  <div class="marco t2" data-fondo aria-hidden="true" style="left:500px;top:96px;width:250px;height:330px"></div>
+  <div class="marco" data-fondo aria-hidden="true" style="left:150px;top:480px;width:470px;height:230px"></div>
+  <div class="marco t2" data-fondo aria-hidden="true" style="left:700px;top:470px;width:340px;height:300px"></div>
+  <div class="contacto" data-fondo aria-hidden="true" style="left:186px;top:332px;width:176px;height:40px"></div>
+  <div class="contacto" data-fondo aria-hidden="true" style="left:552px;top:366px;width:176px;height:40px"></div>
+  <img class="recorte" data-recorte src="recortes/cascos.webp" alt="Cascos inalámbricos blancos" style="left:150px;top:72px;width:236px">
+  <img class="recorte" data-recorte src="recortes/raton.webp" alt="Ratón gaming blanco" style="left:452px;top:44px;width:236px">
+  <img class="recorte" data-recorte src="recortes/teclado.webp" alt="Teclado mecánico blanco" style="left:100px;top:470px;width:560px">
+  <div class="corte" style="left:702px;top:340px;width:336px;height:428px"><img data-recorte src="recortes/jugadora.webp" alt="Jugadora con cascos y un ratón blanco" style="width:420px;left:-71px;transform:none"></div>
+  <svg class="tg-pistas encima" data-fondo aria-hidden="true" viewBox="0 0 1600 900">
+    <g class="nodo t2" transform="translate(625 96)"><rect x="-7" y="-7" width="14" height="14"/><path d="M0 -7V7M-7 0H7"/></g>
+    <g class="nodo" transform="translate(360 390)"><rect x="-7" y="-7" width="14" height="14"/><path d="M0 -7V7M-7 0H7"/></g>
+    <g class="nodo" transform="translate(360 480)"><rect x="-7" y="-7" width="14" height="14"/><path d="M0 -7V7M-7 0H7"/></g>
+    <g class="nodo" transform="translate(120 300)"><rect x="-7" y="-7" width="14" height="14"/><path d="M0 -7V7M-7 0H7"/></g>
+    <g class="nodo t2" transform="translate(750 210)"><rect x="-7" y="-7" width="14" height="14"/><path d="M0 -7V7M-7 0H7"/></g>
+    <g class="nodo t2" transform="translate(1000 470)"><rect x="-7" y="-7" width="14" height="14"/><path d="M0 -7V7M-7 0H7"/></g>
+    <g class="nodo" transform="translate(330 710)"><rect x="-7" y="-7" width="14" height="14"/><path d="M0 -7V7M-7 0H7"/></g>
+    <g class="nodo t2" transform="translate(790 770)"><rect x="-7" y="-7" width="14" height="14"/><path d="M0 -7V7M-7 0H7"/></g>
+  </svg>
+  <svg class="tg-arco" data-fondo aria-hidden="true" viewBox="0 0 100 100" style="left:1028px;top:68px;width:524px;height:524px"><path d="M25.5 7.57A49 49 0 0 1 95.43 31.64"/><path d="M74.5 92.44A49 49 0 0 1 4.57 68.36"/></svg>
+  <div class="tg-bloque" style="left:1094px;top:236px;--titular:72px">
+    <p class="tg-firma" style="font-size:32px;margin-bottom:22px"><span class="logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M2 17h6l3-8 5 15 4-11 2 4h8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span data-marca="nombre">Pulso</span></p>
+    <h1 class="tg-titular"><span>Semana</span><span data-marca="nombre">Pulso</span></h1>
+  </div>
+  <div class="tg-bloque" style="left:1094px;top:636px">
+    <p class="tg-apoyo" style="font-size:30px">Hasta <b>−40&nbsp;%</b> en periféricos</p>
+    <p class="tg-fechas" style="font-size:22px;margin-top:12px">Del 4 al 11 de noviembre</p>
+    <p class="tg-web" style="font-size:20px;margin-top:26px" data-marca="web_texto">pulso.gg</p>
+  </div>
+</section>
+
+<!-- ═══ REDES 1:1 · 1080x1080. Titular (88 px) con su arco arriba y el apoyo abajo a la derecha, donde el arco no pasa; 
+     debajo, teclado y cascos, unidos por pistas. Celda de 108 px (10 %) -->
+<section class="tg" data-pieza="redes-1x1" data-estilo="tech-grid" data-ancho="1080" data-alto="1080" data-margen="64" data-min-letra="22"
+         style="width:1080px;height:1080px;--trazo:2px">
+  <svg class="tg-rejilla" data-fondo aria-hidden="true" viewBox="0 0 1080 1080"><defs><pattern id="rj-1x1" width="108" height="108" x="0" y="0" patternUnits="userSpaceOnUse"><path d="M.5 0V108M0 .5H108"/></pattern></defs><rect width="1080" height="1080" fill="url(#rj-1x1)"/></svg>
+  <svg class="tg-pistas" data-fondo aria-hidden="true" viewBox="0 0 1080 1080">
+    <path class="pista" d="M560 690V665H720"/>
+    <path class="pista t2" d="M900 890V1080"/>
+    <path class="pista" d="M300 920V1080"/>
+    <path class="pista" d="M1010 700H1080"/>
+  </svg>
+  <div class="marco" data-fondo aria-hidden="true" style="left:110px;top:690px;width:500px;height:230px"></div>
+  <div class="marco t2" data-fondo aria-hidden="true" style="left:720px;top:590px;width:290px;height:300px"></div>
+  <div class="contacto" data-fondo aria-hidden="true" style="left:786px;top:810px;width:176px;height:40px"></div>
+  <img class="recorte" data-recorte src="recortes/teclado.webp" alt="Teclado mecánico blanco" style="left:80px;top:680px;width:560px">
+  <img class="recorte" data-recorte src="recortes/cascos.webp" alt="Cascos inalámbricos blancos" style="left:752px;top:540px;width:236px">
+  <svg class="tg-pistas encima" data-fondo aria-hidden="true" viewBox="0 0 1080 1080">
+    <g class="nodo" transform="translate(560 690)"><rect x="-6" y="-6" width="12" height="12"/><path d="M0 -6V6M-6 0H6"/></g>
+    <g class="nodo" transform="translate(720 665)"><rect x="-6" y="-6" width="12" height="12"/><path d="M0 -6V6M-6 0H6"/></g>
+    <g class="nodo t2" transform="translate(900 890)"><rect x="-6" y="-6" width="12" height="12"/><path d="M0 -6V6M-6 0H6"/></g>
+    <g class="nodo" transform="translate(300 920)"><rect x="-6" y="-6" width="12" height="12"/><path d="M0 -6V6M-6 0H6"/></g>
+    <g class="nodo t2" transform="translate(1010 700)"><rect x="-6" y="-6" width="12" height="12"/><path d="M0 -6V6M-6 0H6"/></g>
+  </svg>
+  <svg class="tg-arco" data-fondo aria-hidden="true" viewBox="0 0 100 100" style="left:114px;top:4px;width:653px;height:653px"><path d="M25.5 7.57A49 49 0 0 1 95.43 31.64"/><path d="M74.5 92.44A49 49 0 0 1 4.57 68.36"/></svg>
+  <div class="tg-bloque" style="left:195px;top:222px;--titular:88px">
+    <p class="tg-firma" style="font-size:36px;margin-bottom:18px"><span class="logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M2 17h6l3-8 5 15 4-11 2 4h8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span data-marca="nombre">Pulso</span></p>
+    <h1 class="tg-titular"><span>Semana</span><span data-marca="nombre">Pulso</span></h1>
+  </div>
+  <div class="tg-bloque derecha" style="right:394px;top:458px">
+    <p class="tg-apoyo" style="font-size:32px">Hasta <b>−40&nbsp;%</b> en periféricos</p>
+    <p class="tg-fechas" style="font-size:24px;margin-top:8px">Del 4 al 11 de noviembre</p>
+    <p class="tg-web" style="font-size:22px;margin-top:12px" data-marca="web_texto">pulso.gg</p>
+  </div>
+</section>
+
+<!-- ═══ REDES 4:5 · 1080x1350. Titular grande (116 px) con su arco arriba; el apoyo abajo a la derecha, en la parte
+     del círculo que el arco deja libre; debajo, la persona (marco grande), los cascos y el teclado, unidos por pistas -->
+<section class="tg" data-pieza="redes-4x5" data-estilo="tech-grid" data-ancho="1080" data-alto="1350" data-margen="64" data-min-letra="22"
+         style="width:1080px;height:1350px;--trazo:2px">
+  <svg class="tg-rejilla" data-fondo aria-hidden="true" viewBox="0 0 1080 1350"><defs><pattern id="rj-4x5" width="108" height="108" x="0" y="27" patternUnits="userSpaceOnUse"><path d="M.5 0V108M0 .5H108"/></pattern></defs><rect width="1080" height="1350" fill="url(#rj-4x5)"/></svg>
+  <svg class="tg-pistas" data-fondo aria-hidden="true" viewBox="0 0 1080 1350">
+    <path class="pista" d="M870 990V1050"/>
+    <path class="pista t2" d="M514 960H760"/>
+    <path class="pista t2" d="M290 1290V1350"/>
+    <path class="pista" d="M900 1290V1350"/>
+    <path class="pista" d="M980 890H1080"/>
+    <path class="pista t2" d="M64 1100H0"/>
+  </svg>
+  <div class="marco t2" data-fondo aria-hidden="true" style="left:64px;top:920px;width:450px;height:370px"></div>
+  <div class="marco" data-fondo aria-hidden="true" style="left:760px;top:790px;width:220px;height:200px"></div>
+  <div class="marco" data-fondo aria-hidden="true" style="left:580px;top:1050px;width:436px;height:240px"></div>
+  <div class="contacto" data-fondo aria-hidden="true" style="left:812px;top:924px;width:128px;height:30px"></div>
+  <div class="corte" style="left:66px;top:790px;width:446px;height:498px"><img data-recorte src="recortes/jugadora.webp" alt="Jugadora con cascos y un ratón blanco" style="width:580px;left:-117px;transform:none"></div>
+  <img class="recorte" data-recorte src="recortes/cascos.webp" alt="Cascos inalámbricos blancos" style="left:785px;top:745px;width:170px">
+  <img class="recorte" data-recorte src="recortes/teclado.webp" alt="Teclado mecánico blanco" style="left:528px;top:1040px;width:540px">
+  <svg class="tg-pistas encima" data-fondo aria-hidden="true" viewBox="0 0 1080 1350">
+    <g class="nodo" transform="translate(870 990)"><rect x="-6" y="-6" width="12" height="12"/><path d="M0 -6V6M-6 0H6"/></g>
+    <g class="nodo" transform="translate(870 1050)"><rect x="-6" y="-6" width="12" height="12"/><path d="M0 -6V6M-6 0H6"/></g>
+    <g class="nodo t2" transform="translate(514 960)"><rect x="-6" y="-6" width="12" height="12"/><path d="M0 -6V6M-6 0H6"/></g>
+    <g class="nodo t2" transform="translate(760 960)"><rect x="-6" y="-6" width="12" height="12"/><path d="M0 -6V6M-6 0H6"/></g>
+    <g class="nodo t2" transform="translate(290 1290)"><rect x="-6" y="-6" width="12" height="12"/><path d="M0 -6V6M-6 0H6"/></g>
+    <g class="nodo" transform="translate(900 1290)"><rect x="-6" y="-6" width="12" height="12"/><path d="M0 -6V6M-6 0H6"/></g>
+    <g class="nodo" transform="translate(980 890)"><rect x="-6" y="-6" width="12" height="12"/><path d="M0 -6V6M-6 0H6"/></g>
+    <g class="nodo t2" transform="translate(64 1100)"><rect x="-6" y="-6" width="12" height="12"/><path d="M0 -6V6M-6 0H6"/></g>
+  </svg>
+  <svg class="tg-arco" data-fondo aria-hidden="true" viewBox="0 0 100 100" style="left:142px;top:-8px;width:796px;height:796px"><path d="M25.5 7.57A49 49 0 0 1 95.43 31.64"/><path d="M74.5 92.44A49 49 0 0 1 4.57 68.36"/></svg>
+  <div class="tg-bloque" style="left:216px;top:248px;--titular:116px">
+    <p class="tg-firma" style="font-size:46px;margin-bottom:22px"><span class="logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M2 17h6l3-8 5 15 4-11 2 4h8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span data-marca="nombre">Pulso</span></p>
+    <h1 class="tg-titular"><span>Semana</span><span data-marca="nombre">Pulso</span></h1>
+  </div>
+  <div class="tg-bloque derecha" style="right:216px;top:566px">
+    <p class="tg-apoyo" style="font-size:38px">Hasta <b>−40&nbsp;%</b> en periféricos</p>
+    <p class="tg-fechas" style="font-size:26px;margin-top:10px">Del 4 al 11 de noviembre</p>
+    <p class="tg-web" style="font-size:24px;margin-top:14px" data-marca="web_texto">pulso.gg</p>
+  </div>
+</section>
+
+<!-- ═══ BANNER DE X · 1500x500. La foto de perfil tapa abajo a la izquierda (~400x200) y el móvil recorta ~60 px
+     arriba y abajo: titular con arco a la izquierda por encima de la foto, apoyo en el centro y marcos a la derecha -->
+<section class="tg" data-pieza="banner-x" data-estilo="tech-grid" data-ancho="1500" data-alto="500" data-margen="60" data-min-letra="20"
+         style="width:1500px;height:500px;--trazo:2px">
+  <svg class="tg-rejilla" data-fondo aria-hidden="true" viewBox="0 0 1500 500"><defs><pattern id="rj-x" width="125" height="125" x="0" y="0" patternUnits="userSpaceOnUse"><path d="M.5 0V125M0 .5H125"/></pattern></defs><rect width="1500" height="500" fill="url(#rj-x)"/></svg>
+  <svg class="tg-pistas" data-fondo aria-hidden="true" viewBox="0 0 1500 500">
+    <path class="pista t2" d="M1420 0V84"/>
+    <path class="pista" d="M980 230V120H1260"/>
+    <path class="pista" d="M1080 400V500"/>
+    <path class="pista t2" d="M1400 314V500"/>
+  </svg>
+  <div class="marco" data-fondo aria-hidden="true" style="left:850px;top:230px;width:330px;height:170px"></div>
+  <div class="marco t2" data-fondo aria-hidden="true" style="left:1260px;top:84px;width:190px;height:230px"></div>
+  <div class="contacto" data-fondo aria-hidden="true" style="left:1306px;top:260px;width:124px;height:30px"></div>
+  <img class="recorte" data-recorte src="recortes/teclado.webp" alt="Teclado mecánico blanco" style="left:808px;top:218px;width:410px">
+  <img class="recorte" data-recorte src="recortes/raton.webp" alt="Ratón gaming blanco" style="left:1280px;top:48px;width:160px">
+  <svg class="tg-pistas encima" data-fondo aria-hidden="true" viewBox="0 0 1500 500">
+    <g class="nodo t2" transform="translate(1420 84)"><rect x="-6" y="-6" width="12" height="12"/><path d="M0 -6V6M-6 0H6"/></g>
+    <g class="nodo" transform="translate(980 230)"><rect x="-6" y="-6" width="12" height="12"/><path d="M0 -6V6M-6 0H6"/></g>
+    <g class="nodo" transform="translate(1260 120)"><rect x="-6" y="-6" width="12" height="12"/><path d="M0 -6V6M-6 0H6"/></g>
+    <g class="nodo" transform="translate(1080 400)"><rect x="-6" y="-6" width="12" height="12"/><path d="M0 -6V6M-6 0H6"/></g>
+    <g class="nodo t2" transform="translate(1400 314)"><rect x="-6" y="-6" width="12" height="12"/><path d="M0 -6V6M-6 0H6"/></g>
+  </svg>
+  <svg class="tg-arco" data-fondo aria-hidden="true" viewBox="0 0 100 100" style="left:130px;top:12px;width:400px;height:400px"><path d="M25.5 7.57A49 49 0 0 1 95.43 31.64"/><path d="M74.5 92.44A49 49 0 0 1 4.57 68.36"/></svg>
+  <div class="tg-bloque" style="left:186px;top:120px;--titular:56px">
+    <p class="tg-firma" style="font-size:26px;margin-bottom:16px"><span class="logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M2 17h6l3-8 5 15 4-11 2 4h8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span data-marca="nombre">Pulso</span></p>
+    <h1 class="tg-titular"><span>Semana</span><span data-marca="nombre">Pulso</span></h1>
+  </div>
+  <div class="tg-bloque" style="left:568px;top:160px">
+    <p class="tg-apoyo" style="font-size:32px">Hasta <b>−40&nbsp;%</b><br>en periféricos</p>
+    <p class="tg-fechas" style="font-size:20px;margin-top:12px">Del 4 al 11 de noviembre</p>
+    <p class="tg-web" style="font-size:20px;margin-top:18px" data-marca="web_texto">pulso.gg</p>
+  </div>
+</section>
+
+<!-- ═══ STORY · 1080x1920. 250 px arriba y 340 abajo sin texto (la interfaz los tapa). Titular a 160 px que ocupa casi
+     todo el ancho útil, con un arco grande; apoyo abajo a la derecha dentro del círculo (donde el arco no pasa); la
+     mitad de abajo, para los marcos (pueden entrar en la zona de abajo: no llevan texto) -->
+<section class="tg" data-pieza="story" data-estilo="tech-grid" data-ancho="1080" data-alto="1920" data-margen="72" data-min-letra="26"
+         style="width:1080px;height:1920px;--trazo:2.5px">
+  <svg class="tg-rejilla" data-fondo aria-hidden="true" viewBox="0 0 1080 1920"><defs><pattern id="rj-story" width="108" height="108" x="0" y="42" patternUnits="userSpaceOnUse"><path d="M.5 0V108M0 .5H108"/></pattern></defs><rect width="1080" height="1920" fill="url(#rj-story)"/></svg>
+  <svg class="tg-pistas" data-fondo aria-hidden="true" viewBox="0 0 1080 1920">
+    <path class="pista" d="M1008 1400H1080"/>
+    <path class="pista" d="M830 1570V1640"/>
+    <path class="pista t2" d="M592 1420H650"/>
+    <path class="pista t2" d="M330 1850V1920"/>
+    <path class="pista t2" d="M72 1520H0"/>
+    <path class="pista" d="M900 1860V1920"/>
+  </svg>
+  <div class="marco" data-fondo aria-hidden="true" style="left:650px;top:1240px;width:358px;height:330px"></div>
+  <div class="marco t2" data-fondo aria-hidden="true" style="left:72px;top:1380px;width:520px;height:470px"></div>
+  <div class="marco" data-fondo aria-hidden="true" style="left:640px;top:1640px;width:380px;height:220px"></div>
+  <div class="contacto" data-fondo aria-hidden="true" style="left:723px;top:1502px;width:225px;height:50px"></div>
+  <img class="recorte" data-recorte src="recortes/cascos.webp" alt="Cascos inalámbricos blancos" style="left:680px;top:1175px;width:300px">
+  <div class="corte" style="left:74px;top:1200px;width:516px;height:648px"><img data-recorte src="recortes/jugadora.webp" alt="Jugadora con cascos y un ratón blanco" style="width:650px;left:-115px;transform:none"></div>
+  <img class="recorte" data-recorte src="recortes/teclado.webp" alt="Teclado mecánico blanco" style="left:612px;top:1645px;width:460px">
+  <svg class="tg-pistas encima" data-fondo aria-hidden="true" viewBox="0 0 1080 1920">
+    <g class="nodo" transform="translate(1008 1400)"><rect x="-7" y="-7" width="14" height="14"/><path d="M0 -7V7M-7 0H7"/></g>
+    <g class="nodo" transform="translate(830 1570)"><rect x="-7" y="-7" width="14" height="14"/><path d="M0 -7V7M-7 0H7"/></g>
+    <g class="nodo" transform="translate(830 1640)"><rect x="-7" y="-7" width="14" height="14"/><path d="M0 -7V7M-7 0H7"/></g>
+    <g class="nodo t2" transform="translate(592 1420)"><rect x="-7" y="-7" width="14" height="14"/><path d="M0 -7V7M-7 0H7"/></g>
+    <g class="nodo t2" transform="translate(650 1420)"><rect x="-7" y="-7" width="14" height="14"/><path d="M0 -7V7M-7 0H7"/></g>
+    <g class="nodo t2" transform="translate(330 1850)"><rect x="-7" y="-7" width="14" height="14"/><path d="M0 -7V7M-7 0H7"/></g>
+    <g class="nodo t2" transform="translate(72 1520)"><rect x="-7" y="-7" width="14" height="14"/><path d="M0 -7V7M-7 0H7"/></g>
+    <g class="nodo" transform="translate(900 1860)"><rect x="-7" y="-7" width="14" height="14"/><path d="M0 -7V7M-7 0H7"/></g>
+  </svg>
+  <svg class="tg-arco" data-fondo aria-hidden="true" viewBox="0 0 100 100" style="left:-32px;top:28px;width:1143px;height:1143px"><path d="M25.5 7.57A49 49 0 0 1 95.43 31.64"/><path d="M74.5 92.44A49 49 0 0 1 4.57 68.36"/></svg>
+  <div class="tg-bloque" style="left:94px;top:405px;--titular:160px">
+    <p class="tg-firma" style="font-size:64px;margin-bottom:28px"><span class="logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M2 17h6l3-8 5 15 4-11 2 4h8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span data-marca="nombre">Pulso</span></p>
+    <h1 class="tg-titular"><span>Semana</span><span data-marca="nombre">Pulso</span></h1>
+  </div>
+  <div class="tg-bloque derecha" style="right:93px;top:846px">
+    <p class="tg-apoyo" style="font-size:48px">Hasta <b>−40&nbsp;%</b> en periféricos</p>
+    <p class="tg-fechas" style="font-size:36px;margin-top:10px">Del 4 al 11 de noviembre</p>
+    <p class="tg-web" style="font-size:34px;margin-top:16px" data-marca="web_texto">pulso.gg</p>
+  </div>
+</section>
+
+</body>
+</html>

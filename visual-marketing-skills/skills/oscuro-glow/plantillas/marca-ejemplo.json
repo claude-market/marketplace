@@ -1,0 +1,30 @@
+{
+  "nombre": "Vértice",
+  "ficticia": true,
+  "sector": "App de inversión y trading para particulares",
+  "lema": "Invierte con método.",
+  "web": "https://vertice.app",
+  "web_texto": "vertice.app",
+  "correo_contacto": "hola@vertice.app",
+  "tono": "Directo y seguro, de tú. Cifras claras, sin promesas de rentabilidad ni exclamaciones.",
+  "logo": {
+    "svg": "<svg viewBox=\"0 0 32 32\" aria-hidden=\"true\"><path d=\"M3 6h7.2L16 21.5 21.8 6H29L19.4 27h-6.8z\" fill=\"currentColor\"/></svg>",
+    "png_claro": "",
+    "png_oscuro": ""
+  },
+  "colores": {
+    "papel": "#f4f6fb", "superficie": "#ffffff", "bloque": "#eef1f8",
+    "tinta": "#0a1024", "texto": "#273049", "suave": "#59627a", "apagado": "#7a8399", "linea": "#dde2ee",
+    "noche": "#050a1a", "noche-2": "#0c1530", "noche-linea": "#1c2747",
+    "claro": "#f2f5ff", "claro-suave": "#a3afcf",
+    "acento": "#3d8bff", "acento-texto": "#1f56d6", "sobre-acento": "#050a1a"
+  },
+  "tipografia": {
+    "fuente": "Poppins",
+    "display": "Poppins",
+    "mono": "JetBrains Mono",
+    "google_fonts": "family=Poppins:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400..600",
+    "correo": "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif"
+  },
+  "forma": { "radio": "22px" }
+}

@@ -1,0 +1,142 @@
+/* ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   oscuro-glow.css · componentes del look «oscuro-glow»
+   Lanzamiento u oferta sobre azul noche: fondo degradado oscuro con una luz grande detrás del producto, un gráfico
+   de velas y el portátil del producto MUY tenues y desenfocados al fondo, dos tarjetas oscuras con borde luminoso
+   fino y halo contenido (la cifra de la campaña) y un titular enorme en mayúsculas, plateado.
+
+   · Todo en em: el font-size del componente lo escala entero. Tarjetas de 20-24 px en 1080-1600; titular aparte.
+   · Colores solo con var(--…). La marca los pone desde marca.json (skill direccion-de-arte); los del look se
+     derivan aquí de --acento y --claro, y cualquiera se puede fijar en marca.json → colores (glow, fondo-1…).
+   · Brillo con contención (lo vigila el exportador con data-estilo="oscuro-glow"): halo de box-shadow de color con
+     alfa ≤ 0,6 y desenfoque ≤ 8 % del lado corto del lienzo; 3 elementos con halo como mucho (las 2 tarjetas);
+     nada de text-shadow; desenfoque solo en capas [data-fondo]; la luz grande es un radial-gradient del fondo.
+
+   Tokens del look (todos opcionales en marca.json → colores):
+     --glow         la luz del look ............................ var(--acento)
+     --glow-claro   borde de las tarjetas, unidades ............ glow mezclado con --claro
+     --fondo-1/2/3  azul noche del fondo (oscuro → vivo) ....... oklch(from var(--glow) …) a L .13 / .23 / .40
+     --tarjeta(-2)  relleno de las tarjetas (abajo / arriba) ... oklch(from var(--glow) …) a L .14 / .19
+     --metal-1/2    degradado del titular (blanco → plata) ..... --claro → --claro mezclado con --claro-suave
+     --fuente-display  titular y cifras ......................... tipografia.display de marca.json, si no --fuente
+   Variables de cada pieza (en su style): --luz-x, --luz-y, --luz-w, --luz-h (dónde cae la luz grande),
+     --og-radio (radio de las tarjetas ≈ 1,5-2 % del ancho), --halo (desenfoque del halo, en px o em).
+   Variables de cada tarjeta: --cifra (4,4 em) y --pie (1,3 em), para tarjetas grandes (story, 4:5).
+
+   Componentes: .og-escena (la propia <section>) · .og-velas y .og-portatil (fondo, data-fondo) · .og-marca ·
+   .og-titular · .og-sub · .og-apoyo · .og-tarjeta con .og-cifra (.og-unidad) y .og-pie · .og-cta · .og-url
+   ──────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  --glow: var(--acento);
+  --glow-claro: color-mix(in oklab, var(--glow) 52%, var(--claro));
+  /* Azul noche derivado de la luz: casi negro arriba a la izquierda → azul vivo abajo a la derecha */
+  --fondo-1: oklch(from var(--glow) .13 calc(c * .3) h);
+  --fondo-2: oklch(from var(--glow) .23 calc(c * .6) h);
+  --fondo-3: oklch(from var(--glow) .4 calc(c * .95) h);
+  /* Tarjetas: un punto más oscuras que el fondo que tapan (se separan por luminosidad, el borde las dibuja) */
+  --tarjeta: oklch(from var(--glow) .14 calc(c * .42) h);
+  --tarjeta-2: oklch(from var(--glow) .19 calc(c * .55) h);
+  /* Titular plateado: blanco arriba → plata fría abajo (el tono más oscuro da ≥ 4,5:1 sobre --fondo-2) */
+  --metal-1: var(--claro);
+  --metal-2: color-mix(in oklab, var(--claro) 40%, var(--claro-suave));
+}
+
+/* ── Escena: va en la propia <section data-pieza>. La luz grande es parte del fondo (radial), no una sombra ──── */
+.og-escena {
+  position: relative; overflow: hidden;
+  font-family: var(--fuente); color: var(--claro);
+  -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums;
+  background-color: var(--fondo-2);
+  background-image:
+    /* 1 · la luz detrás del producto */
+    radial-gradient(var(--luz-w, 44%) var(--luz-h, 58%) at var(--luz-x, 72%) var(--luz-y, 62%),
+      color-mix(in oklab, var(--glow) 64%, transparent) 0%,
+      color-mix(in oklab, var(--glow) 28%, transparent) 40%,
+      transparent 72%),
+    /* 2 · la fuga de luz del borde izquierdo */
+    radial-gradient(34% 52% at 0% 24%, color-mix(in oklab, var(--fondo-3) 70%, transparent) 0%, transparent 70%),
+    /* 3 · la base: noche → azul */
+    linear-gradient(128deg, var(--fondo-1) 0%, var(--fondo-1) 20%, var(--fondo-2) 56%, var(--fondo-3) 100%);
+}
+.og-escena > * { position: absolute }
+
+/* ── Fondo: velas y portátil. Siempre data-fondo + aria-hidden; sin texto; aquí (y solo aquí) vale el blur ─────── */
+.og-velas { pointer-events: none; opacity: var(--velas-opacidad, .22); filter: blur(var(--velas-blur, 2px));
+            -webkit-mask-image: var(--velas-mascara, linear-gradient(90deg, transparent 0%, #000 18%, #000 82%, transparent 100%));
+            mask-image: var(--velas-mascara, linear-gradient(90deg, transparent 0%, #000 18%, #000 82%, transparent 100%)) }
+.og-velas svg { display: block; width: 100%; height: 100% }
+.og-velas .og-rejilla { fill: var(--glow-claro); opacity: .35 }
+.og-velas .og-rejilla-v { opacity: .16 }
+.og-velas .og-sube { fill: var(--glow-claro) }
+.og-velas .og-baja { fill: var(--glow); opacity: .7 }
+.og-velas .og-volumen { opacity: .45 }
+.og-velas .og-media { fill: none; stroke: var(--claro); stroke-width: 2; opacity: .45 }
+.og-velas .og-media-lenta { stroke: var(--glow-claro); stroke-width: 1.5; stroke-dasharray: 6 5; opacity: .5 }
+.og-velas .og-etiqueta { fill: var(--glow-claro); opacity: .4 }
+.og-velas .og-ultimo { fill: var(--claro); opacity: .4 }
+.og-velas .og-etiqueta-viva { fill: var(--claro); opacity: .75 }
+
+.og-portatil { pointer-events: none; filter: blur(var(--portatil-blur, 5px)); opacity: var(--portatil-opacidad, .9) }
+.og-portatil svg { display: block; width: 100%; height: auto; overflow: visible }
+.og-portatil .p-marco { fill: oklch(from var(--glow) .12 calc(c * .3) h); stroke: color-mix(in oklab, var(--glow-claro) 45%, transparent); stroke-width: 2 }
+.og-portatil .p-pantalla { fill: oklch(from var(--glow) .17 calc(c * .5) h) }
+.og-portatil .p-panel { fill: color-mix(in oklab, var(--claro) 6%, transparent); stroke: color-mix(in oklab, var(--claro) 8%, transparent); stroke-width: 1.5 }
+.og-portatil .p-tenue { fill: color-mix(in oklab, var(--claro) 20%, transparent) }
+.og-portatil .p-claro { fill: color-mix(in oklab, var(--claro) 42%, transparent) }
+.og-portatil .p-acento { fill: var(--glow) }
+.og-portatil .p-pestana { fill: color-mix(in oklab, var(--glow) 55%, transparent) }
+.og-portatil .p-icono { fill: color-mix(in oklab, var(--glow) 70%, transparent) }
+.og-portatil .p-rejilla { fill: color-mix(in oklab, var(--claro) 7%, transparent) }
+.og-portatil .p-linea { fill: none; stroke: var(--glow-claro); stroke-width: 3 }
+.og-portatil .p-mini { fill: none; stroke: var(--glow-claro); stroke-width: 2.5; stroke-linejoin: round; opacity: .8 }
+.og-portatil .p-barbilla { fill: oklch(from var(--glow) .08 calc(c * .3) h) }
+.og-portatil .p-filo { fill: var(--claro); opacity: .9 }
+.og-portatil .p-muesca { fill: oklch(from var(--glow) .2 calc(c * .3) h) }
+
+/* ── Marca: logo + nombre, centrada arriba ───────────────────────────────────────────────────────────────── */
+.og-marca { display: flex; align-items: center; gap: .34em; font-weight: 600; letter-spacing: -.03em; line-height: 1;
+            white-space: nowrap; color: var(--claro); transform: translateX(-50%) }
+.og-marca .og-logo { display: inline-flex; width: 1.05em; height: 1.05em }
+.og-marca .og-logo svg { width: 100%; height: 100% }
+
+/* ── Columna de texto: centrada en su eje (left = eje, la columna se centra sola) ─────────────────────────── */
+.og-columna { display: flex; flex-direction: column; align-items: center; text-align: center; transform: translateX(-50%) }
+
+/* Titular: mayúsculas, compacto y plateado. El degradado se repite por línea (1lh) para que cada línea brille
+   igual; padding arriba para que las tildes de las mayúsculas no queden fuera de la caja que se pinta */
+.og-titular {
+  font-family: var(--fuente-display, var(--fuente)); font-weight: 700; text-transform: uppercase;
+  letter-spacing: -.04em; line-height: .94; white-space: nowrap; padding-top: .14em;
+  background-image: linear-gradient(180deg, var(--metal-1) 14%, var(--metal-1) 34%, var(--metal-2) 88%);
+  background-size: 100% 1lh; background-repeat: repeat-y; background-origin: content-box;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.og-sub { font-weight: 300; letter-spacing: -.025em; line-height: 1.15; color: var(--claro) }
+.og-apoyo { font-weight: 400; letter-spacing: -.02em; line-height: 1.2; color: var(--claro) }
+.og-apoyo b { font-weight: 700; letter-spacing: -.03em }
+
+/* CTA: píldora clara y plana (sin halo: la luz es de las tarjetas) */
+.og-cta { display: inline-flex; align-items: center; justify-content: center; white-space: nowrap;
+          padding: .5em 2.1em .52em; border-radius: 999px; font-weight: 400; letter-spacing: -.02em; line-height: 1.2;
+          background: var(--claro); color: var(--noche) }
+.og-url { font-weight: 700; letter-spacing: -.03em; line-height: 1.2; white-space: nowrap; color: var(--claro) }
+
+/* ── Tarjeta: relleno oscuro, borde de ~1,5 px degradado (claro arriba) y halo del glow contenido ─────────── */
+.og-tarjeta {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+  padding: 1em .8em; border-radius: var(--og-radio, 1.2em);
+  border: var(--og-borde, 1.5px) solid transparent;
+  background:
+    linear-gradient(180deg, var(--tarjeta-2) 0%, var(--tarjeta) 62%) padding-box,
+    linear-gradient(180deg, var(--glow-claro) 0%, color-mix(in oklab, var(--glow) 75%, transparent) 45%, color-mix(in oklab, var(--glow-claro) 70%, transparent) 100%) border-box;
+  background-color: var(--tarjeta);
+  box-shadow:
+    0 0 var(--halo, 1.8em) calc(var(--halo, 1.8em) * -.12) color-mix(in oklab, var(--glow) 50%, transparent),
+    0 1.6em 2.8em -.8em oklch(from var(--fondo-1) .07 calc(c * .5) h / .75);
+}
+.og-cifra { font-family: var(--fuente-display, var(--fuente)); font-weight: 700; font-size: var(--cifra, 4.4em); line-height: 1;
+            letter-spacing: -.05em; white-space: nowrap; font-variant-numeric: proportional-nums; color: var(--claro) }
+.og-cifra .og-unidad { font-size: .56em; letter-spacing: -.02em; margin-left: .06em; color: var(--glow-claro) }
+.og-cifra .og-unidad.antes { margin: 0 .01em 0 0; vertical-align: .34em }  /* el «+» sube al centro óptico de las cifras */
+.og-pie { margin-top: .55em; font-size: var(--pie, 1.3em); font-weight: 400; line-height: 1.16; letter-spacing: -.02em;
+          color: color-mix(in oklab, var(--claro) 90%, var(--glow-claro)) }

@@ -1,0 +1,10 @@
+{
+  "name": "producto-3d-mascota-scripts",
+  "private": true,
+  "type": "module",
+  "description": "Renderiza escenas de three.js (producto, mascota) a PNG con fondo transparente con Chrome sin cabeza.",
+  "dependencies": {
+    "playwright-core": "^1.48.0",
+    "three": "^0.187.0"
+  }
+}

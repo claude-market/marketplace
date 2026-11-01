@@ -1,0 +1,125 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:transparent}</style>
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script></head><body>
+<script type="module">
+// Mascota original del look «producto-3d-mascota»: «Chispa», una criatura cósmica de vinilo blando (cuerpo de gominola,
+// ojos grandes con brillo, mofletes, antenas con estrella, bufanda de punto) saludando y girada hacia el producto.
+// Se renderiza con la luz de la marca: recorte azul a la izquierda y violeta a la derecha (los del fondo del banner).
+// Vinilo blando: MeshPhysicalMaterial con sheen + un fresnel de recorte (azul a la izquierda, violeta a la derecha) y
+// un «wrap» que aclara el color en las zonas de sombra (aspecto de subsurface) inyectados con onBeforeCompile.
+import { THREE, preparar, luces, encuadrar, sombras, q } from './comun.js'
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js'
+const { r, s } = preparar({ entorno: .42 })
+luces(s, { principal: 1.75, relleno: .35, azul: 9, violeta: 9 })
+
+const RA = new THREE.Color(q.has('azul') ? '#' + q.get('azul') : '#4d6cff'), RV = new THREE.Color(q.has('violeta') ? '#' + q.get('violeta') : '#a95cff')
+const vinilizar = (m, rim = 3.2, sss = .05) => { m.onBeforeCompile = sh => {
+  Object.assign(sh.uniforms, { uAz: { value: RA }, uVi: { value: RV }, uRim: { value: rim }, uSss: { value: sss } })
+  sh.fragmentShader = 'uniform vec3 uAz; uniform vec3 uVi; uniform float uRim; uniform float uSss;\n' + sh.fragmentShader.replace('#include <opaque_fragment>', `
+    float nvR = saturate( dot( geometryNormal, geometryViewDir ) );
+    float frR = pow( 1.0 - nvR, 5.0 );
+    vec3 rimC = mix( uAz * 1.6, uVi, smoothstep( -0.3, 0.3, geometryNormal.x ) );   // el azul pesa menos a la vista: x1,6
+    outgoingLight += rimC * frR * uRim * ( 0.55 + 0.45 * smoothstep( -0.6, 0.5, geometryNormal.y ) );
+    outgoingLight += diffuseColor.rgb * uSss * ( 0.35 + 0.65 * pow( 1.0 - nvR, 1.5 ) );
+    #include <opaque_fragment>`) }
+  m.customProgramCacheKey = () => 'vinilo-' + rim + '-' + sss; return m }
+const sm = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t) }
+const mascota = new THREE.Group(); s.add(mascota)
+
+// Cuerpo: esfera deformada en gominola (más ancha abajo, base algo plana) con la panza algo más clara
+const g = new THREE.SphereGeometry(1, 200, 150), pos = g.attributes.position
+const col = new Float32Array(pos.count * 3), base = new THREE.Color(q.has('cuerpo') ? '#' + q.get('cuerpo') : '#7357ff'), panza = new THREE.Color(q.has('panza') ? '#' + q.get('panza') : '#a996ff'), alto = base.clone().multiplyScalar(.9), t = new THREE.Color()
+for (let i = 0; i < pos.count; i++) {
+  let x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i)
+  const ancho = 1 + .12 * -y
+  x *= ancho; z *= ancho * .9; let yy = y * 1.12
+  if (yy < -.8) yy = -.8 + (yy + .8) * .55
+  pos.setXYZ(i, x, yy, z)
+  const w = sm(.5, .9, z / (ancho * .9)) * sm(-.25, -.6, y) * .8
+  t.copy(base).lerp(alto, sm(.2, 1, y)).lerp(panza, w)
+  col.set([t.r, t.g, t.b], i * 3)
+}
+g.setAttribute('color', new THREE.BufferAttribute(col, 3)); g.computeVertexNormals()
+const params = { roughness: .5, sheen: 1, sheenRoughness: .35, sheenColor: panza.clone().lerp(new THREE.Color('#ffffff'), .5), clearcoat: .22, clearcoatRoughness: .4 }
+const vinilo = vinilizar(new THREE.MeshPhysicalMaterial({ vertexColors: true, ...params }))
+const cuerpo = new THREE.Mesh(g, vinilo); mascota.add(cuerpo); cuerpo.updateMatrixWorld(true)
+const morado = vinilizar(new THREE.MeshPhysicalMaterial({ color: base, ...params }))
+
+const ray = new THREE.Raycaster()
+const pegar = (x, y) => { ray.set(new THREE.Vector3(x, y, 5), new THREE.Vector3(0, 0, -1)); const h = ray.intersectObject(cuerpo)[0]; return { p: h.point, n: h.face.normal.clone().normalize() } }
+const orientar = (o, n) => o.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), n)
+
+// Ojos: esferas lacadas con iris en degradado (pupila oscura, aro violeta, luz azul abajo), dos puntos de brillo y
+// un arco de reflejo
+const iris = (() => { const c = document.createElement('canvas'); c.width = 1024; c.height = 512; const x = c.getContext('2d'), cx = 256, cy = 250, R = 118
+  x.fillStyle = '#0d0a26'; x.fillRect(0, 0, 1024, 512)
+  const g = x.createRadialGradient(cx, cy, 8, cx, cy, R); for (const [p, k] of [[0, '#05040f'], [.4, '#090720'], [.52, '#2a1d8a'], [.78, '#5b48ff'], [.92, '#86a6ff'], [1, '#140f3c']]) g.addColorStop(p, k)
+  x.fillStyle = g; x.beginPath(); x.arc(cx, cy, R, 0, Math.PI * 2); x.fill()
+  x.save(); x.beginPath(); x.arc(cx, cy, R * .96, 0, Math.PI * 2); x.clip()
+  const b = x.createRadialGradient(cx, cy + 78, 4, cx, cy + 66, 92); b.addColorStop(0, 'rgba(150,200,255,.85)'); b.addColorStop(1, 'rgba(150,200,255,0)'); x.fillStyle = b; x.fillRect(0, 0, 1024, 512); x.restore()
+  x.fillStyle = '#04030c'; x.beginPath(); x.arc(cx, cy - 4, R * .4, 0, Math.PI * 2); x.fill()
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t })()
+const ojoMat = new THREE.MeshPhysicalMaterial({ color: '#ffffff', map: iris, emissive: '#ffffff', emissiveMap: iris, emissiveIntensity: .32, roughness: .1, clearcoat: 1, clearcoatRoughness: .03 })
+const bocaMat = new THREE.MeshPhysicalMaterial({ color: '#0f0b29', roughness: .3, clearcoat: .6 })
+const brillo = new THREE.MeshBasicMaterial({ color: '#ffffff', toneMapped: false })
+for (const sx of [-1, 1]) {
+  const { p, n } = pegar(.33 * sx, .36)
+  const ojo = new THREE.Group(); ojo.position.copy(p).addScaledVector(n, -.04); orientar(ojo, n)
+  const e = new THREE.Mesh(new THREE.SphereGeometry(.168, 128, 64), ojoMat); e.scale.set(1, 1.18, .62); ojo.add(e)
+  const re = new THREE.Mesh(new THREE.TorusGeometry(.105, .006, 8, 64, 1.3), new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: .42, toneMapped: false })); re.position.set(0, 0, .099); re.rotation.z = .55; re.scale.set(1, 1.18, 1); ojo.add(re)
+  const b1 = new THREE.Mesh(new THREE.SphereGeometry(.046, 32, 24), brillo); b1.position.set(-.055, .075, .092); ojo.add(b1)
+  const b2 = new THREE.Mesh(new THREE.SphereGeometry(.021, 24, 16), brillo); b2.position.set(.055, -.065, .094); ojo.add(b2)
+  mascota.add(ojo)
+  const m = pegar(.56 * sx, .13), mo = new THREE.Mesh(new THREE.SphereGeometry(.1, 48, 32), new THREE.MeshPhysicalMaterial({ color: '#ff8fcf', roughness: .85, transparent: true, opacity: .78 }))
+  mo.position.copy(m.p).addScaledVector(m.n, -.012); orientar(mo, m.n); mo.scale.set(1.35, .8, .2); mascota.add(mo)
+}
+// Sonrisa
+{ const { p, n } = pegar(0, .16); const bo = new THREE.Mesh(new THREE.TorusGeometry(.088, .024, 24, 64, Math.PI), bocaMat)
+  bo.position.copy(p).addScaledVector(n, -.004); orientar(bo, n); bo.rotateZ(Math.PI); mascota.add(bo) }
+
+// Antenas con estrella en la punta
+const estrella = (() => { const sh = new THREE.Shape(); for (let i = 0; i <= 10; i++) { const a = Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? .064 : .145; const px = Math.cos(a) * rr, py = Math.sin(a) * rr; i ? sh.lineTo(px, py) : sh.moveTo(px, py) }
+  const ge = new THREE.ExtrudeGeometry(sh, { depth: .04, bevelEnabled: true, bevelThickness: .038, bevelSize: .032, bevelSegments: 8, curveSegments: 12 }); ge.center(); return ge })()
+const oro = new THREE.MeshPhysicalMaterial({ color: '#ffd27a', emissive: '#ffb84a', emissiveIntensity: .22, roughness: .3, clearcoat: .8, clearcoatRoughness: .15 })
+for (const sx of [-1, 1]) {
+  ray.set(new THREE.Vector3(.3 * sx, 5, 0), new THREE.Vector3(0, -1, 0)); const h = ray.intersectObject(cuerpo)[0].point
+  const fin = new THREE.Vector3(.58 * sx, h.y + .5, .02)
+  const curva = new THREE.QuadraticBezierCurve3(h.clone().add(new THREE.Vector3(0, -.05, 0)), new THREE.Vector3(.34 * sx, h.y + .36, 0), fin)
+  mascota.add(new THREE.Mesh(new THREE.TubeGeometry(curva, 64, .042, 20), morado))
+  const st = new THREE.Mesh(estrella, oro); st.position.copy(fin).add(new THREE.Vector3(.02 * sx, .08, 0)); st.rotation.set(-.1, sx * .35, sx * -.25); mascota.add(st)
+}
+
+// Brazos (uno saluda) y piernas cortas
+const brazo = (x, y, rz, rx = 0, largo = .34, z = .06, grosor = .135) => { const gr = new THREE.Group(); gr.position.set(x, y, z); const m = new THREE.Mesh(new THREE.CapsuleGeometry(grosor, largo, 24, 48), morado); m.position.y = -.27 - (largo - .34) / 2; gr.add(m); const mano = new THREE.Mesh(new THREE.SphereGeometry(.158, 48, 32), morado); mano.position.y = -.27 - largo / 2 - .03; mano.scale.set(1, .92, .9); gr.add(mano); const pu = new THREE.Mesh(new THREE.CapsuleGeometry(.05, .05, 12, 32), morado); pu.position.set(.13, -.27 - largo / 2 - .01, .07); pu.rotation.set(.3, 0, -.9); gr.add(pu); gr.rotation.set(rx, 0, rz); mascota.add(gr) }
+brazo(-.86, -.34, -.42, .2)
+// Brazo que saluda: brazo, muñeca y mano abierta (palma, tres dedos en abanico y pulgar) mirando a cámara
+{ const gr = new THREE.Group(); gr.position.set(.76, -.02, .2); gr.rotation.set(-.42, .12, -.98); mascota.add(gr)
+  const ab = new THREE.Mesh(new THREE.CapsuleGeometry(.125, .4, 24, 48), morado); ab.position.y = .25; ab.scale.set(1, 1, .95); gr.add(ab)
+  const mano = new THREE.Group(); mano.position.y = .62; mano.rotation.set(.15, .35, .12); gr.add(mano)
+  const palma = new THREE.Mesh(new THREE.SphereGeometry(.15, 48, 32), morado); palma.scale.set(1.05, 1, .62); mano.add(palma)
+  for (const [dx, rz, l] of [[-.085, .32, .07], [0, .02, .085], [.085, -.3, .07]]) { const d = new THREE.Mesh(new THREE.CapsuleGeometry(.05, l, 12, 32), morado); d.position.set(dx, .14 + l / 2 - .02, 0); d.rotation.z = rz; d.scale.set(1, 1, .82); mano.add(d) }
+  const pu = new THREE.Mesh(new THREE.CapsuleGeometry(.052, .06, 12, 32), morado); pu.position.set(-.15, -.01, .02); pu.rotation.z = 1.05; pu.scale.set(1, 1, .85); mano.add(pu) }
+for (const sx of [-1, 1]) { const pi = new THREE.Mesh(new THREE.CapsuleGeometry(.18, .12, 24, 48), morado); pi.position.set(.36 * sx, -1.03, .05); pi.scale.set(1, 1, 1.2); mascota.add(pi) }
+
+// Bufanda de punto (crema con dos rayas del acento): toro con costillas y dos caídas por delante
+// Punto de media: columnas de «V» (dos hojas inclinadas por punto) como relieve, 2 columnas por costilla
+const punto = (() => { const c = document.createElement('canvas'); c.width = 128; c.height = 128; const x = c.getContext('2d')
+  x.fillStyle = '#5a5a5a'; x.fillRect(0, 0, 128, 128)
+  for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) for (const [sx, rot] of [[-1, .6], [1, -.6]]) {
+    const gr = x.createRadialGradient(0, 0, 1, 0, 0, 30); gr.addColorStop(0, '#ffffff'); gr.addColorStop(.7, '#9a9a9a'); gr.addColorStop(1, '#3a3a3a')
+    x.save(); x.translate(i * 64 + 32 + sx * 14, j * 64 + 34); x.rotate(rot); x.scale(.5, 1); x.fillStyle = gr; x.beginPath(); x.arc(0, 0, 29, 0, Math.PI * 2); x.fill(); x.restore() }
+  const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 8; t.repeat.set(70, 3.5); return t })()
+const lana = vinilizar(new THREE.MeshPhysicalMaterial({ color: '#f3ede2', roughness: .92, sheen: 1, sheenRoughness: .55, sheenColor: '#ffffff', bumpMap: punto, bumpScale: 3 }), .7, .05)
+const R = 1, rt = .118, YB = -.13
+const tg = new THREE.TorusGeometry(R, rt, 48, 360), tp = tg.attributes.position, c0 = new THREE.Vector3(), pv = new THREE.Vector3()
+for (let i = 0; i < tp.count; i++) { pv.fromBufferAttribute(tp, i); const u = Math.atan2(pv.y, pv.x); c0.set(Math.cos(u) * R, Math.sin(u) * R, 0); pv.sub(c0).multiplyScalar(1 + .1 * Math.pow(Math.abs(Math.sin(u * 35)), .6)).add(c0); tp.setXYZ(i, pv.x, pv.y, pv.z) }
+tg.computeVertexNormals()
+const bu = new THREE.Mesh(tg, lana); bu.rotation.x = Math.PI / 2; bu.position.y = YB; bu.scale.set(1.04, .95, 1); mascota.add(bu)
+const puntoR = punto.clone(); puntoR.needsUpdate = true; puntoR.repeat.set(140, 1)
+const raya = new THREE.MeshPhysicalMaterial({ color: '#6a4cf6', roughness: .88, sheen: .8, sheenColor: '#cbbcff', bumpMap: puntoR, bumpScale: 2 })
+for (const yy of [-.058, .058]) { const ra = new THREE.Mesh(new THREE.TorusGeometry(1, .024, 16, 260), raya); ra.rotation.x = Math.PI / 2; ra.position.y = YB + yy; ra.scale.set(1.04 + .094, .95 + .094, 1); mascota.add(ra) }
+sombras(mascota)
+mascota.rotation.set(.04, -.42, .03)
+mascota.updateMatrixWorld(true)
+const c = encuadrar(mascota, { fov: 22, margen: .03, elevacion: .06 })
+r.render(s, c); window.listo = true
+</script></body></html>

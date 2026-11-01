@@ -1,0 +1,108 @@
+/* ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   tech-grid.css · componentes del look «tech-grid»
+   Campañas de catálogo tech (periféricos, hardware, electrónica): fondo negro-azulado con una cuadrícula fina y un
+   degradado a azul abajo; productos recortados dentro de marcos rectangulares de borde fino con relleno degradado,
+   saliéndose del marco; marcos unidos por pistas de circuito (solo ángulos rectos) con nodos cuadrados; un arco fino
+   alrededor del bloque logo + titular; titular en grotesca ancha y en MAYÚSCULAS, en el acento. Plano: sin glow, sin
+   sombras de color y sin desenfoques (la única sombra es la de contacto, hecha con un radial-gradient).
+
+   · Colores solo con var(--…). La marca los pone desde marca.json (skill direccion-de-arte); los tokens del look
+     (--tg-*) se derivan de los de marca y se pueden sobrescribir desde marca.json → colores («tg-rejilla»…).
+   · --acento-2 es opcional: si la marca no lo trae, el segundo trazo se deriva del acento (giro de tono de −120°,
+     claro y saturado: con un acento azul sale un lima).
+   · Las medidas que dependen del lienzo van en variables de la pieza (<section style="--trazo:2px;…">): grosor de
+     trazo, tamaño de nodo y tamaño de la letra del titular. Cuadrícula, pistas, nodos y arco son SVG con
+     vector-effect: non-scaling-stroke y llevan data-fondo + aria-hidden="true".
+   Componentes: .tg (la pieza) · .tg-rejilla (SVG) · .tg-pistas (SVG: .pista, .pista.t2, .nodo, .nodo.t2) ·
+   .marco (.t2 = segundo trazo) · .corte (recorte de persona cortado por el borde inferior del marco) ·
+   .contacto (sombra de contacto) · .recorte (img data-recorte) · .tg-arco (SVG) · .tg-bloque con .tg-firma,
+   .tg-titular, .tg-apoyo, .tg-fechas, .tg-web
+   Tokens del look: --tg-fondo, --tg-fondo-azul, --tg-rejilla, --tg-trazo-1, --tg-trazo-2, --tg-marco-arriba,
+   --tg-marco-abajo, --tg-titular, --tg-nodo-cruz, --tg-sombra
+   ──────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  --tg-fondo: var(--noche);
+  /* el azul de abajo sale del acento mezclado con la noche (nunca el acento puro: compite con el titular) */
+  --tg-fondo-azul: color-mix(in oklab, var(--acento) 46%, var(--noche));
+  --tg-rejilla: color-mix(in oklab, var(--acento) 45%, var(--claro));
+  --tg-trazo-1: var(--acento);
+  --tg-trazo-2: var(--acento-2, oklch(from var(--acento) .92 .2 calc(h - 120)));
+  --tg-marco-arriba: color-mix(in oklab, var(--acento) 7%, var(--noche));
+  --tg-marco-abajo: color-mix(in oklab, var(--acento) 62%, var(--noche));
+  --tg-titular: var(--acento);
+  --tg-nodo-cruz: var(--noche);
+  --tg-sombra: color-mix(in oklab, var(--noche) 70%, transparent);
+}
+
+/* ── La pieza ──────────────────────────────────────────────────────────────────────────────────────────────── */
+.tg {
+  position: relative; overflow: hidden; isolation: isolate;
+  --trazo: 2px; --nodo: 14px;
+  background-color: var(--tg-fondo);
+  background-image: linear-gradient(180deg,
+    var(--tg-fondo) 0%, var(--tg-fondo) 42%,
+    color-mix(in oklab, var(--tg-fondo-azul) 45%, var(--tg-fondo)) 74%,
+    var(--tg-fondo-azul) 100%);
+  color: var(--claro); font-family: var(--fuente);
+  -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums;
+}
+.tg > * { position: absolute }
+
+/* ── Cuadrícula: SVG con un <pattern> de celda cuadrada; líneas de 1 px al 10-12 % ─────────────────────────── */
+.tg-rejilla { inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none }
+.tg-rejilla path { fill: none; stroke: var(--tg-rejilla); stroke-opacity: .11; stroke-width: 1; vector-effect: non-scaling-stroke }
+
+/* ── Pistas y nodos: SVG del tamaño del lienzo (viewBox = px de la pieza) ──────────────────────────────────── */
+.tg-pistas { inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; overflow: visible }
+.tg-pistas.encima { z-index: 4 }
+.pista { fill: none; stroke: var(--tg-trazo-1); stroke-width: var(--trazo); stroke-linecap: square; stroke-linejoin: miter;
+         vector-effect: non-scaling-stroke }
+.pista.t2 { stroke: var(--tg-trazo-2) }
+/* nodo: cuadradito del color de su pista con una cruz del color del fondo (4 ventanitas) */
+.nodo rect { fill: var(--tg-trazo-1) }
+.nodo.t2 rect { fill: var(--tg-trazo-2) }
+.nodo path { fill: none; stroke: var(--tg-nodo-cruz); stroke-width: calc(var(--trazo) * .9); vector-effect: non-scaling-stroke }
+
+/* ── Marcos: borde fino de un color de trazo y relleno degradado (oscuro arriba → azul abajo) ──────────────── */
+.marco {
+  z-index: 2;
+  border: var(--trazo) solid var(--tg-trazo-1);
+  background: linear-gradient(180deg, var(--tg-marco-arriba) 0%, color-mix(in oklab, var(--tg-marco-abajo) 55%, var(--tg-marco-arriba)) 55%, var(--tg-marco-abajo) 100%);
+}
+.marco.t2 { border-color: var(--tg-trazo-2) }
+
+/* ── Productos y personas ─────────────────────────────────────────────────────────────────────────────────── */
+.recorte { z-index: 3; display: block; height: auto; user-select: none }
+/* persona cortada por el borde de abajo del marco: el contenedor llega al borde interior y recorta los lados */
+.corte { z-index: 3; overflow: hidden }
+.corte > img { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); display: block; height: auto }
+/* sombra de contacto (dentro del marco, debajo del producto): radial-gradient, nunca box-shadow ni filtros */
+.contacto { z-index: 2; background: radial-gradient(closest-side, var(--tg-sombra), transparent) }
+
+/* ── Arco alrededor del bloque logo + titular (dos tramos opuestos de ~105°) ───────────────────────────────── */
+.tg-arco { z-index: 1; pointer-events: none; overflow: visible }
+.tg-arco path { fill: none; stroke: var(--tg-trazo-1); stroke-width: var(--trazo); stroke-linecap: butt; vector-effect: non-scaling-stroke }
+
+/* ── Bloque de texto ──────────────────────────────────────────────────────────────────────────────────────── */
+.tg-bloque { z-index: 5; display: flex; flex-direction: column; align-items: flex-start }
+.tg-bloque.centro { align-items: center; text-align: center }
+.tg-bloque.derecha { align-items: flex-end; text-align: right }
+.tg-firma { display: flex; align-items: center; gap: .38em; font-weight: 650; letter-spacing: -.01em; white-space: nowrap;
+            color: var(--claro); font-stretch: 112% }
+.tg-firma .logo { display: inline-flex; width: 1.15em; height: 1.15em; color: var(--tg-trazo-1) }
+.tg-firma .logo svg { width: 100%; height: 100% }
+.tg-firma .etiqueta { font-weight: 700; color: var(--tg-trazo-2); letter-spacing: .04em; text-transform: uppercase; font-size: .78em }
+/* titular: grotesca ancha, MAYÚSCULAS, 2 líneas, interlineado .9 (excepción medida a la regla de no usar mayúsculas) */
+.tg-titular {
+  font-family: var(--fuente-display, var(--fuente)); font-stretch: 125%; font-weight: 760;
+  font-size: var(--titular, 96px); line-height: .9; letter-spacing: -.012em; text-transform: uppercase;
+  color: var(--tg-titular); white-space: nowrap; font-synthesis: none
+}
+.tg-titular span { display: block }
+.tg-apoyo { font-weight: 600; font-stretch: 110%; letter-spacing: -.01em; line-height: 1.15; color: var(--claro) }
+.tg-apoyo b { font-weight: 760; color: var(--tg-trazo-2) }
+.tg-fechas { font-weight: 450; letter-spacing: 0; line-height: 1.3; color: var(--claro-suave) }
+.tg-web { font-family: var(--mono); font-weight: 500; letter-spacing: .02em; color: var(--claro) }
+.tg-web::before { content: ""; display: inline-block; width: .5em; height: .5em; margin-right: .5em; vertical-align: .08em;
+                  background: var(--tg-trazo-2) }

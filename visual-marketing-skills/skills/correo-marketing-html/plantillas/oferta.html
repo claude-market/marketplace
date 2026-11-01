@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<!--
+  PLANTILLA «OFERTA» · cupón o descuento con fecha de fin. Sobria: el código va en una caja crema plana
+  (sin bordes discontinuos ni de color, sin «¡OFERTA!»). Una condición clara, una fecha, un botón.
+  La marca NO se escribe a mano: los marcadores %%…%% (colores, nombre, web, tipografía) los rellena
+      node ../scripts/aplicar-marca.mjs oferta.html marca.json -o mi-correo.html
+  con el marca.json de la skill direccion-de-arte. Después cambia solo lo marcado con EDITAR.
+  Contenido de ejemplo: Pliego, marca ficticia. El código y el porcentaje son ficticios.
+-->
+<html lang="es" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="x-apple-disable-message-reformatting">
+<meta name="format-detection" content="telephone=no,address=no,email=no,date=no">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<title>Un 20 % menos en tu primer año</title><!-- EDITAR -->
+<!--[if mso]><xml><o:OfficeDocumentSettings><o:AllowPNG/><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]-->
+<style>
+  @media only screen and (max-width:480px) {
+    .m-pad { padding-left:24px !important; padding-right:24px !important }
+    .m-h1 { font-size:26px !important }
+    .m-codigo { font-size:24px !important; letter-spacing:.12em !important }
+    .m-boton a { display:block !important; text-align:center !important }
+  }
+</style>
+</head>
+<body style="margin:0;padding:0;background:#ffffff;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%">
+<div style="display:none;font-size:1px;color:#ffffff;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden">Con el código EJEMPLO20, hasta el domingo 9 de noviembre. Vale para los planes Autónomo y Equipo.&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;</div><!-- EDITAR -->
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff" style="background:#ffffff">
+<tr><td align="center" style="padding:32px 12px 40px">
+  <!--[if mso]><table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
+  <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px">
+
+    <tr><td class="m-pad" style="padding:0 40px;font-family:%%tipografia.correo%%;font-size:17px;font-weight:800;letter-spacing:-.01em;color:%%colores.tinta%%">%%nombre%%</td></tr>
+
+    <tr><td class="m-pad" style="padding:40px 40px 0">
+      <p style="margin:0 0 12px;font-family:%%tipografia.correo%%;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:%%colores.suave%%">Solo hasta el domingo</p><!-- EDITAR -->
+      <h1 class="m-h1" style="margin:0 0 22px;font-family:%%tipografia.correo%%;font-size:30px;line-height:1.18;font-weight:800;letter-spacing:-.02em;color:%%colores.tinta%%">Un 20&nbsp;% menos en tu primer año</h1><!-- EDITAR -->
+      <p style="margin:0 0 18px;font-family:%%tipografia.correo%%;font-size:16px;line-height:1.65;color:%%colores.texto%%">Hola {{nombre}},</p>
+      <p style="margin:0 0 26px;font-family:%%tipografia.correo%%;font-size:16px;line-height:1.65;color:%%colores.texto%%">Si ya haces más de 5 facturas al mes, esta semana pasarte al plan Autónomo te sale más barato. El descuento se aplica a los 12 primeros meses.</p><!-- EDITAR -->
+    </td></tr>
+
+    <!-- CÓDIGO: caja crema plana, monoespaciada y espaciada para copiarla bien. EDITAR código y condición -->
+    <tr><td class="m-pad" style="padding:0 40px">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="%%colores.bloque%%" style="background:%%colores.bloque%%;border-radius:12px">
+        <tr><td align="center" style="padding:26px 20px 8px;font-family:%%tipografia.correo%%;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:%%colores.apagado%%">Tu código</td></tr>
+        <tr><td class="m-codigo" align="center" style="padding:0 20px;font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-size:30px;line-height:1.3;font-weight:700;letter-spacing:.18em;color:%%colores.tinta%%">EJEMPLO20</td></tr>
+        <tr><td align="center" style="padding:8px 20px 26px;font-family:%%tipografia.correo%%;font-size:13px;line-height:1.5;color:%%colores.suave%%">Válido hasta el domingo 9 de noviembre a las 23:59</td></tr>
+      </table>
+    </td></tr>
+
+    <tr><td class="m-pad m-boton" style="padding:28px 40px 0">
+      <!--[if mso]>
+      <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="%%web%%/precios" style="height:50px;v-text-anchor:middle;width:240px" arcsize="20%" stroke="f" fillcolor="%%colores.acento%%">
+        <w:anchorlock/>
+        <center style="color:%%colores.sobre-acento%%;font-family:Segoe UI,Arial,sans-serif;font-size:16px;font-weight:bold">Elegir mi plan</center>
+      </v:roundrect>
+      <![endif]-->
+      <!--[if !mso]><!-- -->
+      <a href="%%web%%/precios" style="display:inline-block;background:%%colores.acento%%;color:%%colores.sobre-acento%%;text-decoration:none;font-family:%%tipografia.correo%%;font-size:16px;font-weight:700;line-height:22px;padding:14px 30px;border-radius:10px">Elegir mi plan</a>
+      <!--<![endif]-->
+    </td></tr><!-- EDITAR href y texto (2 sitios) -->
+    <tr><td class="m-pad" style="padding:16px 40px 0;font-family:%%tipografia.correo%%;font-size:13px;line-height:1.6;color:%%colores.apagado%%">Precios sin IVA. Escribe el código al pagar; un uso por cuenta y no se suma a otras promociones.</td></tr><!-- EDITAR: condiciones reales -->
+
+    <tr><td class="m-pad" style="padding:44px 40px 0"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td height="1" style="height:1px;background:%%colores.linea%%;font-size:0;line-height:0">&nbsp;</td></tr></table></td></tr>
+    <tr><td class="m-pad" style="padding:24px 40px 0;font-family:%%tipografia.correo%%;font-size:12px;line-height:1.7;color:%%colores.apagado%%">
+      <p style="margin:0 0 8px;font-family:%%tipografia.correo%%;font-size:12px;line-height:1.7;color:%%colores.apagado%%">
+        <a href="%%web%%" style="color:%%colores.apagado%%;text-decoration:none;white-space:nowrap">%%web_texto%%</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="%%web%%/ayuda" style="color:%%colores.apagado%%;text-decoration:none;white-space:nowrap">Ayuda</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="mailto:%%correo_contacto%%" style="color:%%colores.apagado%%;text-decoration:none;white-space:nowrap">%%correo_contacto%%</a>
+      </p>
+      <p style="margin:0;font-family:%%tipografia.correo%%;font-size:12px;line-height:1.7;color:%%colores.apagado%%">Recibes este correo porque aceptaste las novedades de %%nombre%%. <a href="{{url_baja}}" style="color:%%colores.apagado%%;text-decoration:underline">Darme de baja</a></p>
+    </td></tr>
+  </table>
+  <!--[if mso]></td></tr></table><![endif]-->
+</td></tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<!--
+  PLANTILLA «PRODUCTO» · lanzamiento o presentación de un producto o una función (sobrio y plano, nivel Proton).
+  Fondo blanco, imagen de cabecera, titular, 2 párrafos cortos, un botón, ventajas numeradas,
+  tira de cifras y pie con la baja. Todo en tablas y estilos en línea. Sirve para cualquier marca.
+
+  La marca NO se escribe a mano: los marcadores %%…%% (colores, nombre, web, tipografía) los rellena
+      node ../scripts/aplicar-marca.mjs producto.html marca.json -o mi-correo.html
+  con el marca.json de la skill direccion-de-arte. Después cambia solo lo marcado con EDITAR.
+  La imagen de cabecera es relativa (hero-ejemplo.png) para poder previsualizar: antes de enviar, súbela a una
+  URL https pública y pon esa URL (comprobar-correo.mjs da error si sigue siendo relativa).
+  Contenido de ejemplo: Pliego, marca ficticia.
+-->
+<html lang="es" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="x-apple-disable-message-reformatting">
+<meta name="format-detection" content="telephone=no,address=no,email=no,date=no">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<title>Cobra en 7 días, no en 45</title><!-- EDITAR: = asunto -->
+<!--[if mso]><xml><o:OfficeDocumentSettings><o:AllowPNG/><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]-->
+<style>
+  /* Solo mejoras para móvil: si el cliente quita este bloque, el correo se sigue viendo bien. */
+  @media only screen and (max-width:480px) {
+    .m-pad { padding-left:24px !important; padding-right:24px !important }
+    .m-h1 { font-size:26px !important; line-height:1.2 !important }
+    .m-boton a { display:block !important; text-align:center !important }
+    .m-apila { display:block !important; width:100% !important; border-left:0 !important; padding:0 0 18px !important }
+  }
+</style>
+</head>
+<body style="margin:0;padding:0;background:#ffffff;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%">
+
+<!-- Preencabezado: el adelanto que se lee en la bandeja junto al asunto. EDITAR (≤ 110 caracteres) -->
+<div style="display:none;font-size:1px;color:#ffffff;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden">Recordatorios que salen solos y pago con tarjeta o Bizum desde la propia factura.&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;</div>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff" style="background:#ffffff">
+<tr><td align="center" style="padding:24px 12px 40px">
+
+  <!--[if mso]><table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
+  <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px">
+
+    <!-- CABECERA: imagen de 1200 px de ancho (se pinta a 560). Hazla con la skill piezas-graficas (pieza hero-correo).
+         EDITAR src (URL https pública), alt, alto y enlace. El alt repite la promesa: con imágenes bloqueadas es lo único que se ve -->
+    <tr><td style="padding:0 20px">
+      <a href="%%web%%" style="display:block;text-decoration:none">
+        <img src="hero-ejemplo.png" width="560" height="280" alt="%%nombre%%: cobra en 7 días, no en 45" style="display:block;font-family:%%tipografia.correo%%;font-size:16px;font-weight:700;color:%%colores.tinta%%;width:100%;max-width:560px;height:auto;border:0;border-radius:12px;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic">
+      </a>
+    </td></tr>
+
+    <!-- TITULAR + CUERPO. Kicker neutro (el color va al botón). 40-90 palabras. EDITAR -->
+    <tr><td class="m-pad" style="padding:36px 40px 0">
+      <p style="margin:0 0 12px;font-family:%%tipografia.correo%%;font-size:12px;line-height:1.4;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:%%colores.suave%%">Novedad en %%nombre%%</p>
+      <h1 class="m-h1" style="margin:0 0 22px;font-family:%%tipografia.correo%%;font-size:30px;line-height:1.18;font-weight:800;letter-spacing:-.02em;color:%%colores.tinta%%">Cobra en 7&nbsp;días, no&nbsp;en&nbsp;45</h1><!-- EDITAR: ≤ 8 palabras, beneficio, sin punto final -->
+      <p style="margin:0 0 18px;font-family:%%tipografia.correo%%;font-size:16px;line-height:1.65;color:%%colores.texto%%">Hola {{nombre}},</p>
+      <p style="margin:0 0 18px;font-family:%%tipografia.correo%%;font-size:16px;line-height:1.65;color:%%colores.texto%%">Desde hoy, cada factura que envías lleva un enlace para pagar con tarjeta o Bizum. Y si no la pagan, los recordatorios salen solos a los 3 y a los 7&nbsp;días.</p>
+      <p style="margin:0 0 18px;font-family:%%tipografia.correo%%;font-size:16px;line-height:1.65;color:%%colores.texto%%">Tú solo ves cuándo la abren y cuándo te pagan.</p>
+    </td></tr>
+
+    <!-- BOTÓN: el único elemento de color. VML para Outlook de escritorio; el <a> para el resto. EDITAR href y texto (2 sitios) -->
+    <tr><td class="m-pad m-boton" align="left" style="padding:10px 40px 0">
+      <!--[if mso]>
+      <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="%%web%%/recordatorios" style="height:50px;v-text-anchor:middle;width:270px" arcsize="20%" stroke="f" fillcolor="%%colores.acento%%">
+        <w:anchorlock/>
+        <center style="color:%%colores.sobre-acento%%;font-family:Segoe UI,Arial,sans-serif;font-size:16px;font-weight:bold">Activar los recordatorios</center>
+      </v:roundrect>
+      <![endif]-->
+      <!--[if !mso]><!-- -->
+      <a href="%%web%%/recordatorios" style="display:inline-block;background:%%colores.acento%%;color:%%colores.sobre-acento%%;text-decoration:none;font-family:%%tipografia.correo%%;font-size:16px;font-weight:700;line-height:22px;padding:14px 30px;border-radius:10px">Activar los recordatorios</a>
+      <!--<![endif]-->
+    </td></tr>
+    <tr><td class="m-pad" style="padding:14px 40px 0;font-family:%%tipografia.correo%%;font-size:13px;line-height:1.6;color:%%colores.apagado%%">Incluido en todos los planes, también en el gratuito.</td></tr><!-- EDITAR o borra la fila -->
+
+    <!-- SEPARADOR: línea de 1 px neutra -->
+    <tr><td class="m-pad" style="padding:40px 40px 0"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td height="1" style="height:1px;background:%%colores.linea%%;font-size:0;line-height:0">&nbsp;</td></tr></table></td></tr>
+
+    <!-- VENTAJAS: 3 o 4 filas numeradas (sin iconos: no dependen de imágenes y no se rompen en modo oscuro). EDITAR -->
+    <tr><td class="m-pad" style="padding:32px 40px 0">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td width="40" valign="top" style="width:40px;padding:1px 14px 24px 0;font-family:%%tipografia.correo%%;font-size:13px;line-height:1.4;font-weight:700;letter-spacing:.04em;color:%%colores.acento-texto%%">01</td>
+          <td valign="top" style="padding:0 0 24px">
+            <p style="margin:0 0 3px;font-family:%%tipografia.correo%%;font-size:15px;line-height:1.4;font-weight:700;color:%%colores.tinta%%">Pago en un clic</p>
+            <p style="margin:0;font-family:%%tipografia.correo%%;font-size:14px;line-height:1.55;color:%%colores.suave%%">Tarjeta o Bizum desde el enlace de la factura.</p>
+          </td>
+        </tr>
+        <tr>
+          <td width="40" valign="top" style="width:40px;padding:1px 14px 24px 0;font-family:%%tipografia.correo%%;font-size:13px;line-height:1.4;font-weight:700;letter-spacing:.04em;color:%%colores.acento-texto%%">02</td>
+          <td valign="top" style="padding:0 0 24px">
+            <p style="margin:0 0 3px;font-family:%%tipografia.correo%%;font-size:15px;line-height:1.4;font-weight:700;color:%%colores.tinta%%">Recordatorios automáticos</p>
+            <p style="margin:0;font-family:%%tipografia.correo%%;font-size:14px;line-height:1.55;color:%%colores.suave%%">A los 3 y a los 7&nbsp;días, con un texto amable que puedes cambiar.</p>
+          </td>
+        </tr>
+        <tr>
+          <td width="40" valign="top" style="width:40px;padding:1px 14px 0 0;font-family:%%tipografia.correo%%;font-size:13px;line-height:1.4;font-weight:700;letter-spacing:.04em;color:%%colores.acento-texto%%">03</td>
+          <td valign="top" style="padding:0">
+            <p style="margin:0 0 3px;font-family:%%tipografia.correo%%;font-size:15px;line-height:1.4;font-weight:700;color:%%colores.tinta%%">Aviso cuando te pagan</p>
+            <p style="margin:0;font-family:%%tipografia.correo%%;font-size:14px;line-height:1.55;color:%%colores.suave%%">Y la factura se marca como pagada sola.</p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+
+    <!-- CIFRAS: 3 datos reales, fondo de bloque plano, sin borde. En móvil se apilan. EDITAR -->
+    <tr><td class="m-pad" style="padding:36px 40px 0">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="%%colores.bloque%%" style="background:%%colores.bloque%%;border-radius:12px">
+        <tr><td style="padding:24px 8px">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+            <td class="m-apila" width="33%" align="center" valign="top" style="padding:0 10px">
+              <p style="margin:0 0 4px;font-family:%%tipografia.correo%%;font-size:24px;line-height:1.1;font-weight:800;letter-spacing:-.02em;color:%%colores.tinta%%">7&nbsp;días</p>
+              <p style="margin:0;font-family:%%tipografia.correo%%;font-size:13px;line-height:1.4;color:%%colores.suave%%">plazo medio de cobro</p>
+            </td>
+            <td class="m-apila" width="34%" align="center" valign="top" style="padding:0 10px;border-left:1px solid %%colores.linea%%">
+              <p style="margin:0 0 4px;font-family:%%tipografia.correo%%;font-size:24px;line-height:1.1;font-weight:800;letter-spacing:-.02em;color:%%colores.tinta%%">2&nbsp;min</p>
+              <p style="margin:0;font-family:%%tipografia.correo%%;font-size:13px;line-height:1.4;color:%%colores.suave%%">para hacer una factura</p>
+            </td>
+            <td class="m-apila" width="33%" align="center" valign="top" style="padding:0 10px;border-left:1px solid %%colores.linea%%">
+              <p style="margin:0 0 4px;font-family:%%tipografia.correo%%;font-size:24px;line-height:1.1;font-weight:800;letter-spacing:-.02em;color:%%colores.tinta%%">0&nbsp;€</p>
+              <p style="margin:0;font-family:%%tipografia.correo%%;font-size:13px;line-height:1.4;color:%%colores.suave%%">hasta 5 facturas al mes</p>
+            </td>
+          </tr></table>
+        </td></tr>
+      </table>
+    </td></tr>
+
+    <!-- PIE: quién escribe, enlaces útiles, por qué lo recibe y la baja (obligatoria en comerciales). EDITAR enlaces -->
+    <tr><td class="m-pad" style="padding:44px 40px 0"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td height="1" style="height:1px;background:%%colores.linea%%;font-size:0;line-height:0">&nbsp;</td></tr></table></td></tr>
+    <tr><td class="m-pad" style="padding:24px 40px 0;font-family:%%tipografia.correo%%;font-size:12px;line-height:1.7;color:%%colores.apagado%%">
+      <p style="margin:0 0 8px;font-family:%%tipografia.correo%%;font-size:13px;font-weight:700;color:%%colores.suave%%">%%nombre%%</p>
+      <p style="margin:0 0 8px;font-family:%%tipografia.correo%%;font-size:12px;line-height:1.7;color:%%colores.apagado%%">
+        <a href="%%web%%" style="color:%%colores.apagado%%;text-decoration:none;white-space:nowrap">%%web_texto%%</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="%%web%%/ayuda" style="color:%%colores.apagado%%;text-decoration:none;white-space:nowrap">Ayuda</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="mailto:%%correo_contacto%%" style="color:%%colores.apagado%%;text-decoration:none;white-space:nowrap">%%correo_contacto%%</a>
+      </p>
+      <p style="margin:0;font-family:%%tipografia.correo%%;font-size:12px;line-height:1.7;color:%%colores.apagado%%">Recibes este correo porque aceptaste las novedades de %%nombre%%. <a href="{{url_baja}}" style="color:%%colores.apagado%%;text-decoration:underline">Darme de baja</a></p>
+    </td></tr>
+
+  </table>
+  <!--[if mso]></td></tr></table><![endif]-->
+
+</td></tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,95 @@
+/* ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   producto-3d-mascota.css · componentes del look «producto 3D con mascota»
+   Un producto 3D realista y una mascota 3D de la marca, solapados, sobre un degradado profundo (azul arriba a la
+   izquierda → índigo abajo a la derecha) con partículas y bokeh tenues, sombras de contacto que los asientan y el
+   logo centrado arriba. La luz de color va en los renders (recorte azul y violeta) y en el fondo (radial-gradient);
+   en los elementos HTML no hay ni box-shadow de color ni text-shadow.
+
+   · Colores solo con var(--…). La marca los pone desde marca.json (skill direccion-de-arte). Los del look se
+     derivan del acento y se pueden fijar desde marca.json → colores con estas claves:
+       cielo-1    azul de arriba a la izquierda (el más claro del degradado)
+       cielo-2    violeta del centro (el color «de la pieza»: es el fondo representativo para el contraste)
+       cielo-3    índigo profundo de abajo a la derecha
+       luz-3d     luz del fondo detrás de los sujetos (y la de los recortes al renderizarlos)
+       particula  cruces, cuadraditos y bokeh
+       sombra-3d  sombra de contacto (oscura y poco saturada: nunca de color vivo)
+       pagina     color de la página donde va la pieza redondeada (pinta las esquinas fuera del radio)
+   · Medidas en px del lienzo (las piezas tienen tamaño fijo); el radio de la pieza redondeada, en --radio-3d.
+   Componentes: .lienzo-3d (.redondeado) · .luz-3d (.halo, .suelo) · .particulas · .bokeh · .sujeto
+   (.producto, .mascota) con .contacto e img[data-recorte] · .marca-3d · .chip-3d · .titular-3d · .apoyo-3d ·
+   .cta-3d
+   ──────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  --m3-cielo-1: var(--cielo-1, oklch(from var(--acento) calc(l * .74) calc(c * 1.12) calc(h - 24)));
+  --m3-cielo-2: var(--cielo-2, oklch(from var(--acento) calc(l * .5) calc(c * 1.02) calc(h - 6)));
+  --m3-cielo-3: var(--cielo-3, oklch(from var(--acento) calc(l * .3) calc(c * .72) calc(h + 2)));
+  --m3-luz: var(--luz-3d, oklch(from var(--acento) calc(l * 1.02) c calc(h - 12)));
+  --m3-particula: var(--particula, color-mix(in oklab, var(--claro) 78%, var(--m3-cielo-1)));
+  --m3-sombra: var(--sombra-3d, oklch(from var(--m3-cielo-3) .13 calc(c * .45) h));
+  --m3-pagina: var(--pagina, var(--papel));
+  --m3-sobre: var(--claro);
+  --m3-suave: color-mix(in oklab, var(--claro) 80%, var(--m3-cielo-2));
+}
+
+/* ── Lienzo: degradado a 140° (azul → violeta → índigo) con dos manchas de luz grandes ─────────────────────── */
+.lienzo-3d {
+  position: relative; overflow: hidden; isolation: isolate;
+  font-family: var(--fuente); color: var(--m3-sobre);
+  -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums;
+  background-color: var(--m3-cielo-2);
+  background-image:
+    radial-gradient(58% 62% at 8% 0%, color-mix(in oklab, var(--m3-cielo-1) 90%, transparent) 0%, transparent 72%),
+    radial-gradient(55% 60% at 100% 100%, color-mix(in oklab, var(--m3-cielo-3) 92%, transparent) 0%, transparent 78%),
+    linear-gradient(140deg, var(--m3-cielo-1) 0%, var(--m3-cielo-2) 52%, var(--m3-cielo-3) 100%);
+}
+/* Pieza que va como tarjeta en una web o una app (hero, banner de tienda): esquinas redondeadas ≈ 3,4 % del
+   ancho. Fuera del radio se ve la página (--pagina): las redes recomprimen a JPEG y no respetan la transparencia */
+.lienzo-3d.redondeado { border-radius: var(--radio-3d, 54px) }
+
+/* ── Luz del fondo (data-fondo): la luz de color va aquí, nunca como glow en un elemento ─────────────────────── */
+.luz-3d { position: absolute; pointer-events: none; z-index: 0 }
+.luz-3d.halo  { background: radial-gradient(closest-side, color-mix(in oklab, var(--m3-luz) 34%, transparent) 0%, color-mix(in oklab, var(--m3-luz) 12%, transparent) 55%, transparent 100%) }
+.luz-3d.suelo { background: radial-gradient(closest-side, color-mix(in oklab, var(--m3-cielo-1) 16%, transparent) 0%, transparent 100%) }
+
+/* ── Partículas (data-fondo): SVG del tamaño del lienzo con cruces y cuadraditos (ver #p3m-cruz en la plantilla) */
+.particulas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; color: var(--m3-particula); pointer-events: none }
+
+/* ── Bokeh (data-fondo): 4-7 círculos desenfocados, 16-90 px, al 10-30 % ─────────────────────────────────────── */
+.bokeh { position: absolute; inset: 0; z-index: 0; pointer-events: none }
+.bokeh i { position: absolute; border-radius: 50%; filter: blur(var(--desenfoque, 3px));
+           background: radial-gradient(circle, color-mix(in oklab, var(--m3-particula) 70%, transparent) 0%, color-mix(in oklab, var(--m3-particula) 25%, transparent) 60%, transparent 72%) }
+
+/* ── Sujetos: el recorte y su sombra de contacto (la sombra va dentro, en % del recorte) ──────────────────────── */
+.sujeto { position: absolute; z-index: 2 }
+.sujeto.mascota { z-index: 3 }                  /* la mascota va delante del producto */
+.sujeto img { position: relative; display: block; width: 100%; height: auto; z-index: 1 }
+.contacto { position: absolute; z-index: 0; transform: translate(-50%, -50%); pointer-events: none;
+            left: var(--cx, 50%); top: var(--cy, 96%); width: var(--cw, 80%); height: var(--ch, 8%) }
+/* Dos capas: penumbra ancha y suave + núcleo corto y oscuro pegado a la base */
+.contacto::before, .contacto::after { content: ''; position: absolute; border-radius: 50% }
+.contacto::before { inset: 0; background: radial-gradient(closest-side, color-mix(in oklab, var(--m3-sombra) 72%, transparent) 0%, color-mix(in oklab, var(--m3-sombra) 30%, transparent) 55%, transparent 100%) }
+.contacto::after  { inset: 32% 16%; background: radial-gradient(closest-side, color-mix(in oklab, var(--m3-sombra) 94%, transparent) 0%, color-mix(in oklab, var(--m3-sombra) 45%, transparent) 60%, transparent 100%) }
+/* Huella medida de cada recorte de ejemplo (si cambias el render, vuelve a medirla) */
+.producto .contacto { --cx: 55%; --cy: 95.5%; --cw: 108%; --ch: 10% }
+.mascota  .contacto { --cx: 43%; --cy: 97.6%; --cw: 60%;  --ch: 8.5% }
+
+/* ── Texto: logo centrado arriba, chip, titular, apoyo y CTA, siempre en el aire ─────────────────────────────── */
+.marca-3d { position: absolute; z-index: 4; display: flex; align-items: center; gap: .4em; white-space: nowrap;
+            font-family: var(--fuente-display, var(--fuente)); font-weight: 750; letter-spacing: -.03em; line-height: 1; color: var(--m3-sobre) }
+.marca-3d.centro { left: 50%; transform: translateX(-50%) }
+.marca-3d .logo { display: inline-flex; width: 1.12em; height: 1.12em }
+.marca-3d .logo svg { width: 100%; height: 100% }
+.chip-3d { position: absolute; z-index: 4; display: inline-flex; align-items: center; gap: .45em; white-space: nowrap;
+           padding: .42em .9em; border-radius: 999px; font-weight: 650; letter-spacing: -.01em; line-height: 1;
+           color: var(--m3-sobre); background: color-mix(in oklab, var(--claro) 12%, transparent);
+           border: 1px solid color-mix(in oklab, var(--claro) 30%, transparent) }
+.chip-3d .punto { width: .5em; height: .5em; border-radius: 50%; background: var(--m3-particula) }
+.titular-3d { position: absolute; z-index: 4; font-family: var(--fuente-display, var(--fuente)); font-weight: 780;
+              letter-spacing: -.038em; line-height: .98; color: var(--m3-sobre); text-wrap: balance }
+.apoyo-3d { position: absolute; z-index: 4; font-weight: 500; letter-spacing: -.012em; line-height: 1.3; color: var(--m3-suave) }
+.cta-3d { position: absolute; z-index: 4; display: inline-flex; align-items: center; gap: .5em; white-space: nowrap;
+          padding: .7em 1.25em; border-radius: 999px; font-weight: 700; letter-spacing: -.015em; line-height: 1;
+          background: var(--claro); color: var(--tinta) }
+.cta-3d svg { width: 1em; height: 1em }
+.centro-x { left: 50%; transform: translateX(-50%); text-align: center }

@@ -1,0 +1,222 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:transparent}</style>
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script></head><body>
+<script type="module">
+// Producto del look «producto-3d-mascota»: torre gaming blanca sin marca, de ¾ con el cristal a la izquierda.
+// Carcasa lacada con biseles y frontal microperforado con franja de luz. Dentro, montaje de escaparate: AIO de 240
+// arriba (radiador con aletas y 2 ventiladores), bomba con aro de luz y tubos, ventilador trasero, placa con
+// disipadores de VRM, 4 memorias con luz, gráfica horizontal (carcasa, aletas, backplate, tira de luz), cables
+// blancos trenzados (24 pines y PCIe) con peines y cubre-fuente con rejilla. Ventiladores de 11 aspas barridas,
+// buje, marco con tornillos y aro RGB. La luz de color (RGB violeta/azul) tiñe el interior blanco; la principal es
+// una sola (arriba a la derecha) y los recortes azul y violeta de la marca dibujan los cantos.
+import { THREE, preparar, luces, encuadrar, sombras, estudioMarca, q } from './comun.js'
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js'
+const { r, s } = preparar({ entorno: .55 })
+// Estudio con sala gris neutra (no índigo): el blanco queda limpio y el color lo ponen los paneles de la marca,
+// los recortes y el RGB, no un tinte general
+if (q.get('estudio') !== 'neutro') { s.environment = estudioMarca(r, { base: '#211f2c' }); s.environmentIntensity = .5 }
+const L = luces(s, { principal: 1.9, azul: 11, violeta: 11 }); L.f.color.set('#eceaf4')
+const K2 = new THREE.DirectionalLight('#7d6bff', 6); K2.position.set(-1, 5, -4); s.add(K2)   // recorte arriba-atrás
+// Los recortes también hacen sombra: así no entran por las paredes y el interior lo tiñe solo el RGB
+for (const l of [L.a, L.v, K2]) { l.castShadow = true; l.shadow.mapSize.set(1024, 1024); l.shadow.bias = -.0005; l.shadow.normalBias = .02; Object.assign(l.shadow.camera, { left: -2, right: 2, top: 2, bottom: -2, near: .5, far: 20 }) }
+const VI = new THREE.Color(q.has('violeta') ? '#' + q.get('violeta') : '#8b6bff'), AZ = new THREE.Color(q.has('azul') ? '#' + q.get('azul') : '#5b6dff')
+const MZ = VI.clone().lerp(AZ, .5)
+
+const torre = new THREE.Group(); s.add(torre)
+const AN = .86, AL = 2.08, FO = 1.5, R = .08, MARCO = .1   // ancho (x), alto (y), fondo (z); el cristal mira a +x
+const fis = o => new THREE.MeshPhysicalMaterial(o)
+const blanco = fis({ color: '#f4f3f9', roughness: .3, clearcoat: .6, clearcoatRoughness: .18 })
+const satin = fis({ color: '#f3f2f7', roughness: .42, clearcoat: .3, clearcoatRoughness: .3 })        // plásticos de dentro
+const mate = fis({ color: '#e6e3ef', roughness: .62 })
+const pcb = fis({ color: '#4c4860', roughness: .48, clearcoat: .25 })
+const grafito = fis({ color: '#2e2b3d', roughness: .38, clearcoat: .5, clearcoatRoughness: .2 })   // carcasa de la gráfica: el ancla oscura del interior
+const alu = fis({ color: '#dcd9e6', roughness: .32, metalness: .85 })
+const negro = fis({ color: '#141221', roughness: .42, metalness: .3 })
+const oscuro = fis({ color: '#24213a', roughness: .55 })
+const espejo = fis({ color: '#07060f', roughness: .08, clearcoat: 1, clearcoatRoughness: .04 })
+const luz = (c, i = 4) => new THREE.MeshStandardMaterial({ color: '#000000', emissive: c, emissiveIntensity: i })
+// El interior recibe menos estudio que la carcasa: da hondura y deja que el RGB lo tiña
+for (const m of [satin, mate, pcb, alu, oscuro, grafito]) { m.envMap = s.environment; m.envMapIntensity = .42 }
+
+const caja = (w, h, d, mat, x, y, z, rad = .012, padre = torre) => { const m = new THREE.Mesh(new RoundedBoxGeometry(w, h, d, 3, Math.min(rad, w / 2.05, h / 2.05, d / 2.05)), mat); m.position.set(x, y, z); padre.add(m); return m }
+const rr = (w, h, rad, hole) => { const p = hole ? new THREE.Path() : new THREE.Shape(), x = -w / 2, y = -h / 2
+  p.moveTo(x + rad, y); p.lineTo(x + w - rad, y); p.quadraticCurveTo(x + w, y, x + w, y + rad); p.lineTo(x + w, y + h - rad); p.quadraticCurveTo(x + w, y + h, x + w - rad, y + h)
+  p.lineTo(x + rad, y + h); p.quadraticCurveTo(x, y + h, x, y + h - rad); p.lineTo(x, y + rad); p.quadraticCurveTo(x, y, x + rad, y); return p }
+const textura = (ancho, alto, pinta) => { const c = document.createElement('canvas'); c.width = ancho; c.height = alto; pinta(c.getContext('2d'), ancho, alto); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t }
+const rayas = (n, fondo, linea, grosor = .42) => textura(1024, 16, (x, w, h) => { x.fillStyle = fondo; x.fillRect(0, 0, w, h); x.fillStyle = linea; for (let i = 0; i < n; i++) x.fillRect(i * w / n, 0, w / n * grosor, h) })
+
+// ── Carcasa: paredes lacadas, marco del cristal y cristal ──────────────────────────────────────────────────────
+const forma = rr(FO, AL, R, false); forma.holes.push(rr(FO - .13, AL - .13, .04, true))
+const marco = new THREE.Mesh(new THREE.ExtrudeGeometry(forma, { depth: MARCO - .02, bevelEnabled: true, bevelThickness: .01, bevelSize: .008, bevelSegments: 4, curveSegments: 24 }), blanco)
+marco.rotation.y = Math.PI / 2; marco.position.x = AN / 2 - MARCO; torre.add(marco)
+const pared = (w, h, d, x, y, z) => caja(w, h, d, blanco, x, y, z, R * .99)
+pared(.1, AL, FO, -AN / 2 + .05, 0, 0)                          // pared izquierda (bandeja de la placa)
+pared(AN - .02, .065, FO, -.01, AL / 2 - .0325, 0)               // techo
+pared(AN - .02, .065, FO, -.01, -AL / 2 + .0325, 0)              // suelo
+pared(AN - .02, AL, .065, -.01, 0, FO / 2 - .0325)               // frontal
+pared(AN - .02, AL, .065, -.01, 0, -FO / 2 + .0325)              // trasera
+caja(.004, AL - .14, FO - .14, mate, -AN / 2 + .102, 0, 0, .002)   // cara interior de la bandeja, mate
+
+// ── Ventilador de 120: marco cuadrado con esquinas y tornillos, 11 aspas barridas, buje, brazos y aro RGB ────────
+const G = {}
+const geoAspa = n => { const nu = 16, nv = 9, r0 = .15, r1 = .458, paso = Math.PI * 2 / n, pos = [], idx = []
+  for (let i = 0; i <= nu; i++) { const u = i / nu, rad = r0 + (r1 - r0) * u, span = paso * (.84 - .14 * u), fc = .55 * Math.pow(u, 1.25), pitch = .17 * (1 - .45 * u)
+    for (let j = 0; j <= nv; j++) { const v = j / nv, th = fc + (v - .5) * span, z = (.5 - v) * pitch + .022 * Math.sin(Math.PI * v); pos.push(Math.cos(th) * rad, Math.sin(th) * rad, z) } }
+  for (let i = 0; i < nu; i++) for (let j = 0; j < nv; j++) { const a = i * (nv + 1) + j, b = a + nv + 1; idx.push(a, b, a + 1, b, b + 1, a + 1) }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals(); return g }
+const matAspa = fis({ color: '#f5f3fb', roughness: .36, clearcoat: .45, side: THREE.DoubleSide })
+const tornillo = fis({ color: '#8f8ca3', roughness: .28, metalness: .9 })
+function ventilador(color, { aspas = 11, i = 3.2, dos = true } = {}) {
+  const v = new THREE.Group(), D = .2
+  if (!G.marco) { const sh = rr(1, 1, .085, false), h = new THREE.Path(); h.absarc(0, 0, .476, 0, Math.PI * 2, true); sh.holes.push(h)
+    G.marco = new THREE.ExtrudeGeometry(sh, { depth: D - .03, bevelEnabled: true, bevelThickness: .015, bevelSize: .012, bevelSegments: 3, curveSegments: 72 })
+    G.buje = new THREE.CylinderGeometry(.148, .148, D * .62, 64); G.cupula = new THREE.SphereGeometry(.148, 48, 12, 0, Math.PI * 2, 0, Math.PI / 2)
+    G.brazo = new THREE.BoxGeometry(.33, .03, .032); G.disco = new THREE.CylinderGeometry(.165, .165, .03, 48)
+    G.aro = new THREE.TorusGeometry(.479, .012, 12, 160); G.banda = new THREE.RingGeometry(.482, .512, 128); G.tor = new THREE.CylinderGeometry(.027, .027, .012, 20)
+    G.hueco = new THREE.CylinderGeometry(.04, .04, .013, 20) }
+  const m = new THREE.Mesh(G.marco, satin); m.position.z = -D / 2 + .015; v.add(m)
+  const b = new THREE.Mesh(G.buje, matAspa); b.rotation.x = Math.PI / 2; v.add(b)
+  const cu = new THREE.Mesh(G.cupula, matAspa); cu.rotation.x = Math.PI / 2; cu.scale.set(1, .22, 1); cu.position.z = D * .31; v.add(cu)
+  const ga = G['a' + aspas] ??= geoAspa(aspas)
+  for (let k = 0; k < aspas; k++) { const a = new THREE.Mesh(ga, matAspa); a.rotation.z = k / aspas * Math.PI * 2; v.add(a) }
+  for (let k = 0; k < 4; k++) { const g = new THREE.Group(); g.rotation.z = k * Math.PI / 2 + .35; const br = new THREE.Mesh(G.brazo, satin); br.position.set(.31, 0, -D / 2 + .018); g.add(br); v.add(g) }
+  const di = new THREE.Mesh(G.disco, satin); di.rotation.x = Math.PI / 2; di.position.z = -D / 2 + .018; v.add(di)
+  const ml = luz(color, i), mb = luz(color, i * .38)
+  for (const sz of dos ? [1, -1] : [1]) {
+    const aro = new THREE.Mesh(G.aro, ml); aro.position.z = sz * (D / 2 - .006); v.add(aro)
+    const ba = new THREE.Mesh(G.banda, mb); ba.position.z = sz * (D / 2 + .002); if (sz < 0) ba.rotation.y = Math.PI; v.add(ba) }
+  for (const [sx, sy] of [[1, 1], [1, -1], [-1, 1], [-1, -1]]) {
+    const hu = new THREE.Mesh(G.hueco, oscuro); hu.rotation.x = Math.PI / 2; hu.position.set(sx * .43, sy * .43, D / 2 + .001); v.add(hu)
+    const t = new THREE.Mesh(G.tor, tornillo); t.rotation.x = Math.PI / 2; t.position.set(sx * .43, sy * .43, D / 2 + .005); v.add(t) }
+  return v }
+const puntual = (c, i, d, x, y, z) => { const p = new THREE.PointLight(c, i, d, 2); p.position.set(x, y, z); torre.add(p) }
+
+// ── Placa base (gris claro) con E/S, VRM con aletas, M.2, chips y bandeja de cables ─────────────────────────────
+const XP = -AN / 2 + .13   // cara de la placa
+caja(.012, 1.47, 1.1, pcb, XP - .006, .195, -.11, .006)
+const aletas = rayas(64, '#e9e7f1', '#8d89a2', .38); aletas.wrapS = THREE.RepeatWrapping
+const vrm = fis({ color: '#ffffff', map: aletas, roughness: .38, metalness: .55 }); vrm.envMap = s.environment; vrm.envMapIntensity = .5
+caja(.09, .11, .52, vrm, XP + .045, .79, -.26, .01)              // VRM de arriba
+caja(.09, .4, .1, vrm, XP + .045, .5, -.47, .01)                 // VRM de la izquierda
+caja(.12, .62, .15, satin, XP + .06, .58, -.6, .02)               // tapa de la E/S trasera
+// Centro de la placa a escala visible a 1x: disipador M.2 con ranuras y tornillos, PCIe x16 con refuerzo metálico,
+// PCIe x1, bobinas y condensadores de la fase de alimentación, chips y tornillos de la placa
+const tornilloP = fis({ color: '#b9b6c8', roughness: .3, metalness: .9 })
+const ranurasM2 = rayas(22, '#f4f3f8', '#8e8aa2', .3); ranurasM2.wrapS = THREE.RepeatWrapping
+const matM2 = fis({ color: '#ffffff', map: ranurasM2, roughness: .4, metalness: .25 }); matM2.envMap = s.environment; matM2.envMapIntensity = .5
+caja(.012, .1, .62, satin, XP + .006, -.07, -.21, .006)                // base del M.2
+caja(.012, .066, .52, matM2, XP + .016, -.072, -.21, .004)             // ranuras del M.2
+caja(.014, .005, .56, luz(MZ, 1.1), XP + .02, -.024, -.21, .002)        // filo de luz
+for (const z of [-.5, .08]) { const t = new THREE.Mesh(new THREE.CylinderGeometry(.012, .012, .01, 16), tornilloP); t.rotation.z = Math.PI / 2; t.position.set(XP + .026, -.07, z); torre.add(t) }
+caja(.026, .03, .46, alu, XP + .013, -.166, -.3, .004); caja(.03, .011, .42, negro, XP + .016, -.166, -.3, .003)   // PCIe x16
+caja(.024, .026, .13, oscuro, XP + .012, .035, -.44, .004); caja(.027, .009, .11, negro, XP + .015, .035, -.44, .002) // PCIe x1
+for (let k = 0; k < 5; k++) caja(.042, .046, .046, alu, XP + .021, .225, -.37 + k * .062, .006)                   // bobinas
+for (let k = 0; k < 4; k++) { const z = -.34 + k * .07, cn = new THREE.Mesh(new THREE.CylinderGeometry(.014, .014, .04, 20), negro); cn.rotation.z = Math.PI / 2; cn.position.set(XP + .02, .14, z); torre.add(cn)
+  const tp = new THREE.Mesh(new THREE.CircleGeometry(.0125, 20), tornilloP); tp.rotation.y = Math.PI / 2; tp.position.set(XP + .0405, .14, z); torre.add(tp) }
+for (const [y, z, w, h] of [[.06, -.17, .06, .06], [.07, -.06, .04, .03], [.03, -.3, .03, .03]]) caja(.012, h, w, oscuro, XP + .006, y, z, .003)
+for (const [y, z] of [[.1, .06], [.1, -.55], [.6, -.55]]) { const t = new THREE.Mesh(new THREE.CylinderGeometry(.013, .013, .01, 16), tornilloP); t.rotation.z = Math.PI / 2; t.position.set(XP + .006, y, z); torre.add(t) }
+caja(.012, 1.26, .07, oscuro, -AN / 2 + .107, .1, .58, .02)       // pasacables de goma (bandeja)
+
+// ── Bomba de la AIO: cuerpo blanco, tapa de espejo con aro RGB doble, tubos trenzados hasta el radiador ────────────
+const bomba = new THREE.Group(); bomba.position.set(XP + .075, .45, -.18); torre.add(bomba)
+{ const c = new THREE.Mesh(new THREE.CylinderGeometry(.15, .158, .15, 96), satin); c.rotation.z = Math.PI / 2; bomba.add(c)
+  const bisel = new THREE.Mesh(new THREE.TorusGeometry(.142, .016, 20, 120), blanco); bisel.rotation.y = Math.PI / 2; bisel.position.x = .074; bomba.add(bisel)
+  const ta = new THREE.Mesh(new THREE.CircleGeometry(.13, 96), espejo); ta.rotation.y = Math.PI / 2; ta.position.x = .076; bomba.add(ta)
+  const a1 = new THREE.Mesh(new THREE.TorusGeometry(.118, .007, 12, 120), luz(VI, 4)); a1.rotation.y = Math.PI / 2; a1.position.x = .079; bomba.add(a1)
+  const a2 = new THREE.Mesh(new THREE.TorusGeometry(.082, .004, 10, 100), luz(AZ, 2.6)); a2.rotation.y = Math.PI / 2; a2.position.x = .078; bomba.add(a2)
+  const a3 = new THREE.Mesh(new THREE.TorusGeometry(.05, .0028, 8, 80), luz(MZ, 1.6)); a3.rotation.y = Math.PI / 2; a3.position.x = .077; bomba.add(a3) }
+const trenza = textura(64, 64, (x, w, h) => { x.fillStyle = '#ffffff'; x.fillRect(0, 0, w, h); x.strokeStyle = '#b9b5c9'; x.lineWidth = 5; for (let i = -2; i < 4; i++) { x.beginPath(); x.moveTo(i * 22, 0); x.lineTo(i * 22 + 44, h); x.stroke(); x.beginPath(); x.moveTo(i * 22 + 44, 0); x.lineTo(i * 22, h); x.stroke() } })
+trenza.wrapS = trenza.wrapT = THREE.RepeatWrapping
+const cableMat = (rep) => { const t = trenza.clone(); t.needsUpdate = true; t.repeat.set(rep, 1); const m = fis({ color: '#f3f1f8', map: t, bumpMap: t, bumpScale: .6, roughness: .7, sheen: .6, sheenColor: '#ffffff' }); m.envMap = s.environment; m.envMapIntensity = .45; return m }
+const tubo = (pts, rad, mat, seg = 64) => { const m = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts.map(p => new THREE.Vector3(...p))), seg, rad, 14), mat); torre.add(m); return m }
+const matTubo = cableMat(40)
+tubo([[XP + .07, .56, -.29], [XP + .1, .66, -.42], [.0, .74, -.55], [.02, .86, -.6]], .024, matTubo)
+tubo([[XP + .07, .5, -.31], [XP + .16, .58, -.45], [.16, .7, -.56], [.17, .86, -.6]], .024, matTubo)
+for (const z of [-.29, -.31]) caja(.05, .05, .05, alu, XP + .07, z === -.29 ? .56 : .5, z, .015)
+
+// ── Radiador de 240 arriba: núcleo de aletas, depósitos blancos y 2 ventiladores mirando abajo ───────────────────
+const nucleo = rayas(150, '#3a3650', '#d6d3e2', .5); nucleo.wrapS = THREE.RepeatWrapping
+const matNucleo = fis({ map: nucleo, roughness: .45, metalness: .5 }); matNucleo.envMap = s.environment; matNucleo.envMapIntensity = .5
+caja(.54, .1, 1.1, matNucleo, .09, .915, -.04, .004)
+caja(.56, .13, .07, satin, .09, .91, -.63, .02); caja(.56, .13, .07, satin, .09, .91, .55, .02)
+// Inclinados 8° hacia el cristal: con la cámara casi a nivel enseñan un poco la cara y el aro (de canto no se leen)
+for (const z of [-.31, .23]) { const g = new THREE.Group(); g.position.set(.09, .822, z); g.rotation.z = .14; const f = ventilador(MZ, { i: 3.4 }); f.rotation.x = Math.PI / 2; f.scale.setScalar(.54); g.add(f); torre.add(g) }
+puntual(MZ, 2.2, 1.6, .1, .62, -.05)
+
+// ── Ventilador trasero (extracción), de cara al interior ────────────────────────────────────────────────────────
+{ const f = ventilador(VI, { i: 3.4 }); f.scale.setScalar(.55); f.position.set(.05, .3, -FO / 2 + .065 + .056); torre.add(f) }
+puntual(VI, 1.8, 1.3, .08, .3, -.42)
+
+// ── Memorias: 4 módulos blancos con barra de luz (violeta → azul) ─────────────────────────────────────────────────
+for (let k = 0; k < 4; k++) { const z = -.005 + k * .046
+  caja(.17, .6, .03, satin, XP + .085, .42, z, .008)
+  caja(.006, .58, .032, oscuro, XP + .172, .42, z, .002)
+  caja(.026, .58, .028, luz(VI.clone().lerp(AZ, k / 3), 3.6), XP + .188, .42, z, .008) }
+puntual(VI.clone().lerp(AZ, .4), 1.1, .9, XP + .32, .45, .06)
+
+// ── 24 pines: conector y 12 hilos trenzados con peine hasta el pasacables ───────────────────────────────────────
+caja(.06, .31, .05, negro, XP + .03, .36, .2, .006)
+const mat24 = cableMat(12)
+for (let k = 0; k < 12; k++) { const y = .225 + k * .0245; tubo([[XP + .06, y, .2], [XP + .14, y, .215], [XP + .17, y, .29], [XP + .1, y, .4], [XP - .02, y, .45]], .0105, mat24, 40) }
+caja(.03, .32, .03, satin, XP + .16, .36, .255, .008)            // peine
+
+// ── Cubre-fuente con rejilla de ranuras en el canto que mira al cristal ─────────────────────────────────────────
+const YS = -.56   // techo del cubre-fuente
+caja(AN - .2, YS + AL / 2 - .065, FO - .13, satin, .02, (YS + (-AL / 2 + .065)) / 2, 0, .02)
+{ const n = 7 * 12, ranura = new THREE.InstancedMesh(new RoundedBoxGeometry(.004, .016, .07, 2, .002), oscuro, n), m4 = new THREE.Matrix4(); let c = 0
+  for (let fy = 0; fy < 7; fy++) for (let fz = 0; fz < 12; fz++) { m4.makeTranslation(.02 + (AN - .2) / 2 + .001, -.66 - fy * .042, .14 + fz * .044 - (fy % 2) * .022); ranura.setMatrixAt(c++, m4) }
+  ranura.count = c; torre.add(ranura) }
+caja(.3, .006, .12, oscuro, .1, YS + .002, .2, .003)               // hueco de paso de cables
+
+// ── Gráfica horizontal: carcasa blanca, aletas a la vista, backplate, tira de luz, ventiladores y PCIe trenzado ──
+const XG = .15   // canto que mira al cristal
+caja(.44, .22, 1.02, grafito, XG - .22, -.32, -.13, .03)
+const finG = rayas(110, '#2b2840', '#bdb9cc', .45); finG.wrapS = THREE.RepeatWrapping
+const matFinG = fis({ map: finG, roughness: .45, metalness: .5 }); matFinG.envMap = s.environment; matFinG.envMapIntensity = .5
+caja(.006, .075, .86, matFinG, XG + .002, -.385, -.17, .002)      // aletas vistas por el canto
+caja(.006, .016, .64, luz(VI, 3), XG + .003, -.245, -.3, .004)     // tira de luz
+caja(.006, .008, .86, oscuro, XG + .002, -.33, -.17, .002)         // junta
+caja(.44, .014, 1.02, alu, XG - .22, -.203, -.13, .004)            // backplate
+caja(.3, .004, .22, oscuro, XG - .2, -.195, .24, .002)             // hueco de flujo del backplate
+{ const f = ventilador(AZ, { i: 2.4, dos: false }); f.rotation.x = -Math.PI / 2; f.scale.setScalar(.2); f.position.set(XG - .2, -.205, .24); torre.add(f) }
+for (const z of [-.47, -.14, .19]) { const f = ventilador(MZ, { i: 3, dos: false }); f.rotation.x = Math.PI / 2; f.scale.setScalar(.3); f.position.set(XG - .22, -.45, z); torre.add(f) }
+puntual(AZ, 1.6, 1.1, .05, -.5, -.1)
+caja(.03, .07, .17, negro, XG + .012, -.29, .2, .006)              // conector PCIe en el canto
+const matPci = cableMat(10)
+for (let k = 0; k < 8; k++) { const z = .13 + k * .02; tubo([[XG + .02, -.29, z], [XG + .1, -.3, z], [XG + .15, -.41, z], [XG + .13, YS, z]], .0095, matPci, 36) }
+caja(.025, .03, .18, satin, XG + .146, -.44, .2, .008)            // peine PCIe
+
+// Luz de los ventiladores en el aire de la caja: lavado suave violeta → azul de arriba abajo
+puntual(VI, .5, 2.4, .25, .55, .2); puntual(AZ, .5, 2.4, .25, -.3, .3)
+
+// ── Cristal: transmisión, reflejo diagonal suave y brillo de canto ──────────────────────────────────────────────
+const tx = textura(512, 768, (x, w, h) => {
+  const g = x.createLinearGradient(0, h, w, 0); for (const [p, a] of [[0, 0], [.34, 0], [.42, .17], [.47, .05], [.55, .12], [.6, 0], [1, 0]]) g.addColorStop(p, `rgba(255,255,255,${a})`)
+  x.fillStyle = g; x.fillRect(0, 0, w, h)
+  const e = x.createLinearGradient(0, 0, 0, h * .7); e.addColorStop(0, 'rgba(255,255,255,.7)'); e.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = e; x.fillRect(0, 0, 5, h * .7)
+  const t = x.createLinearGradient(0, 0, w * .6, 0); t.addColorStop(0, 'rgba(255,255,255,.45)'); t.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = t; x.fillRect(0, 0, w * .6, 4) })
+const refl = new THREE.Mesh(new THREE.PlaneGeometry(FO - .13, AL - .13), new THREE.MeshBasicMaterial({ map: tx, transparent: true, depthWrite: false, toneMapped: false }))
+refl.rotation.y = Math.PI / 2; refl.position.x = AN / 2 - .034; torre.add(refl)
+const cristal = new THREE.Mesh(new THREE.BoxGeometry(.01, AL - .1, FO - .1), fis({ color: '#ffffff', roughness: .02, transmission: 1, thickness: .01, ior: 1.5, clearcoat: 1, clearcoatRoughness: .02, attenuationColor: '#eeecf8', attenuationDistance: 2.5 }))
+cristal.position.x = AN / 2 - .045; torre.add(cristal)
+
+// ── Frontal microperforado con franja de luz; botón y rejilla arriba; patas ────────────────────────────────────
+const zf = FO / 2 + .001
+const agujeros = new THREE.InstancedMesh(new THREE.CircleGeometry(.0078, 12), new THREE.MeshBasicMaterial({ color: '#3a3650' }), 5000)
+let n = 0; const m4 = new THREE.Matrix4(), xr = -.02
+for (let iy = 0; iy < 82 && n < 5000; iy++) for (let ix = 0; ix < 30 && n < 5000; ix++) { const x = -AN / 2 + .085 + ix * .024 + (iy % 2) * .012, y = -AL / 2 + .17 + iy * .0212
+  if (Math.abs(x - xr) < .046 || x > AN / 2 - .085) continue; m4.makeTranslation(x, y, zf); agujeros.setMatrixAt(n++, m4) }
+agujeros.count = n; torre.add(agujeros)
+caja(.056, AL - .3, .02, negro, xr, .01, FO / 2 - .004, .01)
+caja(.03, AL - .36, .02, luz(VI, 6), xr, .01, FO / 2 + .002, .012)
+const boton = new THREE.Mesh(new THREE.CylinderGeometry(.034, .034, .016, 48), blanco); boton.position.set(-.16, AL / 2 + .006, FO / 2 - .16); torre.add(boton)
+const anillo = new THREE.Mesh(new THREE.TorusGeometry(.039, .0045, 12, 64), luz(VI, 3)); anillo.rotation.x = Math.PI / 2; anillo.position.set(-.16, AL / 2 + .004, FO / 2 - .16); torre.add(anillo)
+for (let k = 0; k < 12; k++) caja(.46, .01, .022, negro, -.04, AL / 2 + .001, -FO / 2 + .2 + k * .065, .005)
+for (const [x, z] of [[-AN / 2 + .1, FO / 2 - .14], [AN / 2 - .1, FO / 2 - .14], [-AN / 2 + .1, -FO / 2 + .14], [AN / 2 - .1, -FO / 2 + .14]]) {
+  const p = new THREE.Mesh(new THREE.CylinderGeometry(.04, .05, .045, 32), negro); p.position.set(x, -AL / 2 - .0225, z); torre.add(p) }
+
+sombras(torre); agujeros.castShadow = false; cristal.castShadow = false; refl.castShadow = false
+torre.scale.x = -1; torre.rotation.y = +(q.get('giro') ?? .86)   // espejo: cristal a la izquierda y frontal a la derecha
+torre.updateMatrixWorld(true)
+const c = encuadrar(torre, { fov: 24, margen: .03, elevacion: +(q.get('elev') ?? .03) })
+r.render(s, c); window.listo = true
+</script></body></html>

@@ -1,0 +1,270 @@
+<!doctype html>
+<!--
+  PLANTILLA «PRODUCTO EN CONTEXTO» · la interfaz del producto sobre un fondo degradado suave, con 1-2 capas
+  flotantes que cuentan UNA función. Siete formatos de una misma campaña:
+    cabecera-correo (600x300 → 1200x600), hero (1600x900), redes-1x1 (1080x1080), redes-4x5 (1080x1350),
+    banner-x (1500x500), miniatura (1280x720) y story (1080x1920).
+  Exportar a 2x (PNG nítido), desde la carpeta de esta plantilla, con producto.css y producto.js al lado:
+    node ../../piezas-graficas/scripts/exportar.mjs producto-en-contexto.html --marca marca.json --escala 2
+  Reglas:
+    · La marca sale de marca.json (skill direccion-de-arte): colores y fuente en var(--…), y nombre, web y logo en
+      los elementos con data-marca. Aquí no se escribe ningún color suelto.
+    · Cada capa de producto (ventana, modal, fila destacada, aviso) lleva data-maqueta: pueden solaparse entre
+      ellas; el texto libre (titular, apoyo, botón) no puede tocar ninguna.
+    · Ventanas que salen del lienzo: --sangra-d / --sangra-a con los px que salen, para que su texto no se corte.
+    · Una función por pieza; dos capas flotantes como mucho, y solo una con borde degradado si compiten.
+  Contenido de ejemplo: Pliego, marca ficticia (cámbialo por el producto y los datos reales de tu marca).
+-->
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Producto en contexto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400..800&family=Geist+Mono:wght@400..600&display=block" rel="stylesheet">
+<link rel="stylesheet" href="producto.css">
+<script src="producto.js" defer></script>
+<style>
+  :root {
+    /* Tokens de marca (los sustituye marca.json). Ejemplo: Pliego, marca ficticia */
+    --papel: #f3f1ec; --superficie: #ffffff; --bloque: #f5f3ef;
+    --tinta: #121418; --texto: #2b2f35; --suave: #5f656e; --apagado: #80868e; --linea: #dcd8d0;
+    --noche: #111317; --noche-2: #1b1e24; --noche-linea: #2c3038; --claro: #f3f1ec; --claro-suave: #a1a6ad;
+    --acento: #ff5b2e; --acento-texto: #b8330c; --sobre-acento: #121418;
+    --fuente: 'Geist', system-ui, sans-serif; --mono: 'Geist Mono', ui-monospace, monospace;
+    --radio: 20px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0 }
+  body { background: #d9d6d0; padding: 60px; display: flex; flex-direction: column; align-items: flex-start; gap: 60px; font-family: var(--fuente) }
+  section { position: relative; overflow: hidden; font-family: var(--fuente); -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums }
+
+  /* Texto libre de las piezas (fuera de las maquetas): pesos medios y tracking negativo, nunca 800-900 */
+  .marca { position: absolute; display: flex; align-items: center; gap: .42em; font-weight: 650; letter-spacing: -.025em; white-space: nowrap }
+  .marca .logo { display: inline-flex; width: 1.1em; height: 1.1em }
+  .marca .logo svg { width: 100%; height: 100% }
+  .tit { font-weight: 600; letter-spacing: -.042em; line-height: 1.02 }
+  .apoyo { font-weight: 450; letter-spacing: -.012em; line-height: 1.38; color: color-mix(in oklab, var(--sobre-escena) 80%, transparent) }
+  .url { font-family: var(--mono); font-weight: 500; letter-spacing: -.01em }
+  .boton { display: inline-flex; align-items: center; gap: .5em; padding: .62em 1.05em; border-radius: .5em; font-weight: 600; letter-spacing: -.015em;
+           white-space: nowrap; background: var(--noche); color: var(--claro) }
+</style>
+</head>
+<body>
+
+<!-- ═══ CABECERA DE CORREO · 600x300 (se exporta a 2x: 1200x600). Sin texto de marketing: el titular va en el HTML del
+     correo. Ventana al 11 % / 13 %, sangra por la derecha y por abajo; modal arriba a la derecha (sangra) y la fila
+     destacada sale por la izquierda de la ventana. Letra mínima 8 px aquí (es contexto de interfaz) -->
+<section class="escena" data-pieza="cabecera-correo" data-estilo="producto" data-ancho="600" data-alto="300" data-min-letra="8"
+         style="width:600px;height:300px;--radio-escena:11px">
+  <div class="ventana" data-maqueta style="font-size:10px;left:64px;top:40px;width:640px;height:320px;--sangra-d:104px;--sangra-a:20px">
+    <aside class="ui-lateral">
+      <div class="ui-marca"><span class="ui-logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 3h14l7 7v19H6z" fill="currentColor"/><path d="M20 3v7h7z" fill="currentColor" opacity=".45"/></svg></span><span data-marca="nombre">Pliego</span><svg class="i"><use href="#i-panel"/></svg></div>
+      <div class="ui-item"><svg class="i"><use href="#i-inicio"/></svg>Inicio</div>
+      <div class="ui-item activo"><svg class="i"><use href="#i-factura"/></svg>Facturas<span class="ui-num">24</span></div>
+      <div class="ui-item"><svg class="i"><use href="#i-clientes"/></svg>Clientes</div>
+    </aside>
+    <main class="ui-principal">
+      <div class="ui-barra"><div class="ui-buscador"><svg class="i"><use href="#i-buscar"/></svg>Buscar facturas<kbd>⌘K</kbd></div></div>
+      <div class="ui-cab"><p class="titulo-ui">Facturas</p></div>
+      <div class="ui-lista atenuado">
+        <div class="ui-fila"><span class="ui-avatar" style="--tono:var(--ok)">CL</span><div class="ui-quien"><b>Café Lumbre</b><small>F-2026-119</small></div><span class="ui-eur">480,00 €</span><span class="ui-chip">Enviada</span></div>
+        <div class="ui-fila oculta"><span class="ui-avatar">EM</span><div class="ui-quien"><b>Estudio Marea</b><small>F-2026-118</small></div><span class="ui-eur">1.250,00 €</span><span class="ui-chip ok">Pagada</span></div>
+        <div class="ui-fila"><span class="ui-avatar" style="--tono:var(--pendiente)">NA</span><div class="ui-quien"><b>Norte Arquitectos</b><small>F-2026-120</small></div><span class="ui-eur">2.900,00 €</span><span class="ui-chip pendiente">Vence en 3 días</span></div>
+        <div class="ui-fila"><span class="ui-avatar" style="--tono:var(--escena-3)">TO</span><div class="ui-quien"><b>Taller Olmo</b><small>F-2026-117</small></div><span class="ui-eur">640,00 €</span><span class="ui-chip ok">Pagada</span></div>
+      </div>
+    </main>
+  </div>
+  <!-- Capa 1 (la función): el modal que la configura. Sangra 40 px por la derecha: el padding los suma -->
+  <div class="flotante modal" data-maqueta style="font-size:10.5px;left:330px;top:22px;width:310px;padding-right:calc(1.45em + 40px)">
+    <p class="modal-cab"><svg class="i"><use href="#i-reloj"/></svg>Recordatorios<svg class="i cerrar"><use href="#i-cerrar"/></svg></p>
+    <div class="ui-campo foco"><label>Primer aviso</label><span>3 días después del envío<svg class="i"><use href="#i-abajo"/></svg></span></div>
+    <div class="ui-campo"><label>Segundo aviso</label><span>7 días después<svg class="i"><use href="#i-abajo"/></svg></span></div>
+    <div class="modal-acciones"><span class="ui-boton sec">Cancelar</span><span class="ui-boton">Activar</span></div>
+  </div>
+  <!-- Capa 2 (el resultado): la fila de la lista, más grande, encima de su fila (data-sobre) y saliendo 22 px por la
+       izquierda de la ventana -->
+  <div class="flotante destacada" data-maqueta data-sobre=".ui-fila.oculta" style="font-size:11.5px;left:42px;top:190px;width:300px">
+    <span class="ui-avatar">EM</span><div class="ui-quien"><b>Estudio Marea</b><small>Cobrada en 6 días</small></div><span class="ui-eur">1.250,00 €</span><span class="ui-chip ok">Pagada</span>
+  </div>
+</section>
+
+<!-- ═══ HERO 16:9 · 1600x900. Igual que la cabecera, con más detalle de producto. Sin texto de marketing -->
+<section class="escena" data-pieza="hero" data-estilo="producto" data-ancho="1600" data-alto="900"
+         style="width:1600px;height:900px;--radio-escena:26px">
+  <div class="ventana" data-maqueta style="font-size:19px;left:176px;top:124px;width:1560px;height:900px;--sangra-d:136px;--sangra-a:124px">
+    <aside class="ui-lateral">
+      <div class="ui-marca"><span class="ui-logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 3h14l7 7v19H6z" fill="currentColor"/><path d="M20 3v7h7z" fill="currentColor" opacity=".45"/></svg></span><span data-marca="nombre">Pliego</span><svg class="i"><use href="#i-panel"/></svg></div>
+      <div class="ui-item"><svg class="i"><use href="#i-inicio"/></svg>Inicio</div>
+      <div class="ui-item activo"><svg class="i"><use href="#i-factura"/></svg>Facturas<span class="ui-num">24</span></div>
+      <div class="ui-item"><svg class="i"><use href="#i-presupuesto"/></svg>Presupuestos</div>
+      <div class="ui-item"><svg class="i"><use href="#i-clientes"/></svg>Clientes</div>
+      <div class="ui-item"><svg class="i"><use href="#i-gastos"/></svg>Gastos</div>
+      <div class="ui-item"><svg class="i"><use href="#i-informes"/></svg>Informes</div>
+    </aside>
+    <main class="ui-principal">
+      <div class="ui-barra"><div class="ui-buscador"><svg class="i"><use href="#i-buscar"/></svg>Buscar facturas o clientes<kbd>⌘K</kbd></div></div>
+      <div class="ui-cab"><p class="titulo-ui">Facturas</p></div>
+      <div class="ui-pestanas"><span class="activa">Todas</span><span>Enviadas</span><span>Pagadas</span><span>Vencidas</span></div>
+      <div class="ui-lista atenuado">
+        <div class="ui-fila"><span class="ui-avatar" style="--tono:var(--ok)">CL</span><div class="ui-quien"><b>Café Lumbre</b><small>F-2026-119 · 4 nov</small></div><span class="ui-eur">480,00 €</span><span class="ui-chip">Enviada</span></div>
+        <div class="ui-fila"><span class="ui-avatar" style="--tono:var(--pendiente)">NA</span><div class="ui-quien"><b>Norte Arquitectos</b><small>F-2026-120 · 5 nov</small></div><span class="ui-eur">2.900,00 €</span><span class="ui-chip pendiente">Vence en 3 días</span></div>
+        <div class="ui-fila"><span class="ui-avatar" style="--tono:var(--escena-3)">TO</span><div class="ui-quien"><b>Taller Olmo</b><small>F-2026-117 · 28 oct</small></div><span class="ui-eur">640,00 €</span><span class="ui-chip ok">Pagada</span></div>
+        <div class="ui-fila oculta"><span class="ui-avatar">EM</span><div class="ui-quien"><b>Estudio Marea</b><small>F-2026-118 · 3 nov</small></div><span class="ui-eur">1.250,00 €</span><span class="ui-chip ok">Pagada</span></div>
+        <div class="ui-fila"><span class="ui-avatar" style="--tono:var(--vencida)">EB</span><div class="ui-quien"><b>Estudio Bruma</b><small>F-2026-116 · 21 oct</small></div><span class="ui-eur">920,00 €</span><span class="ui-chip ok">Pagada</span></div>
+        <div class="ui-fila"><span class="ui-avatar" style="--tono:var(--pendiente)">LD</span><div class="ui-quien"><b>Lúa Diseño</b><small>F-2026-115 · 18 oct</small></div><span class="ui-eur">1.480,00 €</span><span class="ui-chip ok">Pagada</span></div>
+        <div class="ui-fila"><span class="ui-avatar" style="--tono:var(--ok)">CR</span><div class="ui-quien"><b>Casa Ribera</b><small>F-2026-114 · 15 oct</small></div><span class="ui-eur">310,00 €</span><span class="ui-chip">Enviada</span></div>
+      </div>
+    </main>
+  </div>
+  <!-- El borde de abajo del modal cae entre dos filas: así no corta ningún texto de la lista -->
+  <div class="flotante modal" data-maqueta style="font-size:22px;left:1000px;top:96px;width:660px;padding-right:calc(1.45em + 60px)">
+    <p class="modal-cab"><svg class="i"><use href="#i-reloj"/></svg>Recordatorios automáticos<svg class="i cerrar"><use href="#i-cerrar"/></svg></p>
+    <div class="ui-campo foco"><label>Primer aviso</label><span>3 días después del envío<svg class="i"><use href="#i-abajo"/></svg></span></div>
+    <div class="ui-campo"><label>Segundo aviso</label><span>7 días después<svg class="i"><use href="#i-abajo"/></svg></span></div>
+    <div class="ui-opcion" style="margin-top:.5em"><span>Avisarme si sigue sin pagar</span><span class="ui-interruptor"></span></div>
+    <div class="modal-acciones"><span class="ui-boton sec">Cancelar</span><span class="ui-boton">Activar</span></div>
+  </div>
+  <div class="flotante destacada" data-maqueta data-sobre=".ui-fila.oculta" style="font-size:22px;left:136px;top:560px;width:720px">
+    <span class="ui-avatar">EM</span><div class="ui-quien"><b>Estudio Marea</b><small>F-2026-118 · cobrada en 6 días</small></div><span class="ui-eur">1.250,00 €</span><span class="ui-chip ok">Pagada</span>
+  </div>
+</section>
+
+<!-- ═══ REDES 1:1 · 1080x1080. Titular corto arriba (sobre la escena) y el producto debajo, sangrando -->
+<section class="escena" data-pieza="redes-1x1" data-estilo="producto" data-ancho="1080" data-alto="1080" data-margen="80"
+         style="width:1080px;height:1080px;--radio-escena:20px">
+  <div class="marca" style="font-size:30px;left:88px;top:84px"><span class="logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 3h14l7 7v19H6z" fill="currentColor"/><path d="M20 3v7h7z" fill="currentColor" opacity=".45"/></svg></span><span data-marca="nombre">Pliego</span></div>
+  <h1 class="tit" style="position:absolute;left:88px;top:170px;font-size:84px">Cobra en 7&nbsp;días,<br>no en&nbsp;45.</h1>
+  <div class="ventana" data-maqueta style="font-size:21px;left:88px;top:500px;width:1100px;height:670px;--sangra-d:108px;--sangra-a:90px">
+    <aside class="ui-lateral">
+      <div class="ui-marca"><span class="ui-logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 3h14l7 7v19H6z" fill="currentColor"/><path d="M20 3v7h7z" fill="currentColor" opacity=".45"/></svg></span><span data-marca="nombre">Pliego</span></div>
+      <div class="ui-item"><svg class="i"><use href="#i-inicio"/></svg>Inicio</div>
+      <div class="ui-item activo"><svg class="i"><use href="#i-factura"/></svg>Facturas<span class="ui-num">24</span></div>
+    </aside>
+    <main class="ui-principal">
+      <div class="ui-barra"><div class="ui-buscador"><svg class="i"><use href="#i-buscar"/></svg>Buscar</div></div>
+      <div class="ui-lista atenuado" style="padding-top:.8em">
+        <div class="ui-fila"><span class="ui-avatar" style="--tono:var(--ok)">CL</span><div class="ui-quien"><b>Café Lumbre</b><small>F-2026-119</small></div><span class="ui-eur">480 €</span><span class="ui-chip">Enviada</span></div>
+        <div class="ui-fila"><span class="ui-avatar" style="--tono:var(--pendiente)">NA</span><div class="ui-quien"><b>Norte Arq.</b><small>F-2026-120</small></div><span class="ui-eur">2.900 €</span><span class="ui-chip pendiente">Vence</span></div>
+        <div class="ui-fila oculta"><span class="ui-avatar">EM</span><div class="ui-quien"><b>Estudio Marea</b><small>F-2026-118</small></div><span class="ui-eur">1.250 €</span><span class="ui-chip ok">Pagada</span></div>
+      </div>
+    </main>
+  </div>
+  <div class="flotante toast neutra" data-maqueta style="font-size:23px;left:470px;top:440px">
+    <span class="toast-ico"><svg class="i"><use href="#i-check"/></svg></span><div><b>Pago recibido</b><small>Estudio Marea · F-2026-118</small></div><span class="hora">ahora</span>
+  </div>
+  <div class="flotante destacada" data-maqueta data-sobre=".ui-fila.oculta" style="font-size:24px;left:56px;top:700px;width:790px">
+    <span class="ui-avatar">EM</span><div class="ui-quien"><b>Estudio Marea</b><small>Cobrada en 6 días</small></div><span class="ui-eur">1.250,00 €</span><span class="ui-chip ok">Pagada</span>
+  </div>
+</section>
+
+<!-- ═══ REDES 4:5 · 1080x1350 (post o diapositiva de carrusel). Titular arriba, modal sobre la ventana atenuada -->
+<section class="escena malla" data-pieza="redes-4x5" data-estilo="producto" data-ancho="1080" data-alto="1350" data-margen="80"
+         style="width:1080px;height:1350px;--radio-escena:20px">
+  <div class="marca" style="font-size:30px;left:88px;top:84px"><span class="logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 3h14l7 7v19H6z" fill="currentColor"/><path d="M20 3v7h7z" fill="currentColor" opacity=".45"/></svg></span><span data-marca="nombre">Pliego</span></div>
+  <h1 class="tit" style="position:absolute;left:88px;top:176px;font-size:88px">Recordatorios<br>que salen solos.</h1>
+  <p class="apoyo" style="position:absolute;left:88px;top:390px;font-size:34px;max-width:760px">A los 3 y a los 7&nbsp;días, sin que tengas que&nbsp;escribir.</p>
+  <div class="ventana" data-maqueta style="font-size:21px;left:88px;top:560px;width:1100px;height:900px;--sangra-d:108px;--sangra-a:110px">
+    <aside class="ui-lateral">
+      <div class="ui-marca"><span class="ui-logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 3h14l7 7v19H6z" fill="currentColor"/><path d="M20 3v7h7z" fill="currentColor" opacity=".45"/></svg></span><span data-marca="nombre">Pliego</span></div>
+      <div class="ui-item"><svg class="i"><use href="#i-inicio"/></svg>Inicio</div>
+      <div class="ui-item activo"><svg class="i"><use href="#i-factura"/></svg>Facturas<span class="ui-num">24</span></div>
+      <div class="ui-item"><svg class="i"><use href="#i-presupuesto"/></svg>Presupuestos</div>
+      <div class="ui-item"><svg class="i"><use href="#i-clientes"/></svg>Clientes</div>
+      <div class="ui-item"><svg class="i"><use href="#i-informes"/></svg>Informes</div>
+      <div class="ui-item"><svg class="i"><use href="#i-ajustes"/></svg>Ajustes</div>
+    </aside>
+    <main class="ui-principal atenuado">
+      <div class="ui-barra"><div class="ui-buscador"><svg class="i"><use href="#i-buscar"/></svg>Buscar<kbd>⌘K</kbd></div></div>
+      <div class="ui-lista" style="padding-top:.8em">
+        <div class="ui-fila"><span class="ui-avatar">EM</span><div class="ui-quien"><b>Estudio Marea</b><small>F-2026-118</small></div><span class="ui-eur">1.250 €</span><span class="ui-chip ok">Pagada</span></div>
+        <div class="ui-fila"><span class="ui-avatar" style="--tono:var(--ok)">CL</span><div class="ui-quien"><b>Café Lumbre</b><small>F-2026-119</small></div><span class="ui-eur">480 €</span><span class="ui-chip">Enviada</span></div>
+        <div class="ui-fila"><span class="ui-avatar" style="--tono:var(--pendiente)">NA</span><div class="ui-quien"><b>Norte Arq.</b><small>F-2026-120</small></div><span class="ui-eur">2.900 €</span><span class="ui-chip pendiente">Vence</span></div>
+        <div class="ui-fila"><span class="ui-avatar" style="--tono:var(--escena-3)">TO</span><div class="ui-quien"><b>Taller Olmo</b><small>F-2026-117</small></div><span class="ui-eur">640 €</span><span class="ui-chip ok">Pagada</span></div>
+      </div>
+    </main>
+  </div>
+  <div class="flotante modal" data-maqueta style="font-size:25px;left:400px;top:680px;width:790px;padding-right:calc(1.45em + 110px)">
+    <p class="modal-cab"><svg class="i"><use href="#i-campana"/></svg>Recordatorios<svg class="i cerrar"><use href="#i-cerrar"/></svg></p>
+    <div style="margin-top:.6em">
+      <div class="ui-opcion"><div>Día 3 · Recordatorio amable<small>Si aún no la han abierto</small></div><span class="ui-interruptor"></span></div>
+      <div class="ui-opcion"><div>Día 7 · Aviso de vencimiento<small>Con el enlace para pagar</small></div><span class="ui-interruptor"></span></div>
+      <div class="ui-opcion"><div>Avisarme a mí<small>Si sigue sin pagar</small></div><span class="ui-interruptor apagado"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ BANNER DE X · 1500x500. La foto de perfil tapa abajo a la izquierda (≈ 400x200) y el móvil recorta ~60 px
+     arriba y abajo: el texto va arriba a la izquierda y el producto a la derecha, sangrando -->
+<section class="escena invertida" data-pieza="banner-x" data-estilo="producto" data-ancho="1500" data-alto="500" data-margen="64" data-min-letra="22"
+         style="width:1500px;height:500px;--radio-escena:20px">
+  <div class="marca" style="font-size:28px;left:96px;top:100px"><span class="logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 3h14l7 7v19H6z" fill="currentColor"/><path d="M20 3v7h7z" fill="currentColor" opacity=".45"/></svg></span><span data-marca="nombre">Pliego</span></div>
+  <h1 class="tit" style="position:absolute;left:96px;top:164px;font-size:58px">Facturas claras,<br>cobros a tiempo.</h1>
+  <div class="ventana" data-maqueta style="font-size:17px;left:700px;top:84px;width:940px;height:520px;--sangra-d:140px;--sangra-a:104px">
+    <main class="ui-principal">
+      <div class="ui-barra"><div class="ui-buscador"><svg class="i"><use href="#i-buscar"/></svg>Buscar facturas<kbd>⌘K</kbd></div></div>
+      <div class="ui-lista atenuado" style="padding-top:.6em">
+        <div class="ui-fila"><span class="ui-avatar" style="--tono:var(--ok)">CL</span><div class="ui-quien"><b>Café Lumbre</b><small>F-2026-119</small></div><span class="ui-eur">480,00 €</span><span class="ui-chip">Enviada</span></div>
+        <div class="ui-fila oculta"><span class="ui-avatar">EM</span><div class="ui-quien"><b>Estudio Marea</b><small>F-2026-118</small></div><span class="ui-eur">1.250,00 €</span><span class="ui-chip ok">Pagada</span></div>
+        <div class="ui-fila"><span class="ui-avatar" style="--tono:var(--pendiente)">NA</span><div class="ui-quien"><b>Norte Arquitectos</b><small>F-2026-120</small></div><span class="ui-eur">2.900,00 €</span><span class="ui-chip pendiente">Vence en 3 días</span></div>
+      </div>
+    </main>
+  </div>
+  <div class="flotante destacada" data-maqueta data-sobre=".ui-fila.oculta" style="font-size:20px;left:656px;top:226px;width:640px">
+    <span class="ui-avatar">EM</span><div class="ui-quien"><b>Estudio Marea</b><small>Cobrada en 6 días</small></div><span class="ui-eur">1.250,00 €</span><span class="ui-chip ok">Pagada</span>
+  </div>
+</section>
+
+<!-- ═══ MINIATURA DE YOUTUBE · 1280x720. Se juzga a 320 px: 2-4 palabras enormes y una sola capa de producto.
+     La esquina inferior derecha (≈ 200x80) la tapa la duración -->
+<section class="escena" data-pieza="miniatura" data-estilo="producto" data-ancho="1280" data-alto="720" data-margen="64" data-min-letra="26"
+         style="width:1280px;height:720px;--radio-escena:24px">
+  <div style="position:absolute;left:76px;top:150px">
+    <p class="tit" style="font-size:124px;letter-spacing:-.05em">Cobra en</p>
+    <p class="tit" style="font-size:240px;letter-spacing:-.06em;line-height:.92;margin-left:-8px">7&nbsp;días</p>
+  </div>
+  <div class="ventana" data-maqueta style="font-size:22px;left:860px;top:96px;width:600px;height:720px;--sangra-d:180px;--sangra-a:96px">
+    <main class="ui-principal atenuado">
+      <div class="ui-barra"><div class="ui-buscador"><svg class="i"><use href="#i-buscar"/></svg>Buscar</div></div>
+      <div class="ui-lista" style="padding-top:.6em">
+        <div class="ui-fila" style="grid-template-columns:auto 1fr"><span class="ui-avatar" style="--tono:var(--ok)">CL</span><div class="ui-quien"><b>Café Lumbre</b><small>480 €</small></div></div>
+        <div class="ui-fila oculta" style="grid-template-columns:auto 1fr"><span class="ui-avatar">EM</span><div class="ui-quien"><b>Estudio Marea</b><small>1.250 €</small></div></div>
+        <div class="ui-fila" style="grid-template-columns:auto 1fr"><span class="ui-avatar" style="--tono:var(--pendiente)">NA</span><div class="ui-quien"><b>Norte Arq.</b><small>2.900 €</small></div></div>
+        <div class="ui-fila" style="grid-template-columns:auto 1fr"><span class="ui-avatar" style="--tono:var(--escena-3)">TO</span><div class="ui-quien"><b>Taller Olmo</b><small>640 €</small></div></div>
+        <div class="ui-fila" style="grid-template-columns:auto 1fr"><span class="ui-avatar" style="--tono:var(--vencida)">EB</span><div class="ui-quien"><b>Estudio Bruma</b><small>920 €</small></div></div>
+      </div>
+    </main>
+  </div>
+  <div class="flotante toast" data-maqueta style="font-size:34px;left:790px;top:318px">
+    <span class="toast-ico"><svg class="i"><use href="#i-check"/></svg></span><div><b>Pagada</b><small>1.250,00 € · en 6 días</small></div>
+  </div>
+</section>
+
+<!-- ═══ STORY · 1080x1920. Instagram tapa 250 px arriba y 340 abajo. Titular, producto y una acción -->
+<section class="escena malla" data-pieza="story" data-estilo="producto" data-ancho="1080" data-alto="1920" data-margen="96" data-min-letra="30"
+         style="width:1080px;height:1920px;--radio-escena:24px">
+  <div class="marca" style="font-size:38px;left:96px;top:290px"><span class="logo" data-marca="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 3h14l7 7v19H6z" fill="currentColor"/><path d="M20 3v7h7z" fill="currentColor" opacity=".45"/></svg></span><span data-marca="nombre">Pliego</span></div>
+  <h1 class="tit" style="position:absolute;left:96px;top:390px;font-size:120px">Cobra en<br>7&nbsp;días,<br>no en&nbsp;45.</h1>
+  <div class="ventana" data-maqueta style="font-size:24px;left:96px;top:880px;width:1100px;height:540px;--sangra-d:116px">
+    <main class="ui-principal">
+      <div class="ui-barra"><div class="ui-buscador" style="max-width:7.5em"><svg class="i"><use href="#i-buscar"/></svg>Buscar</div></div>
+      <div class="ui-lista atenuado" style="padding-top:.6em">
+        <div class="ui-fila oculta"><span class="ui-avatar">EM</span><div class="ui-quien"><b>Estudio Marea</b><small>F-2026-118</small></div><span class="ui-eur">1.250 €</span><span class="ui-chip ok">Pagada</span></div>
+        <div class="ui-fila"><span class="ui-avatar" style="--tono:var(--ok)">CL</span><div class="ui-quien"><b>Café Lumbre</b><small>F-2026-119</small></div><span class="ui-eur">480 €</span><span class="ui-chip">Enviada</span></div>
+        <div class="ui-fila"><span class="ui-avatar" style="--tono:var(--pendiente)">NA</span><div class="ui-quien"><b>Norte Arq.</b><small>F-2026-120</small></div><span class="ui-eur">2.900 €</span><span class="ui-chip pendiente">Vence</span></div>
+      </div>
+    </main>
+  </div>
+  <div class="flotante toast neutra" data-maqueta style="font-size:30px;left:400px;top:812px">
+    <span class="toast-ico"><svg class="i"><use href="#i-check"/></svg></span><div><b>Pago recibido</b><small>Estudio Marea · ahora</small></div>
+  </div>
+  <div class="flotante destacada" data-maqueta data-sobre=".ui-fila.oculta" style="font-size:30px;left:60px;top:1020px;width:930px">
+    <span class="ui-avatar">EM</span><div class="ui-quien"><b>Estudio Marea</b><small>En 6 días</small></div><span class="ui-eur">1.250,00 €</span><span class="ui-chip ok">Pagada</span>
+  </div>
+  <div style="position:absolute;left:96px;right:96px;top:1470px;display:flex;align-items:center;justify-content:space-between">
+    <span class="boton" style="font-size:40px">Prueba gratis</span>
+    <span class="url" style="font-size:34px" data-marca="web_texto">pliego.app</span>
+  </div>
+</section>
+
+</body>
+</html>
