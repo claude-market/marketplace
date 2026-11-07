@@ -1,0 +1,33 @@
+{
+  "fail_closed": false,
+  "protected_branches": ["main", "master", "production"],
+  "rules": {
+    "destructive_shell": {
+      "enabled": true,
+      "mode": "block",
+      "allow_patterns": [],
+      "extra_patterns": []
+    },
+    "secrets_in_content": {
+      "enabled": true,
+      "mode": "block",
+      "ignore_paths": ["*.md", "*.example", "*.sample", "test*"],
+      "extra_patterns": [],
+      "patterns": []
+    },
+    "protected_paths": {
+      "enabled": true,
+      "mode": "block",
+      "paths": [".env", ".env.*", "**/*.pem", "**/*.key", "**/id_rsa*", ".git/**", "**/.git/**", "**/secrets/**", ".claude/guardrails.json", ".claude/guardrails.*.json"],
+      "allow_paths": [".env.example", ".env.sample", ".env.template"],
+      "allow_paths_override_scope": false,
+      "scope": { "enabled": false, "allowed_paths": [] }
+    },
+    "scope_shell": {
+      "enabled": false,
+      "mode": "block",
+      "blocked_commands": ["npm publish", "terraform apply", "kubectl delete"]
+    }
+  },
+  "audit": { "enabled": true, "path": ".claude/guardrails-audit.jsonl" }
+}

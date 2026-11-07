@@ -1,0 +1,25 @@
+{
+  "name": "agent-guardrails",
+  "version": "0.2.0",
+  "description": "Configurable guardrails and an audit trail for coding agents: blocks destructive shell commands, secret leaks and edits to protected paths, and reports what the agent did.",
+  "author": {
+    "name": "Richard Harding (Agent Guardrails)"
+  },
+  "homepage": "https://github.com/RichFloForge/agent-guardrails",
+  "repository": "https://github.com/RichFloForge/agent-guardrails",
+  "license": "MIT",
+  "keywords": [
+    "guardrails",
+    "safety",
+    "audit",
+    "hooks",
+    "security",
+    "governance",
+    "secrets"
+  ],
+  "commands": [
+    "./commands/init.md",
+    "./commands/report.md"
+  ],
+  "hooks": "./hooks/hooks.json"
+}

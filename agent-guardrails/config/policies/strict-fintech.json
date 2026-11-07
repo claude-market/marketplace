@@ -1,0 +1,21 @@
+{
+  "fail_closed": true,
+  "protected_branches": ["main", "master", "production", "release", "staging", "develop"],
+  "rules": {
+    "destructive_shell": { "enabled": true, "mode": "block" },
+    "secrets_in_content": { "enabled": true, "mode": "block", "ignore_paths": ["*.md", "*.example"] },
+    "protected_paths": {
+      "enabled": true,
+      "mode": "block",
+      "paths": [".env", ".env.*", "**/*.pem", "**/*.key", "**/*.p12", "**/*.pfx", "**/id_rsa*", ".git/**", "**/.git/**", "**/secrets/**", ".claude/guardrails.json", ".claude/guardrails.*.json", "**/credentials*", ".github/workflows/**", "**/migrations/**", "terraform/**"],
+      "allow_paths": [".env.example"],
+      "scope": { "enabled": true, "allowed_paths": ["src/**", "tests/**", "docs/**", "README.md"] }
+    },
+    "scope_shell": {
+      "enabled": true,
+      "mode": "block",
+      "blocked_commands": ["npm publish", "pip install", "terraform apply", "terraform destroy", "kubectl delete", "kubectl apply", "docker push", "aws s3 rm", "gh release", "psql", "mysql"]
+    }
+  },
+  "audit": { "enabled": true, "path": ".claude/guardrails-audit.jsonl" }
+}
