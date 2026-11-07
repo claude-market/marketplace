@@ -1,6 +1,6 @@
 {
   "name": "claude-market",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Hand-curated open source repository for Claude Code tools, agents and skills",
   "owner": {
     "name": "Claude Market",
@@ -14,7 +14,8 @@
       "version": "0.2.0",
       "description": "Configurable guardrails and an audit trail for coding agents: blocks destructive shell commands, secret leaks and edits to protected paths, and reports what the agent did.",
       "author": {
-        "name": "Richard Harding (Agent Guardrails)"
+        "name": "Agent Guardrails",
+        "url": "https://agentguardrails.app"
       },
       "license": "MIT",
       "homepage": "https://github.com/RichFloForge/agent-guardrails",
