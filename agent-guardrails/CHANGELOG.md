@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.1
+
+- The audit log (`audit.path`) and the active policy files are now always protected from Edit/Write, even when a policy replaces the `protected_paths.paths` list. `allow_paths` can still exempt them explicitly.
+- `scope_shell.blocked_commands` match on word boundaries: `ssh` blocks `ssh host` but no longer blocks `ssh-keygen` or `sshfs`.
+- `/agent-guardrails:report` reads the log location from `audit.path` in the merged config instead of assuming the default path; `--log` still overrides.
+
 ## 0.2.0
 
 - `secrets_in_content.patterns`: per-pattern `{name, regex, mode}` objects (`block` or `warn`); string patterns and built-ins keep the rule mode.

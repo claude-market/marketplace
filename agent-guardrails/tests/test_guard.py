@@ -339,9 +339,9 @@ class TestV020(Base):
     def test_versions(self):
         from helpers import ROOT
         with open(os.path.join(ROOT, ".claude-plugin", "plugin.json")) as fh:
-            self.assertEqual(json.load(fh)["version"], "0.2.0")
+            self.assertEqual(json.load(fh)["version"], "0.2.1")
         with open(os.path.join(ROOT, ".claude-plugin", "marketplace.json")) as fh:
-            self.assertEqual(json.load(fh)["plugins"][0]["version"], "0.2.0")
+            self.assertEqual(json.load(fh)["plugins"][0]["version"], "0.2.1")
 
 
 class TestManifests(unittest.TestCase):
@@ -369,3 +369,36 @@ class TestManifests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestAlwaysProtected(Base):
+    REPLACED = {"rules": {"protected_paths": {"paths": ["secrets/**"]}}}
+
+    def test_audit_log_and_policy_protected_even_when_paths_replaced(self):
+        self.assertBlocked(self.pre_edit(".claude/guardrails-audit.jsonl", "x", self.REPLACED), "protected_paths")
+        self.assertBlocked(self.pre_edit(".claude/guardrails.json", "{}", self.REPLACED), "protected_paths")
+        self.assertAllowed(self.pre_edit("src/a.py", "x", self.REPLACED))
+
+    def test_custom_audit_path_protected(self):
+        cfg = {"audit": {"path": "logs/agent-audit.jsonl"}, "rules": {"protected_paths": {"paths": ["secrets/**"]}}}
+        self.assertBlocked(self.pre_edit("logs/agent-audit.jsonl", "x", cfg), "protected_paths")
+        self.assertAllowed(self.pre_edit(".claude/guardrails-audit.jsonl", "x", cfg))
+
+    def test_allow_paths_can_exempt(self):
+        cfg = {"rules": {"protected_paths": {"paths": ["secrets/**"], "allow_paths": [".claude/guardrails-audit.jsonl"]}}}
+        self.assertAllowed(self.pre_edit(".claude/guardrails-audit.jsonl", "x", cfg))
+
+
+class TestScopeShellBoundaries(Base):
+    CFG = {"rules": {"scope_shell": {"enabled": True, "blocked_commands": ["ssh", "psql", "git push"]}}}
+
+    def test_whole_words_only(self):
+        self.assertAllowed(self.pre_bash("ssh-keygen -t ed25519 -f key", self.CFG))
+        self.assertAllowed(self.pre_bash("sshfs host:/data mnt", self.CFG))
+        self.assertAllowed(self.pre_bash("mypsql --help", self.CFG))
+        self.assertAllowed(self.pre_bash("git pushover", self.CFG))
+
+    def test_still_blocks_real_uses(self):
+        self.assertBlocked(self.pre_bash("ssh deploy@host 'ls'", self.CFG), "scope_shell")
+        self.assertBlocked(self.pre_bash("docker exec db psql -U app", self.CFG), "scope_shell")
+        self.assertBlocked(self.pre_bash("git   push origin main", self.CFG), "scope_shell")

@@ -35,6 +35,12 @@ Afterwards, `/agent-guardrails:report` summarises the session (excerpt):
 - 2026-11-07T07:13:59Z `secrets_in_content`: src/config.py (33 chars)
 ```
 
+### What's new in 0.2.1
+
+- The audit log and the active policy files are always protected from Edit/Write, whatever your `paths` list says (`allow_paths` can still exempt them).
+- `scope_shell` entries match whole words: `ssh` no longer matches `ssh-keygen`.
+- The report command follows `audit.path`, so a relocated log is found without `--log`.
+
 ### What's new in 0.2.0
 
 - `secrets_in_content.patterns`: per-pattern objects `{name, regex, mode}` with `block` or `warn` mode (built-in patterns keep the rule mode).

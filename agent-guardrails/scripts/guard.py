@@ -351,9 +351,15 @@ def check_destructive(cfg, command):
 
 
 def check_scope_shell(cfg, command):
+    """Blocked commands match on word boundaries: "ssh" matches "ssh host" but not "ssh-keygen" or "sshfs"."""
     rc = rule_cfg(cfg, "scope_shell")
     norm = " ".join(command.lower().split())
-    return [b for b in rc.get("blocked_commands") or [] if " ".join(b.lower().split()) in norm]
+    out = []
+    for b in rc.get("blocked_commands") or []:
+        nb = " ".join(str(b).lower().split())
+        if nb and re.search(r"(?<![\w.-])" + re.escape(nb) + r"(?![\w-])", norm):
+            out.append(b)
+    return out
 
 # ---------------------------------------------------------------- rules: edit
 
@@ -405,6 +411,25 @@ def scan_secrets(cfg, text):
     return names
 
 
+def always_protected(cfg, payload):
+    """Files the agent may never edit regardless of the policy's `paths` list: the active policy and the audit log."""
+    pats = [".claude/guardrails.json", ".claude/guardrails.*.json"]
+    a = cfg.get("audit") or {}
+    p = a.get("path") or ".claude/guardrails-audit.jsonl"
+    if os.path.isabs(p):
+        try:
+            r = os.path.relpath(p, project_dir(payload))
+        except ValueError:
+            r = ".."
+        p = None if r.startswith("..") else r
+    if p:
+        p = os.path.normpath(p).replace(os.sep, "/")
+        if p.startswith("./"):
+            p = p[2:]
+        pats.append(p)
+    return pats
+
+
 def check_paths(cfg, payload, rel):
     rc = rule_cfg(cfg, "protected_paths")
     out = []
@@ -418,6 +443,10 @@ def check_paths(cfg, payload, rel):
         hit = None  # opt-in: scope.allowed_paths overrides protected globs
     if hit:
         out.append(("protected_paths", "'%s' matches protected path '%s'" % (rel, hit)))
+    else:
+        always = next((p for p in always_protected(cfg, payload) if match_glob(p, rel)), None)
+        if always:
+            out.append(("protected_paths", "'%s' is a guardrails file (%s) and is always protected; use allow_paths to permit it" % (rel, always)))
     if scope.get("enabled") and scope.get("allowed_paths") and not match_any(scope["allowed_paths"], rel):
         out.append(("protected_paths", "'%s' is outside the allowed scope %s" % (rel, scope["allowed_paths"])))
     return out

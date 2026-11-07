@@ -8,8 +8,15 @@ import sys
 
 
 def default_log():
-    base = os.environ.get("CLAUDE_PROJECT_DIR") or os.getcwd()
-    return os.path.join(base, ".claude", "guardrails-audit.jsonl")
+    """The log the hooks write: `audit.path` from the merged config, relative to the project directory."""
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    try:
+        import guard  # same scripts directory
+        cfg, _warnings = guard.load_config()
+        return guard.audit_path(cfg, None)
+    except Exception:
+        base = os.environ.get("CLAUDE_PROJECT_DIR") or os.getcwd()
+        return os.path.join(base, ".claude", "guardrails-audit.jsonl")
 
 
 def load(path, session=None):
@@ -99,7 +106,7 @@ def render(s):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--log", help="path to audit log (default: $CLAUDE_PROJECT_DIR/.claude/guardrails-audit.jsonl)")
+    ap.add_argument("--log", help="path to audit log (default: audit.path from .claude/guardrails.json, else .claude/guardrails-audit.jsonl in the project)")
     ap.add_argument("--json", action="store_true", help="machine-readable output")
     ap.add_argument("--session", help="only this session id")
     ap.add_argument("--top", type=int, default=10, help="rows in top lists (default 10)")

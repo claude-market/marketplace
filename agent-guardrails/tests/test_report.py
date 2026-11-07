@@ -76,3 +76,20 @@ class TestInit(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestReportFollowsConfig(unittest.TestCase):
+    def setUp(self):
+        self.proj = tmpdir()
+
+    def tearDown(self):
+        rmdir(self.proj)
+
+    def test_default_log_uses_audit_path(self):
+        cfg = {"audit": {"path": "logs/agent-audit.jsonl"}}
+        run_guard("post", {"session_id": "s9", "tool_name": "Bash", "tool_input": {"command": "ls"}}, self.proj, cfg)
+        self.assertTrue(os.path.isfile(os.path.join(self.proj, "logs", "agent-audit.jsonl")))
+        self.assertFalse(os.path.exists(os.path.join(self.proj, ".claude", "guardrails-audit.jsonl")))
+        r = run(REPORT, "--json", project=self.proj)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertEqual(json.loads(r.stdout)["by_tool"], {"Bash": 1})
