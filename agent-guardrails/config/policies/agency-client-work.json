@@ -1,0 +1,21 @@
+{
+  "fail_closed": false,
+  "protected_branches": ["main", "master", "production", "staging"],
+  "rules": {
+    "destructive_shell": { "enabled": true, "mode": "block" },
+    "secrets_in_content": { "enabled": true, "mode": "block", "ignore_paths": ["*.md", "*.example", "test*"] },
+    "protected_paths": {
+      "enabled": true,
+      "mode": "block",
+      "paths": [".env", ".env.*", "**/*.pem", "**/*.key", "**/id_rsa*", ".git/**", "**/.git/**", "**/secrets/**", ".claude/guardrails.json", ".claude/guardrails.*.json", ".claude/settings.json", ".claude/settings.local.json", "**/wp-config.php", "**/vendor/**", "**/node_modules/**"],
+      "allow_paths": [".env.example"],
+      "scope": { "enabled": false, "allowed_paths": [] }
+    },
+    "scope_shell": {
+      "enabled": true,
+      "mode": "warn",
+      "blocked_commands": ["npm publish", "terraform apply", "kubectl delete", "git push", "rsync", "scp", "ssh"]
+    }
+  },
+  "audit": { "enabled": true, "path": ".claude/guardrails-audit.jsonl" }
+}

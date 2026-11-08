@@ -1,0 +1,48 @@
+// Reference only: agent-guardrails reads .claude/guardrails.json (plain JSON, no comments).
+// Your file is merged over config/default.json: objects merge key by key, lists replace.
+{
+  // true: if hook input is unreadable or the engine errors, BLOCK pre-tool calls.
+  // false (default): allow and log a warning.
+  "fail_closed": false,
+
+  // Branches protected from force-push, deletion and `git branch -D`.
+  "protected_branches": ["main", "master", "production"],  // exact names or fnmatch globs, e.g. "release/*"
+
+  "rules": {
+    "destructive_shell": {
+      "enabled": true,
+      "mode": "block",            // "block" or "warn"
+      "allow_patterns": [],       // regexes; a command matching any is exempt, e.g. "^rm -rf \\./build$"
+      "extra_patterns": []        // additional regexes to treat as destructive
+    },
+    "secrets_in_content": {
+      "enabled": true,
+      "mode": "block",
+      "ignore_paths": ["*.md", "*.example", "*.sample", "test*"],  // globs; no slash = any path component
+      "extra_patterns": [],       // additional secret regexes (use the rule mode)
+      "patterns": [],             // e.g. [{"name": "nhs-number", "regex": "\\b\\d{3} \\d{3} \\d{4}\\b", "mode": "warn"}]; mode block|warn per pattern
+      "inline_allow_marker": false  // opt-in: skip lines containing "guardrails:allow". Off by default because the agent writes those lines and could add the marker itself.
+    },
+    "protected_paths": {
+      "enabled": true,
+      "mode": "block",
+      "paths": [".env", ".env.*", "**/*.pem", "**/*.key", "**/id_rsa*", ".git/**", "**/.git/**", "**/secrets/**", ".claude/guardrails.json", ".claude/guardrails.*.json", ".claude/settings.json", ".claude/settings.local.json"],  // .claude/* entries: self-protection, incl. the settings files that could turn hooks off (listing paths replaces the default list, so keep them)
+      "allow_paths": [".env.example", ".env.sample", ".env.template"],  // exceptions to "paths"; add ".claude/guardrails.json" to deliberately let the agent edit its policy
+      "allow_paths_override_scope": false,  // true: files matching scope.allowed_paths are exempt from "paths" (default false)
+      "scope": {
+        "enabled": false,         // true: ONLY files matching allowed_paths may be edited
+        "allowed_paths": []       // e.g. ["src/**", "tests/**"]
+      }
+    },
+    "scope_shell": {
+      "enabled": false,           // off by default; list commands your team bans
+      "mode": "block",
+      "blocked_commands": ["npm publish", "terraform apply", "kubectl delete"]  // case-insensitive substrings
+    }
+  },
+
+  "audit": {
+    "enabled": true,
+    "path": ".claude/guardrails-audit.jsonl"   // relative to the project directory
+  }
+}

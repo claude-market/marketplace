@@ -1,0 +1,23 @@
+{
+  "name": "agent-guardrails-marketplace",
+  "description": "Open-source guardrails and audit tooling for coding agents",
+  "owner": {
+    "name": "Agent Guardrails",
+    "url": "https://agentguardrails.app"
+  },
+  "plugins": [
+    {
+      "name": "agent-guardrails",
+      "source": "./",
+      "description": "Configurable guardrails (hooks) and an audit trail with a report command for coding agents.",
+      "version": "0.2.2",
+      "license": "MIT",
+      "keywords": [
+        "guardrails",
+        "safety",
+        "audit",
+        "hooks"
+      ]
+    }
+  ]
+}
