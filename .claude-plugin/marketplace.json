@@ -11,7 +11,7 @@
     {
       "name": "agent-guardrails",
       "source": "./agent-guardrails",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "description": "Configurable guardrails and an audit trail for coding agents: blocks destructive shell commands, secret leaks and edits to protected paths, and reports what the agent did.",
       "author": {
         "name": "Agent Guardrails",
