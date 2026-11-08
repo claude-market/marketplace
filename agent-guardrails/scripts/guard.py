@@ -393,9 +393,10 @@ def scan_secrets_modes(cfg, text):
             pats.append((name or "custom", re.compile(regex), mode or default_mode))
         except re.error:
             continue
+    marker_ok = bool(rc.get("inline_allow_marker", False))
     found = []
     for line in text.splitlines():
-        if ALLOW_MARKER in line:
+        if marker_ok and ALLOW_MARKER in line:
             continue
         for name, rx, mode in pats:
             if rx.search(line) and (name, mode) not in found:
@@ -446,18 +447,55 @@ def check_paths(cfg, payload, rel):
     else:
         always = next((p for p in always_protected(cfg, payload) if match_glob(p, rel)), None)
         if always:
-            out.append(("protected_paths", "'%s' is a guardrails file (%s) and is always protected; use allow_paths to permit it" % (rel, always)))
+            out.append(("protected_paths", "'%s' is a guardrails file (%s) and is always protected" % (rel, always)))
     if scope.get("enabled") and scope.get("allowed_paths") and not match_any(scope["allowed_paths"], rel):
         out.append(("protected_paths", "'%s' is outside the allowed scope %s" % (rel, scope["allowed_paths"])))
     return out
 
 # ---------------------------------------------------------------- decisions
 
-HINT = "To allow: edit .claude/guardrails.json (%s)."
+HINT = ("Policy: .claude/guardrails.json (%s). "
+        "Agent: do not change the policy; take a safer approach or ask the user.")
+HINT_DESTRUCTIVE = ('a human can add a regex to rules.destructive_shell.allow_patterns, '
+                    'or set rules.destructive_shell.mode to "warn"')
+HINT_SCOPE = "a human can remove it from rules.scope_shell.blocked_commands"
+HINT_PATHS = ("a human can add this file to rules.protected_paths.allow_paths, "
+              "or adjust rules.protected_paths.paths / scope.allowed_paths")
+HINT_SECRETS = "a human can add the path to rules.secrets_in_content.ignore_paths"
+HINT_SECRETS_MARKER = HINT_SECRETS + ", or mark the line with '%s'" % ALLOW_MARKER
 
 
 def reason_text(rule, detail, hint):
     return "%s %s: %s %s" % (PREFIX, rule, detail, HINT % hint)
+
+
+_SHELL_RM_CLAUDE = re.compile(r"\b(?:rm|rmdir|mv)\b[^|;&\n]*(?<![\w.-])\.claude/?(?=[\s;&|'\"]|$)")
+
+
+def guardrails_needles(cfg, payload):
+    """(path, regex) pairs for the guardrails files a shell command must not name.
+    `protected_paths.allow_paths` exempts a file here exactly as it does for Edit/Write."""
+    rc = rule_cfg(cfg, "protected_paths")
+    allow = rc.get("allow_paths") or []
+    out = []
+    for p in always_protected(cfg, payload):
+        if p in allow or (not any(c in p for c in "*?[") and match_any(allow, p)):
+            continue
+        rx = re.escape(os.path.basename(p)).replace(r"\*", r"[\w.-]+")
+        out.append((p, re.compile(r"(?<![\w.-])" + rx + r"(?![\w-])")))
+    return out
+
+
+def check_shell_guardrails(cfg, payload, command):
+    """A shell command that names the policy or the audit log is refused, whether it reads or
+    writes: the agent can read the policy with the Read tool, and the Edit/Write protection of
+    these files would mean little if `echo > .claude/guardrails.json` went through."""
+    for p, rx in guardrails_needles(cfg, payload):
+        if rx.search(command):
+            return ["command refers to guardrails file '%s'" % p]
+    if _SHELL_RM_CLAUDE.search(command):
+        return ["command removes or moves the .claude directory (policy and audit log)"]
+    return []
 
 
 def evaluate(cfg, payload, event):
@@ -472,13 +510,18 @@ def evaluate(cfg, payload, event):
             for d in check_destructive(cfg, command):
                 findings.append(("destructive_shell", rc.get("mode", "block"), reason_text(
                     "destructive_shell", "blocked - " + d + ".",
-                    "add a regex to rules.destructive_shell.allow_patterns, or set rules.destructive_shell.mode to \"warn\"")))
+                    HINT_DESTRUCTIVE)))
         rc = rule_cfg(cfg, "scope_shell")
         if rc.get("enabled", False):
             for b in check_scope_shell(cfg, command):
                 findings.append(("scope_shell", rc.get("mode", "block"), reason_text(
                     "scope_shell", "blocked - command contains banned text '%s'." % b,
-                    "remove it from rules.scope_shell.blocked_commands")))
+                    HINT_SCOPE)))
+        rc = rule_cfg(cfg, "protected_paths")
+        if rc.get("enabled", True):
+            for d in check_shell_guardrails(cfg, payload, command):
+                findings.append(("protected_paths", rc.get("mode", "block"), reason_text(
+                    "protected_paths", "blocked - " + d + ".", HINT_PATHS)))
     elif event == "pre-edit":
         fp = ti.get("file_path") or ti.get("path")
         rel = rel_path(str(fp), payload) if fp else None
@@ -487,7 +530,7 @@ def evaluate(cfg, payload, event):
             for rule, detail in check_paths(cfg, payload, rel):
                 findings.append((rule, rc.get("mode", "block"), reason_text(
                     rule, "blocked - " + detail + ".",
-                    "to permit this single file add it to rules.protected_paths.allow_paths; otherwise adjust rules.protected_paths.paths / scope.allowed_paths")))
+                    HINT_PATHS)))
         rc = rule_cfg(cfg, "secrets_in_content")
         if rc.get("enabled", True) and not (rel and match_any(rc.get("ignore_paths"), rel)):
             hits = scan_secrets_modes(cfg, new_contents(ti))
@@ -500,7 +543,7 @@ def evaluate(cfg, payload, event):
                     findings.append(("secrets_in_content", mode, reason_text(
                         "secrets_in_content", "blocked - content looks like a secret (%s) in '%s'; value not shown." % (
                             ", ".join(names), rel or "?"),
-                        "append '# guardrails:allow' to the line, or add the path to rules.secrets_in_content.ignore_paths")))
+                        HINT_SECRETS_MARKER if rc.get("inline_allow_marker") else HINT_SECRETS)))
     return findings
 
 
@@ -560,7 +603,7 @@ def run(event, raw):
         msg = "empty or non-JSON hook input"
         write_audit(cfg, stub, make_record(stub, "warning", "warn", "input", msg))
         if is_pre and cfg.get("fail_closed"):
-            return deny("%s fail_closed: blocked - %s. To allow: set fail_closed to false in .claude/guardrails.json." % (PREFIX, msg))
+            return deny("%s fail_closed: blocked - %s. %s" % (PREFIX, msg, HINT % "a human can set fail_closed to false"))
         sys.stderr.write("%s warning: %s; allowing (fail open)\n" % (PREFIX, msg))
         return 0
 

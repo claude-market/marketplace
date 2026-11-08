@@ -7,7 +7,7 @@
     "protected_paths": {
       "enabled": true,
       "mode": "block",
-      "paths": [".env", ".env.*", "**/*.pem", "**/*.key", "**/*.p12", "**/*.pfx", "**/id_rsa*", ".git/**", "**/.git/**", "**/secrets/**", ".claude/guardrails.json", ".claude/guardrails.*.json", "**/credentials*", ".github/workflows/**", "**/migrations/**", "terraform/**"],
+      "paths": [".env", ".env.*", "**/*.pem", "**/*.key", "**/*.p12", "**/*.pfx", "**/id_rsa*", ".git/**", "**/.git/**", "**/secrets/**", ".claude/guardrails.json", ".claude/guardrails.*.json", ".claude/settings.json", ".claude/settings.local.json", "**/credentials*", ".github/workflows/**", "**/migrations/**", "terraform/**"],
       "allow_paths": [".env.example"],
       "scope": { "enabled": true, "allowed_paths": ["src/**", "tests/**", "docs/**", "README.md"] }
     },

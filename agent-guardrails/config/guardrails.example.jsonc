@@ -20,13 +20,13 @@
       "mode": "block",
       "ignore_paths": ["*.md", "*.example", "*.sample", "test*"],  // globs; no slash = any path component
       "extra_patterns": [],       // additional secret regexes (use the rule mode)
-      "patterns": []              // e.g. [{"name": "nhs-number", "regex": "\\b\\d{3} \\d{3} \\d{4}\\b", "mode": "warn"}]; mode block|warn per pattern
-      // Per-line escape: add the text "guardrails:allow" (e.g. "# guardrails:allow") to the line.
+      "patterns": [],             // e.g. [{"name": "nhs-number", "regex": "\\b\\d{3} \\d{3} \\d{4}\\b", "mode": "warn"}]; mode block|warn per pattern
+      "inline_allow_marker": false  // opt-in: skip lines containing "guardrails:allow". Off by default because the agent writes those lines and could add the marker itself.
     },
     "protected_paths": {
       "enabled": true,
       "mode": "block",
-      "paths": [".env", ".env.*", "**/*.pem", "**/*.key", "**/id_rsa*", ".git/**", "**/.git/**", "**/secrets/**", ".claude/guardrails.json", ".claude/guardrails.*.json"],  // last two: self-protection (listing paths replaces the default list, so keep them)
+      "paths": [".env", ".env.*", "**/*.pem", "**/*.key", "**/id_rsa*", ".git/**", "**/.git/**", "**/secrets/**", ".claude/guardrails.json", ".claude/guardrails.*.json", ".claude/settings.json", ".claude/settings.local.json"],  // .claude/* entries: self-protection, incl. the settings files that could turn hooks off (listing paths replaces the default list, so keep them)
       "allow_paths": [".env.example", ".env.sample", ".env.template"],  // exceptions to "paths"; add ".claude/guardrails.json" to deliberately let the agent edit its policy
       "allow_paths_override_scope": false,  // true: files matching scope.allowed_paths are exempt from "paths" (default false)
       "scope": {

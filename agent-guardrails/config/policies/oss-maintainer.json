@@ -7,7 +7,7 @@
     "protected_paths": {
       "enabled": true,
       "mode": "block",
-      "paths": [".env", ".env.*", "**/*.pem", "**/*.key", "**/id_rsa*", ".git/**", "**/.git/**", "**/secrets/**", ".claude/guardrails.json", ".claude/guardrails.*.json", "LICENSE"],
+      "paths": [".env", ".env.*", "**/*.pem", "**/*.key", "**/id_rsa*", ".git/**", "**/.git/**", "**/secrets/**", ".claude/guardrails.json", ".claude/guardrails.*.json", ".claude/settings.json", ".claude/settings.local.json", "LICENSE"],
       "allow_paths": [".env.example"],
       "scope": { "enabled": false, "allowed_paths": [] }
     },

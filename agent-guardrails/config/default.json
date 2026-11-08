@@ -13,12 +13,13 @@
       "mode": "block",
       "ignore_paths": ["*.md", "*.example", "*.sample", "test*"],
       "extra_patterns": [],
-      "patterns": []
+      "patterns": [],
+      "inline_allow_marker": false
     },
     "protected_paths": {
       "enabled": true,
       "mode": "block",
-      "paths": [".env", ".env.*", "**/*.pem", "**/*.key", "**/id_rsa*", ".git/**", "**/.git/**", "**/secrets/**", ".claude/guardrails.json", ".claude/guardrails.*.json"],
+      "paths": [".env", ".env.*", "**/*.pem", "**/*.key", "**/id_rsa*", ".git/**", "**/.git/**", "**/secrets/**", ".claude/guardrails.json", ".claude/guardrails.*.json", ".claude/settings.json", ".claude/settings.local.json"],
       "allow_paths": [".env.example", ".env.sample", ".env.template"],
       "allow_paths_override_scope": false,
       "scope": { "enabled": false, "allowed_paths": [] }

@@ -148,10 +148,18 @@ class TestSecrets(Base):
         self.assertAllowed(self.pre_edit("fixtures/a.txt", AWS, cfg))
         self.assertBlocked(self.pre_edit("src/a.txt", AWS), "secrets_in_content")
 
-    def test_inline_allow_escape(self):
-        self.assertAllowed(self.pre_edit("src/a.py", "k = '%s'  # guardrails:allow\n" % AWS))
-        r = self.pre_edit("src/a.py", "ok = 1  # guardrails:allow\nk = '%s'\n" % AWS)
+    def test_inline_allow_marker_off_by_default(self):
+        # The agent writes the line, so it could add the marker itself: off unless a human opts in.
+        r = self.pre_edit("src/a.py", "k = '%s'  # guardrails:allow\n" % AWS)
         self.assertBlocked(r, "secrets_in_content")
+        self.assertNotIn("guardrails:allow", r.err)
+
+    def test_inline_allow_marker_opt_in(self):
+        cfg = {"rules": {"secrets_in_content": {"inline_allow_marker": True}}}
+        self.assertAllowed(self.pre_edit("src/a.py", "k = '%s'  # guardrails:allow\n" % AWS, cfg))
+        r = self.pre_edit("src/a.py", "ok = 1  # guardrails:allow\nk = '%s'\n" % AWS, cfg)
+        self.assertBlocked(r, "secrets_in_content")
+        self.assertIn("guardrails:allow", r.err)
 
     def test_extra_patterns(self):
         cfg = {"rules": {"secrets_in_content": {"extra_patterns": [r"CORP-[0-9]{6}"]}}}
@@ -315,7 +323,8 @@ class TestV020(Base):
             else:
                 self.assertBlocked(r, "protected_paths")
                 self.assertIn("allow_paths", r.err)
-        self.assertAllowed(self.pre_edit(".claude/settings.json", "{}", None))
+        self.assertBlocked(self.pre_edit(".claude/settings.json", "{}", None), "protected_paths")  # 0.2.2: settings can turn hooks off
+        self.assertAllowed(self.pre_edit(".claude/notes.md", "x", None))
 
     def test_self_protection_allow_deliberately(self):
         cfg = {"rules": {"protected_paths": {"allow_paths": [".claude/guardrails.json"]}}}
@@ -339,9 +348,9 @@ class TestV020(Base):
     def test_versions(self):
         from helpers import ROOT
         with open(os.path.join(ROOT, ".claude-plugin", "plugin.json")) as fh:
-            self.assertEqual(json.load(fh)["version"], "0.2.1")
+            self.assertEqual(json.load(fh)["version"], "0.2.2")
         with open(os.path.join(ROOT, ".claude-plugin", "marketplace.json")) as fh:
-            self.assertEqual(json.load(fh)["plugins"][0]["version"], "0.2.1")
+            self.assertEqual(json.load(fh)["plugins"][0]["version"], "0.2.2")
 
 
 class TestManifests(unittest.TestCase):
@@ -402,3 +411,75 @@ class TestScopeShellBoundaries(Base):
         self.assertBlocked(self.pre_bash("ssh deploy@host 'ls'", self.CFG), "scope_shell")
         self.assertBlocked(self.pre_bash("docker exec db psql -U app", self.CFG), "scope_shell")
         self.assertBlocked(self.pre_bash("git   push origin main", self.CFG), "scope_shell")
+
+
+class TestShellGuardrails(Base):
+    """Shell commands that name the policy or audit log are refused (Edit/Write protection alone would be hollow)."""
+
+    def test_shell_writes_to_policy_and_audit_blocked(self):
+        for cmd in ("echo '{}' > .claude/guardrails.json",
+                    "sed -i 's/block/warn/' .claude/guardrails.json",
+                    "cat .claude/guardrails.json",
+                    "tail -n 5 .claude/guardrails-audit.jsonl",
+                    "python3 - <<'EOF'\nopen('.claude/guardrails.local.json', 'w').write('{}')\nEOF",
+                    "cd .claude && mv guardrails.json guardrails.json.bak",
+                    "rm -rf .claude",
+                    "rm -rf ./.claude/",
+                    "mv .claude .claude.bak"):
+            with self.subTest(cmd=cmd):
+                r = self.pre_bash(cmd)
+                self.assertBlocked(r, "protected_paths")
+                self.assertIn("ask the user", r.err)
+
+    def test_ordinary_commands_allowed(self):
+        for cmd in ("python3 scripts/report.py", "ls .claude", "cat README.md", "grep -rn guardrails src/",
+                    "cat my-guardrails.json", "git rm --cached .claude/other.txt", "npm test"):
+            with self.subTest(cmd=cmd):
+                self.assertAllowed(self.pre_bash(cmd))
+
+    def test_custom_audit_path(self):
+        cfg = {"audit": {"path": "logs/agent-audit.jsonl"}}
+        self.assertBlocked(self.pre_bash("echo x >> logs/agent-audit.jsonl", cfg), "protected_paths")
+        self.assertAllowed(self.pre_bash("cat .claude/guardrails-audit.jsonl", cfg))
+
+    def test_allow_paths_exempts_shell_too(self):
+        cfg = {"rules": {"protected_paths": {"allow_paths": [".claude/guardrails.json"]}}}
+        self.assertAllowed(self.pre_bash("cat .claude/guardrails.json", cfg))
+        self.assertBlocked(self.pre_bash("cat .claude/guardrails-audit.jsonl", cfg), "protected_paths")
+
+    def test_rule_disabled_or_warn(self):
+        self.assertAllowed(self.pre_bash("cat .claude/guardrails.json", {"rules": {"protected_paths": {"enabled": False}}}))
+        r = self.pre_bash("cat .claude/guardrails.json", {"rules": {"protected_paths": {"mode": "warn"}}})
+        self.assertAllowed(r)
+        self.assertIn("warning", r.err)
+
+
+class TestSettingsProtected(Base):
+    def test_claude_settings_protected_by_default(self):
+        for path in (".claude/settings.json", ".claude/settings.local.json"):
+            with self.subTest(path=path):
+                self.assertBlocked(self.pre_edit(path, "{}"), "protected_paths")
+
+    def test_can_be_allowed(self):
+        cfg = {"rules": {"protected_paths": {"allow_paths": [".claude/settings.local.json"]}}}
+        self.assertAllowed(self.pre_edit(".claude/settings.local.json", "{}", cfg))
+
+
+class TestHintWording(Base):
+    """Block messages name the policy for the human and tell the agent to ask, never how to lift the rule itself."""
+
+    def test_reasons_address_the_agent_and_the_human(self):
+        cases = [self.pre_bash("git reset --hard"),
+                 self.pre_bash("terraform apply", {"rules": {"scope_shell": {"enabled": True}}}),
+                 self.pre_edit(".env", "X=1"),
+                 self.pre_edit(".claude/guardrails.json", "{}"),
+                 self.pre_edit("src/a.py", "k=" + AWS),
+                 run_guard("pre-bash", None, self.proj, {"fail_closed": True}, raw="not json")]
+        for r in cases:
+            with self.subTest(err=r.err[:60]):
+                self.assertEqual(r.code, 2, r.err)
+                self.assertIn("Policy: .claude/guardrails.json", r.err)
+                self.assertIn("Agent: do not change the policy", r.err)
+                self.assertIn("ask the user", r.err)
+                self.assertNotIn("To allow:", r.err)
+                self.assertEqual(len(r.err.strip().splitlines()), 1)

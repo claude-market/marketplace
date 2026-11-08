@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.2
+
+Closes the ways an agent could talk or work its way around its own rails.
+
+- Block messages no longer tell the agent how to lift a rule. They name the rule and the policy file for the human, and end with: "Agent: do not change the policy; take a safer approach or ask the user."
+- The `guardrails:allow` inline escape for secret detection is now opt-in (`secrets_in_content.inline_allow_marker`, default `false`). The agent writes the line, so by default it could have exempted itself.
+- Shell commands that name the policy or the audit log are refused (`echo > .claude/guardrails.json`, `sed -i ... guardrails.json`, `rm -rf .claude`), under `protected_paths`. Protecting these files from Edit/Write alone was hollow. `allow_paths` exempts a file for the shell too. Read the policy with the Read tool.
+- `.claude/settings.json` and `.claude/settings.local.json` are protected by default, because an agent that can edit them can turn hooks off. Add them to `allow_paths` if you want the agent to manage settings.
+- README gains a "What it is, and is not" section: a seat belt against mistakes and drift, not a cage for an adversarial agent.
+
 ## 0.2.1
 
 - The audit log (`audit.path`) and the active policy files are now always protected from Edit/Write, even when a policy replaces the `protected_paths.paths` list. `allow_paths` can still exempt them explicitly.

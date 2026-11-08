@@ -4,14 +4,18 @@ agent-guardrails is a Claude Code plugin that adds a safety-and-audit layer for 
 
 ## 30-second demo
 
+![Terminal recording of the hook output: git reset --hard, a piped remote script and a write to .env are each blocked with the rule name and how to allow it; npm test is allowed and logged; the report command summarises the session.](docs/demo.gif)
+
+*Recorded from the real `scripts/guard.py` and `scripts/report.py` output; the invocation lines are shortened for display.*
+
 The agent tries two things it should not. Claude Code shows each one-line reason to the agent, which then adjusts:
 
 ```
 > Bash: rm -rf ~
-[agent-guardrails] destructive_shell: blocked - rm -rf on root, home or working directory. To allow: edit .claude/guardrails.json (add a regex to rules.destructive_shell.allow_patterns, or set rules.destructive_shell.mode to "warn").
+[agent-guardrails] destructive_shell: blocked - rm -rf on root, home or working directory. Policy: .claude/guardrails.json (a human can add a regex to rules.destructive_shell.allow_patterns, or set rules.destructive_shell.mode to "warn"). Agent: do not change the policy; take a safer approach or ask the user.
 
 > Write src/config.py  (content: AWS_KEY = "AKIA...")
-[agent-guardrails] secrets_in_content: blocked - content looks like a secret (aws-access-key) in 'src/config.py'; value not shown. To allow: edit .claude/guardrails.json (append '# guardrails:allow' to the line, or add the path to rules.secrets_in_content.ignore_paths).
+[agent-guardrails] secrets_in_content: blocked - content looks like a secret (aws-access-key) in 'src/config.py'; value not shown. Policy: .claude/guardrails.json (a human can add the path to rules.secrets_in_content.ignore_paths). Agent: do not change the policy; take a safer approach or ask the user.
 ```
 
 Afterwards, `/agent-guardrails:report` summarises the session (excerpt):
@@ -34,6 +38,13 @@ Afterwards, `/agent-guardrails:report` summarises the session (excerpt):
 - 2026-11-07T07:13:59Z `destructive_shell`: rm -rf ~
 - 2026-11-07T07:13:59Z `secrets_in_content`: src/config.py (33 chars)
 ```
+
+### What's new in 0.2.2
+
+- Block messages tell the agent to take a safer approach or ask you; they no longer explain how to lift the rule. The policy key a human would change is still named.
+- The `guardrails:allow` inline escape is off by default (`inline_allow_marker`), since the agent writes the line it would mark.
+- Shell commands that name the policy or the audit log are refused, so `echo > .claude/guardrails.json` and `rm -rf .claude` no longer slip past the Edit/Write protection.
+- `.claude/settings.json` and `.claude/settings.local.json` are protected by default, because editing them can turn hooks off.
 
 ### What's new in 0.2.1
 
@@ -115,7 +126,7 @@ Per-pattern secret modes, for example warn on NHS-style numbers but still block 
 
 Self-protection: the agent cannot edit `.claude/guardrails.json` by default, so it cannot silently loosen its own policy; you edit it yourself. To allow it deliberately, add `".claude/guardrails.json"` to `rules.protected_paths.allow_paths` (this change must be made by you outside the agent, or temporarily), or remove the entries from `paths`.
 
-Per-line secret escape: add `guardrails:allow` to the line (for example `# guardrails:allow`).
+Per-line secret escape (opt-in): with `"inline_allow_marker": true` under `secrets_in_content`, a line containing `guardrails:allow` is not scanned. It is off by default because the agent writes the line and could add the marker itself; prefer `ignore_paths`, which only a human can change.
 
 ## Starter policies
 
@@ -134,8 +145,10 @@ These are starting points, not compliance guarantees. Review and adapt them.
 A blocked call returns exit code 2, a one-line reason on stderr, and a JSON deny decision on stdout, so it works across hook versions. Claude sees the reason and can adjust. Example:
 
 ```
-[agent-guardrails] destructive_shell: blocked - git reset --hard (discards uncommitted work). To allow: edit .claude/guardrails.json (add a regex to rules.destructive_shell.allow_patterns, or set rules.destructive_shell.mode to "warn").
+[agent-guardrails] destructive_shell: blocked - git reset --hard (discards uncommitted work). Policy: .claude/guardrails.json (a human can add a regex to rules.destructive_shell.allow_patterns, or set rules.destructive_shell.mode to "warn"). Agent: do not change the policy; take a safer approach or ask the user.
 ```
+
+The message is written for two readers. The human learns which rule fired and which policy key they could change. The agent is told, in the same line, that changing the policy is not its move: pick a safer command or ask. Since 0.2.2 the agent cannot act on the hint anyway: the policy, the audit log and the Claude settings files are refused to Edit/Write and to shell commands that name them.
 
 ## Audit log and report
 
@@ -148,6 +161,10 @@ python3 scripts/report.py --json    # machine output; also --session ID, --log P
 
 The report shows time range, events, tool counts, blocks by rule, recent blocks, files touched and top commands.
 
+## What it is, and is not
+
+Agent Guardrails catches mistakes and drift: the destructive command an agent reaches for when a test fails, the key it pastes into a config, the file it should not touch. It also leaves a record you can read afterwards. It is not a sandbox and not a security boundary against an agent that is actively trying to defeat it. If you need that, run the agent in a container with least-privilege credentials, and keep Claude Code's permission prompts on; the plugin sits inside those, not instead of them.
+
 ## FAQ
 
 **Fail open or closed?** Default is open: if the hook gets garbage input it allows the call and logs a warning, so a bug never stops your work. Set `fail_closed: true` for stricter environments; then unreadable input or an internal error blocks PreToolUse calls (audit-only hooks never block).
@@ -156,7 +173,9 @@ The report shows time range, events, tool counts, blocks by rule, recent blocks,
 
 **Limitations.** Hooks only see tool calls Claude Code makes; they do not cover commands a script runs internally, other processes, or what happens outside the session. This is not a sandbox. Pattern matching can be bypassed by obfuscation (variables, encoding, `bash -c` with built strings, symlinks, indirect scripts). Pair it with proper sandboxing, least-privilege credentials and Claude Code's own permission settings. `git push --force` with no explicit branch is blocked because the target cannot be known.
 
-**Can I allow one command?** Add a regex to `allow_patterns`, or append `guardrails:allow` for a secret false positive.
+**Can I allow one command?** Add a regex to `allow_patterns`. For a secret false positive, add the path to `ignore_paths`, or opt in to the `guardrails:allow` line marker.
+
+**Can the agent get round it?** Not by the obvious routes: it cannot edit or shell-write the policy, the audit log or `.claude/settings.json`, and the block message tells it to ask you. A determined agent can still obfuscate a command (see Limitations), so treat this as a seat belt, not a cage; the permission prompts and your review remain the real boundary.
 
 ## Compatibility
 
